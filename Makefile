@@ -1,0 +1,2 @@
+all:
+	c++ main.cpp
