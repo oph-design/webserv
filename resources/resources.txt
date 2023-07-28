@@ -1,0 +1,11 @@
+RFC HTTP 1.1
+
+https://datatracker.ietf.org/doc/html/rfc7230
+
+" The "http" URI scheme is hereby defined for the purpose of minting
+   identifiers according to their association with the hierarchical
+   namespace governed by a potential HTTP origin server listening for
+   TCP ([RFC0793]) connections on a given port.
+
+     http-URI = "http:" "//" authority path-abempty [ "?" query ]
+                [ "#" fragment ]"
