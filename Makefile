@@ -56,40 +56,11 @@ bonus:
 ################################################################################
 ################################################################################
 
-test:
-	@echo $(ALL_SRC)
-
 $(ALL_OBJ_DIR):
 	mkdir -p $(ALL_OBJ_DIR)
 
 norm:
 	@echo "implement linter here"
-
-################################################################################
-################################################################################
-
-LSAN			=	lib/LeakSanitizer
-LSANLIB			=	$(LSAN)/liblsan.a
-
-ifeq ($(OS),Linux)
-	LSANLFLAGS := -rdynamic -Llib/LeakSanitizer -llsan -ldl -lstdc++
-endif
-ifeq ($(OS),Darwin)
-	LSANLFLAGS := -Llib/LeakSanitizer -llsan -lc++
-endif
-
-lsan: CFLAGS += -I $(LSAN) -Wno-gnu-include-next
-lsan: LFLAGS += $(LSANLFLAGS)
-lsan: fclean $(LSANLIB)
-lsan: all
-
-$(LSAN):
-	@git submodule init $(LSAN)
-	@git submodule update $(LSAN)
-
-$(LSANLIB): $(LSAN)
-	@$(MAKE) -C $(LSAN)
-	@echo $(GREEN)"created liblsan.a"$(DEFAULT)
 
 ################################################################################
 ################################################################################
