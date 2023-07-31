@@ -1,3 +1,0 @@
-[submodule "lib/LeakSanitizer"]
-	path = lib/LeakSanitizer
-	url = https://github.com/mhahnFr/LeakSanitizer
