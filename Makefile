@@ -1,9 +1,9 @@
 NAME			=	webserv
 
 CC				=	c++
-CFLAGS			=	-Wall -Wextra -Werror -g
-LFLAGS			=
-LCFLAGS			=
+LCFLAGS			=	# -fsanitize=address
+CFLAGS			=	$(LCFLAGS) -Wall -Wextra -Werror -g -pedantic
+LFLAGS			=	$(LCFLAGS)
 
 ################################################################################
 ################################################################################
@@ -60,7 +60,7 @@ $(ALL_OBJ_DIR):
 	mkdir -p $(ALL_OBJ_DIR)
 
 norm:
-	@echo "implement linter here"
+	cpplint $(ALL_SRC)
 
 ################################################################################
 ################################################################################
