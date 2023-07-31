@@ -55,7 +55,7 @@ int main() {
                            // clientinfos in the corresponding structs
 
     // sends a simple response to browser
-    if (pollSocket(sockfd, POLLIN, 5000)) { //check socket events with poll
+    if (pollSocket(sockfd, POLLIN | POLLOUT, 10000)) { //check socket events with poll
       char buffer[1024] = {0};  // creates buffer to store client msg
       read(client_sockfd, buffer, sizeof(buffer));  // reads client msg
 
