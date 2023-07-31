@@ -1,5 +1,7 @@
-# Executable
-webserv
+# Random Folders
+webserv.dSYM
+obj
+.vscode
 
 # Prerequisites
 *.d
@@ -7,7 +9,7 @@ webserv
 # Compiled Object files
 *.slo
 *.lo
-*.o
+**.o
 *.obj
 
 # Precompiled Headers
@@ -33,3 +35,4 @@ webserv
 *.exe
 *.out
 *.app
+webserv
