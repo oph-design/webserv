@@ -1,3 +1,5 @@
-#include <iostream>
 
-int main(void) { std::cout << "hello world" << std::endl; }
+
+void placeholder();
+
+int main(void) { placeholder(); }
