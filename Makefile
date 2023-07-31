@@ -10,7 +10,7 @@ LCFLAGS			=
 
 SRC					=	$(addprefix $(SRC_DIR), $(SRC_FILES))
 SRC_DIR				=	src/
-SRC_FILES			=	main.c
+SRC_FILES			=	main.cpp
 
 PLACEHOLDER			=	$(addprefix $(PLACEHOLDER_DIR), $(PLACEHOLDER_FILES))
 PLACEHOLDER_DIR		=	src/placeholder/
@@ -22,15 +22,15 @@ ALL_SRC				=	$(SRC) $(PLACEHOLDER)
 ################################################################################
 
 OBJ_DIR			=	obj/
-ALL_OBJ			=	$(patsubst $(SRC_DIR)%.c, $(OBJ_DIR)%.o, $(ALL_SRC))
+ALL_OBJ			=	$(patsubst $(SRC_DIR)%.cpp, $(OBJ_DIR)%.o, $(ALL_SRC))
 ALL_OBJ_DIR		=	$(sort $(dir $(ALL_OBJ)))
 
 ################################################################################
 ################################################################################
 
-all: $(NAME)
+all: $(ALL_OBJ_DIR) $(NAME)
 
-$(OBJ_DIR)%.o: $(SRC_DIR)%.c
+$(OBJ_DIR)%.o: $(SRC_DIR)%.cpp
 	@$(CC) $(LCFLAGS) -c $< -o $@ $(CFLAGS)
 	@echo $(LGREEN)"compiled "$^$(DEFAULT)
 
@@ -55,6 +55,12 @@ bonus:
 
 ################################################################################
 ################################################################################
+
+test:
+	@echo $(ALL_SRC)
+
+$(ALL_OBJ_DIR):
+	mkdir -p $(ALL_OBJ_DIR)
 
 norm:
 	@echo "implement linter here"
