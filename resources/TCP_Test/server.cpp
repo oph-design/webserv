@@ -1,9 +1,26 @@
 #include <netinet/in.h>
+#include <poll.h>
 #include <sys/socket.h>
 #include <unistd.h>
-
 #include <cstring>
+#include <fstream>
 #include <iostream>
+
+bool pollSocket(int sockfd, short event, int timeout) {
+  struct pollfd pfd; //struct to contain info for fd read with poll
+  pfd.fd = sockfd; //setting up struct
+  pfd.events = event; //setting up struct
+  int ret = poll(&pfd, 1, timeout); // address of pfd as config, 1 fd to read, timeout in milliseconds
+  if (ret == -1) {
+    std::cerr << "poll failed: " << std::endl;
+		return false;
+  } else if (ret == 0) {
+    std::cerr << "poll timed out" << std::endl;
+		return false;
+  } else {
+    return pfd.revents & event; // if the event we want to occure and the event that happend the same -> return true;
+  }
+}
 
 int main() {
   int sockfd = socket(AF_INET, SOCK_STREAM, 0);
@@ -37,13 +54,34 @@ int main() {
         &clientaddr_len);  // waits for incoming signals on sockfd, writes
                            // clientinfos in the corresponding structs
 
-    char buffer[1024] = {0};
-    read(client_sockfd, buffer,
-         sizeof(buffer));  // writes incoming data in buffer
-    std::cout << "Received: " << buffer << "\n";
+    // sends a simple response to browser
+    if (pollSocket(sockfd, POLLIN, 5000)) { //check socket events with poll
+      char buffer[1024] = {0};  // creates buffer to store client msg
+      read(client_sockfd, buffer, sizeof(buffer));  // reads client msg
 
-    const char* msg = "Hello, client!";
-    write(client_sockfd, msg, strlen(msg));  // writes message back to client
+      // Simple check for an HTTP GET request
+      if (strncmp(buffer, "GET", 3) == 0) {  // if it is GET method
+        const char* httpResponse =
+            "HTTP/1.1 200 OK\r\n"
+            "Content-Type: text/html; charset=UTF-8\r\n\r\n";  // response
+                                                               // HTTP/1.1
+                                                               // header
+        write(client_sockfd, httpResponse,
+              strlen(httpResponse));  // write response header to the socket
+        std::ifstream htmlFile(
+            "index.html");  // stream index.html file into ifstream
+        if (htmlFile) {
+          std::string line;
+          while (std::getline(htmlFile, line)) {  // read line by line
+            write(client_sockfd, line.c_str(),
+                  line.size());  // write it into socket with c_str, which
+                                 // converts it into a c type string
+          }
+        }
+      } else {
+        std::cout << "Received: " << buffer << "\n";
+      }
+    }
 
     close(client_sockfd);  // closes sockfd
   }
