@@ -1,4 +1,4 @@
-# Random Folders
+# Other unwanted files 
 webserv.dSYM
 obj
 .vscode
@@ -35,4 +35,5 @@ obj
 *.exe
 *.out
 *.app
+**server
 webserv
