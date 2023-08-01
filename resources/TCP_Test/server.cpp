@@ -5,24 +5,29 @@
 #include <cstring>
 #include <fstream>
 #include <iostream>
+#include <sstream>
+#include <string>
 
 bool pollSocket(int sockfd, short event, int timeout) {
-  struct pollfd pfd; //struct to contain info for fd read with poll
-  pfd.fd = sockfd; //setting up struct
-  pfd.events = event; //setting up struct
-  int ret = poll(&pfd, 1, timeout); // address of pfd as config, 1 fd to read, timeout in milliseconds
+  struct pollfd pfd;   // struct to contain info for fd read with poll
+  pfd.fd = sockfd;     // setting up struct
+  pfd.events = event;  // setting up struct
+  int ret = poll(&pfd, 1, timeout);  // address of pfd as config, 1 fd to read,
+                                     // timeout in milliseconds
   if (ret == -1) {
     std::cerr << "poll failed: " << std::endl;
-		return false;
+    return false;
   } else if (ret == 0) {
     std::cerr << "poll timed out" << std::endl;
-		return false;
+    return false;
   } else {
-    return pfd.revents & event; // if the event we want to occure and the event that happend the same -> return true;
+    return pfd.revents & event;  // if the event we want to occure and the event
+                                 // that happend the same -> return true;
   }
 }
 
 int main() {
+	fd_set test;
   int sockfd = socket(AF_INET, SOCK_STREAM, 0);
 
   sockaddr_in servaddr;  // struct so save socketadresses(server)
@@ -55,10 +60,11 @@ int main() {
                            // clientinfos in the corresponding structs
 
     // sends a simple response to browser
-    if (pollSocket(sockfd, POLLIN | POLLOUT, 10000)) { //check socket events with poll
+    if (pollSocket(client_sockfd, POLLIN | POLLOUT,
+                   10000)) {    // check socket events with poll
       char buffer[1024] = {0};  // creates buffer to store client msg
       read(client_sockfd, buffer, sizeof(buffer));  // reads client msg
-
+      //std::cout << buffer << std::endl;
       // Simple check for an HTTP GET request
       if (strncmp(buffer, "GET", 3) == 0) {  // if it is GET method
         const char* httpResponse =
@@ -66,26 +72,21 @@ int main() {
             "Content-Type: text/html; charset=UTF-8\r\n\r\n";  // response
                                                                // HTTP/1.1
                                                                // header
-        write(client_sockfd, httpResponse,
-              strlen(httpResponse));  // write response header to the socket
         std::ifstream htmlFile(
             "index.html");  // stream index.html file into ifstream
-        if (htmlFile) {
-          std::string line;
-          while (std::getline(htmlFile, line)) {  // read line by line
-            write(client_sockfd, line.c_str(),
-                  line.size());  // write it into socket with c_str, which
-                                 // converts it into a c type string
-          }
-        }
+        std::stringstream html_content;
+        html_content << htmlFile.rdbuf();
+        std::string final_response(httpResponse);
+        final_response.append(html_content.str());
+				std::cout << final_response << std::endl;
+        write(client_sockfd, final_response.c_str(),
+              final_response.size());  // write response to the socket
       } else {
         std::cout << "Received: " << buffer << "\n";
       }
+      close(client_sockfd);  // closes sockfd
     }
-
-    close(client_sockfd);  // closes sockfd
   }
-
   close(sockfd);
 
   return 0;
