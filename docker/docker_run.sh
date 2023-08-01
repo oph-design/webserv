@@ -31,7 +31,7 @@ run_minilinux()
 	docker run -it -v $PWD:/host/ --name $IMG_NAME -e DOCKER_CONTAINER_NAME=$IMG_NAME $IMG_NAME $CMD
 }
 
-launch_minilinux()
+launch_container()
 {
 	if [ "$(docker image ls | grep $IMG_NAME)" ]
 	then
@@ -42,14 +42,7 @@ launch_minilinux()
 	fi
 }
 
-save_minilinux()
-{
-	echo "Saving changes to image..."
-	export CONT_ID=$(docker ps -a | grep $IMG_NAME | cut -d ' ' -f 1)
-	docker commit $CONT_ID $IMG_NAME
-}
-
-clean_up_minilinux()
+clean_up()
 {
 	docker container rm $IMG_NAME
 	echo "Cleaning up..."
@@ -57,7 +50,6 @@ clean_up_minilinux()
 }
 
 start_docker
-launch_minilinux
-save_minilinux
-clean_up_minilinux
+launch_container
+clean_up
 echo "Credits go to pfuchs, I just ripped it"
