@@ -1,7 +1,7 @@
 #!/bin/bash
 
 IMG_NAME=webserv
-DOCKERFILE_DIR=.
+DOCKERFILE_DIR=docker/
 CMD=bash
 
 start_docker()
