@@ -2,42 +2,37 @@
 
 IMG_NAME=webserv
 DOCKERFILE_DIR=.
+CMD=bash
 
 start_docker()
 {
-	# start the docker daemon
 	if ! [ "$(pgrep Docker)" ]
 	then
-		echo "${blue}Starting docker daemon...${reset}"
+		echo "Starting docker daemon..."
 		open -j -g -a Docker
 	fi
 
-	# wait for the daemon to start
 	until docker info > /dev/null 2>&1
 	do
 		sleep 1
 	done
-	echo "${blue}Docker daemon started${reset}"
+	echo "Docker daemon started"
 }
 
 build_minilinux()
 {
-	# build the image
-	echo "${blue}Building image...${reset}"
+	echo "Building image..."
 	docker build -t $IMG_NAME $DOCKERFILE_DIR
 }
 
 run_minilinux()
 {
-	# create the container
-	echo "${blue}Creating container...${reset}"
-	docker run -it -v ..:/host/ --name $IMG_NAME -e DOCKER_CONTAINER_NAME=$IMG_NAME $IMG_NAME bash
-	# docker run -it -v $PWD:/host/ --name $IMG_NAME -e DOCKER_CONTAINER_NAME=$IMG_NAME $IMG_NAME zsh
+	echo "Creating container..."
+	docker run -it -v $PWD:/host/ --name $IMG_NAME -e DOCKER_CONTAINER_NAME=$IMG_NAME $IMG_NAME $CMD
 }
 
 launch_minilinux()
 {
-	# check if the container already exists
 	if [ "$(docker image ls | grep $IMG_NAME)" ]
 	then
 		run_minilinux
@@ -47,5 +42,22 @@ launch_minilinux()
 	fi
 }
 
+save_minilinux()
+{
+	echo "Saving changes to image..."
+	export CONT_ID=$(docker ps -a | grep $IMG_NAME | cut -d ' ' -f 1)
+	docker commit $CONT_ID $IMG_NAME
+}
+
+clean_up_minilinux()
+{
+	docker container rm $IMG_NAME
+	echo "Cleaning up..."
+	docker rmi $(docker images -f "dangling=true" -q) 2>/dev/null
+}
+
 start_docker
 launch_minilinux
+save_minilinux
+clean_up_minilinux
+echo "Credits go to pfuchs, I just ripped it"

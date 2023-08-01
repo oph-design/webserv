@@ -1,10 +1,9 @@
 FROM ubuntu:latest
 
-RUN apt update -y && apt ugrade -y
+RUN apt update -y && apt upgrade -y
 RUN apt install vim \
                 valgrind \
-                build-essential
+                build-essential \
+                -y
 
-RUN apt-get install build-essential -y
 WORKDIR /host/
-
