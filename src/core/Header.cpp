@@ -27,6 +27,15 @@ Header &Header::operator=(const Header &obj) {
   return *this;
 }
 
+const std::string &Header::operator[](const std::string &key) const {
+  return this->headerContent_.at(key);
+}
+
+const std::string &Header::operator[](const char *key) const {
+  std::string stringKey(key);
+  return this->headerContent_.at(stringKey);
+}
+
 std::ostream &operator<<(std::ostream &stream, const Header &header) {
   for (std::map<std::string, std::string>::const_iterator iter =
            header.headerContent_.begin();

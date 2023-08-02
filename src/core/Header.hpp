@@ -2,10 +2,10 @@
 #define HEADER_HPP_
 
 #include <iostream>
+#include <iterator>
 #include <map>
 #include <string>
 #include <utility>
-#include <iterator>
 
 #ifndef BUFFER_SIZE
 #define BUFFER_SIZE 1024
@@ -22,7 +22,8 @@ class Header {
 
   void addField(std::pair<std::string, std::string> &fieldWithContent);
 
-  std::string &operator[](std::string key) const;
+  const std::string &operator[](const std::string &key) const;
+  const std::string &operator[](const char *key) const;
   friend std::ostream &operator<<(std::ostream &stream, const Header &header);
 
  private:
