@@ -88,8 +88,7 @@ void TcpServer::_existingConnection(int &i) {
     }
     --_nfds;
     --i;
-  } else
-    std::cout << "some kind of error" << std::endl;
+  } else { std::cout << "some kind of error" << std::endl; }
 }
 
 std::string TcpServer::_createResponse() {
