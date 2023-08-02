@@ -90,7 +90,7 @@ void TcpServer::_existingConnection(int &i) {
     }
     --_nfds;
     --i;
-  } 
+  }
 }
 
 std::string TcpServer::_createResponse() {
