@@ -1,4 +1,5 @@
 #include "TcpServer.hpp"
+#include <string>
 
 void TcpServer::_bootServer() {
   _listening_socket = socket(AF_INET, SOCK_STREAM, 0);
@@ -88,15 +89,12 @@ void TcpServer::_existingConnection(int &i) {
     }
     --_nfds;
     --i;
-  } else { std::cout << "some kind of error" << std::endl; }
+  } else { 
+    std::cout << "some kind of error" << std::endl; 
+  }
 }
 
 std::string TcpServer::_createResponse() {
-  const char *httpResponse =
-      "HTTP/1.1 200 OK\r\n"
-      "Content-Type: text/html; charset=UTF-8\r\n"
-      "Connection: keep-alive\r\n\r\n";
-
   std::ifstream htmlFile("html/index.html");
   if (htmlFile.is_open()) {
     std::cout << "html File opened successfully." << std::endl;
@@ -105,7 +103,14 @@ std::string TcpServer::_createResponse() {
   }
   std::stringstream html_content;
   html_content << htmlFile.rdbuf();
+  const char *httpResponse =
+      "HTTP/1.1 200 OK\r\n"
+      "Content-Type: text/plain; charset=UTF-8\r\n"
+      "Connection: keep-alive\r\n"
+      "Content-Length: ";
   std::string final_response(httpResponse);
+  final_response.append(std::to_string(html_content.str().length()));
+  final_response.append("\r\n\r\n");
   final_response.append(html_content.str());
   return final_response;
 }
