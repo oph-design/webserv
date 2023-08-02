@@ -4,14 +4,15 @@
 #include <netinet/in.h>
 #include <poll.h>
 #include <sys/socket.h>
+#include <algorithm>
 #include <unistd.h>
 #include <cstring>
 #include <fstream>
 #include <iostream>
+#include <map>
 #include <sstream>
 #include <string>
-#include <map>
-#include <algorithm>
+
 
 class Response {
  public:
@@ -25,4 +26,4 @@ class Response {
   std::map<std::string, std::string> header_;
 };
 
-#endif // !RESPONSE_HPP
+#endif  // !RESPONSE_HPP

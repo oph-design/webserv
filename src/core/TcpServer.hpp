@@ -1,6 +1,7 @@
 #ifndef TCPSERVER_HPP
 #define TCPSERVER_HPP
 
+#include <fcntl.h>
 #include <netinet/in.h>
 #include <poll.h>
 #include <sys/socket.h>
@@ -10,7 +11,7 @@
 #include <iostream>
 #include <sstream>
 #include <string>
-#include <fcntl.h>
+
 
 #define MAX_CLIENTS 1024
 
@@ -19,7 +20,7 @@ class TcpServer {
   TcpServer(std::string ip_addr, int port);
   TcpServer(const TcpServer &);
   ~TcpServer();
-  TcpServer& operator=(const TcpServer &);
+  TcpServer &operator=(const TcpServer &);
   void boot();
 
  private:
@@ -39,4 +40,4 @@ class TcpServer {
   int _socketopt;
 };
 
-#endif // TCPSERVER_HPP
+#endif  // TCPSERVER_HPP
