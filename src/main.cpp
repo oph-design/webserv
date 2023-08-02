@@ -1,10 +1,6 @@
-#include <iostream>
-
-#include "Header.hpp"
+#include "TcpServer.hpp"
 
 int main(void) {
-  Header header;
-  Header header2= header;
-  std::cout << header2 << std::endl;
-  return 0;
-}
+	TcpServer Server("localhost", 1234);
+	Server.boot();
+	 return 0; }
