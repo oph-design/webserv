@@ -1,5 +1,3 @@
 
 
-void placeholder();
-
-int main(void) { placeholder(); }
+int main(void) { return 0; }
