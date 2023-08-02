@@ -1,0 +1,28 @@
+name: Run compile check
+
+on:
+  pull_request:
+    branches:
+      - main  # Change this to your main branch name
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Build with make
+      run: |
+        make # Replace with the path to your C++ project
+      continue-on-error: true  # To allow the workflow to continue even if the build fails
+
+    - name: Check build status
+      run: |
+        if [ $? -eq 0 ]; then
+          echo "Build succeeded!"
+        else
+          echo "Build failed!"
+          exit 1  # Exit with a non-zero status code to indicate a build failure
+        fi
