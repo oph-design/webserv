@@ -2,7 +2,9 @@ NAME							=	webserv
 
 CC								=	c++
 LCFLAGS						=	# -fsanitize=address
-CFLAGS						=	$(LCFLAGS) -std=c++98 -Wall -Wextra -Werror -g -pedantic
+HEADERFLAGS				=	-I src/core
+CFLAGS						=	$(LCFLAGS) $(HEADERFLAGS) \
+											-std=c++98 -Wall -Wextra -Werror -g -pedantic
 LFLAGS						=	$(LCFLAGS)
 
 ################################################################################
@@ -12,11 +14,11 @@ SRC								=	$(addprefix $(SRC_DIR), $(SRC_FILES))
 SRC_DIR						=	src/
 SRC_FILES					=	main.cpp
 
-PLACEHOLDER				=	$(addprefix $(PLACEHOLDER_DIR), $(PLACEHOLDER_FILES))
-PLACEHOLDER_DIR		=	src/placeholder/
-PLACEHOLDER_FILES	=	placeholder.cpp
+CORE							=	$(addprefix $(CORE_DIR), $(CORE_FILES))
+CORE_DIR					=	src/core/
+CORE_FILES				=	Header.cpp
 
-ALL_SRC						=	$(SRC) $(PLACEHOLDER)
+ALL_SRC						=	$(SRC) $(CORE)
 
 ################################################################################
 ################################################################################
