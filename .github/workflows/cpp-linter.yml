@@ -12,6 +12,4 @@ jobs:
         source: '.'
         extensions: 'hpp,cpp,tpp,ipp'
         clangFormatVersion: 16
-        exclude:
-        - 'resources/*'
-        - 'tester/*'
+        exclude: './docker,./obj,./resources,./tester'
