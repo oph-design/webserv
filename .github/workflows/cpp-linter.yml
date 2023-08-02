@@ -6,7 +6,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    style: Google
 
     steps:
     - uses: actions/checkout@v2
@@ -16,3 +15,4 @@ jobs:
         exclude: './lib'
         extensions: 'hpp,cpp'
         clangFormatVersion: 16
+        style: Google
