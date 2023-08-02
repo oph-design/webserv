@@ -15,7 +15,14 @@
 
 class Response {
  public:
+  Response();
+  Response(const Response& rhs);
+  Response& operator=(const Response& rhs);
+  ~Response();
+
  private:
+  std::string body_;
+  std::map<std::string, std::string> header_;
 };
 
 #endif // !RESPONSE_HPP
