@@ -12,11 +12,11 @@ LFLAGS						=	$(LCFLAGS)
 
 SRC								=	$(addprefix $(SRC_DIR), $(SRC_FILES))
 SRC_DIR						=	src/
-SRC_FILES					=	main.cpp
+SRC_FILES					=	main.cpp 
 
 CORE							=	$(addprefix $(CORE_DIR), $(CORE_FILES))
 CORE_DIR					=	src/core/
-CORE_FILES				=	Header.cpp
+CORE_FILES				=	Header.cpp TcpServer.cpp
 
 ALL_SRC						=	$(SRC) $(CORE)
 
