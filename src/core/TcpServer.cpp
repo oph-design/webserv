@@ -82,7 +82,7 @@ void TcpServer::_existingConnection(int &i) {
     std::cout << "connection established with socket " << i << " " << std::endl;
     std::string response = _createResponse();
     write(_fds[i].fd, response.c_str(), response.size());
-  } else if (bytes_read == 0) {
+  } else {
     std::cout << "client closed connection on socket " << i << " " << std::endl;
     close(_fds[i].fd);
     for (int j = i; j < _nfds - 1; ++j) {
@@ -90,9 +90,7 @@ void TcpServer::_existingConnection(int &i) {
     }
     --_nfds;
     --i;
-  } else { 
-    std::cout << "some kind of error" << std::endl; 
-  }
+  } 
 }
 
 std::string TcpServer::_createResponse() {

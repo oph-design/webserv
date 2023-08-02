@@ -4,9 +4,9 @@
 #include <netinet/in.h>
 #include <poll.h>
 #include <sys/socket.h>
-#include <algorithm>
 #include <unistd.h>
 
+#include <algorithm>
 #include <cstring>
 #include <fstream>
 #include <iostream>
