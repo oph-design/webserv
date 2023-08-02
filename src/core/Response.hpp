@@ -18,4 +18,4 @@ class Response {
  private:
 };
 
-#endif // !RESPONSEHPP
+#endif // !RESPONSE_HPP
