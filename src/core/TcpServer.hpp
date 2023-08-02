@@ -10,6 +10,7 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <fcntl.h>
 
 #define MAX_CLIENTS 1024
 
@@ -27,6 +28,7 @@ class TcpServer {
 	void _bootServer();
 	void _serverLoop();
 	void _initNewConnection();
+	void _existingConnection(int &);
 	std::string _createResponse();
 	void _error();
 
