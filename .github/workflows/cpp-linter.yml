@@ -6,6 +6,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    style: Google
+
     steps:
     - uses: actions/checkout@v2
     - uses: DoozyX/clang-format-lint-action@v0.16.2
