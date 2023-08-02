@@ -11,4 +11,3 @@ Response& Response::operator=(const Response& rhs) {
 }
 
 Response::~Response() { this->body_.clear(); }
-
