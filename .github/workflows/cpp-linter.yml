@@ -13,3 +13,4 @@ jobs:
         extensions: 'hpp,cpp,tpp,ipp'
         clangFormatVersion: 16
         exclude: './resources'
+        style: 'Google'
