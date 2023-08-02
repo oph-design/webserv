@@ -1,7 +1,9 @@
 name: Run compile check
 
-on: [push]
-
+on:
+  pull_request:
+    branches:
+      - main  # Change this to your main branch name
 jobs:
   build:
     runs-on: ubuntu-latest
