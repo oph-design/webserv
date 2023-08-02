@@ -1,29 +1,31 @@
-NAME			=	webserv
+NAME							=	webserv
 
-CC				=	c++
-LCFLAGS			=	# -fsanitize=address
-CFLAGS			=	$(LCFLAGS) -Wall -Wextra -Werror -g -pedantic
-LFLAGS			=	$(LCFLAGS)
-
-################################################################################
-################################################################################
-
-SRC					=	$(addprefix $(SRC_DIR), $(SRC_FILES))
-SRC_DIR				=	src/
-SRC_FILES			=	main.cpp
-
-PLACEHOLDER			=	$(addprefix $(PLACEHOLDER_DIR), $(PLACEHOLDER_FILES))
-PLACEHOLDER_DIR		=	src/placeholder/
-PLACEHOLDER_FILES	=	placeholder.cpp
-
-ALL_SRC				=	$(SRC) $(PLACEHOLDER)
+CC								=	c++
+LCFLAGS						=	# -fsanitize=address
+HEADERFLAGS				=	-I src/core
+CFLAGS						=	$(LCFLAGS) $(HEADERFLAGS) \
+											-std=c++98 -Wall -Wextra -Werror -g -pedantic
+LFLAGS						=	$(LCFLAGS)
 
 ################################################################################
 ################################################################################
 
-OBJ_DIR			=	obj/
-ALL_OBJ			=	$(patsubst $(SRC_DIR)%.cpp, $(OBJ_DIR)%.o, $(ALL_SRC))
-ALL_OBJ_DIR		=	$(sort $(dir $(ALL_OBJ)))
+SRC								=	$(addprefix $(SRC_DIR), $(SRC_FILES))
+SRC_DIR						=	src/
+SRC_FILES					=	main.cpp
+
+CORE							=	$(addprefix $(CORE_DIR), $(CORE_FILES))
+CORE_DIR					=	src/core/
+CORE_FILES				=	Header.cpp
+
+ALL_SRC						=	$(SRC) $(CORE)
+
+################################################################################
+################################################################################
+
+OBJ_DIR						=	obj/
+ALL_OBJ						=	$(patsubst $(SRC_DIR)%.cpp, $(OBJ_DIR)%.o, $(ALL_SRC))
+ALL_OBJ_DIR				=	$(sort $(dir $(ALL_OBJ)))
 
 ################################################################################
 ################################################################################
@@ -56,6 +58,14 @@ bonus:
 ################################################################################
 ################################################################################
 
+REDIRECT					= $(HOME)/goinfre/docker
+
+$(REDIRECT):
+	./docker/setup.sh
+
+docker: $(REDIRECT)
+	./docker/docker_run.sh
+
 $(ALL_OBJ_DIR):
 	mkdir -p $(ALL_OBJ_DIR)
 
@@ -65,12 +75,12 @@ norm:
 ################################################################################
 ################################################################################
 
-GREEN			= "\033[32m"
-LGREEN			= "\033[92m"
-DEFAULT			= "\033[39m"
-RED				= "\033[31m"
+GREEN							=	"\033[32m"
+LGREEN						=	"\033[92m"
+DEFAULT						=	"\033[39m"
+RED								=	"\033[31m"
 
 ################################################################################
 ################################################################################
 
-.PHONY: all clean fclean re
+.PHONY: all clean fclean re docker norm
