@@ -1,3 +1,10 @@
+#include <iostream>
 
+#include "Header.hpp"
 
-int main(void) { return 0; }
+int main(void) {
+  Header header;
+  Header header2 = header;
+  std::cout << header << std::endl;
+  return 0;
+}
