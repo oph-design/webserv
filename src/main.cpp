@@ -1,3 +1,6 @@
+#include "TcpServer.hpp"
 
-
-int main(void) { return 0; }
+int main(void) {
+	TcpServer Server("localhost", 1234);
+	Server.boot();
+	 return 0; }
