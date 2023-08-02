@@ -28,6 +28,7 @@ class Header {
 
  private:
   std::map<std::string, std::string> headerContent_;
+  std::string requestLine_;
 };
 
 #endif  // HEADER_HPP_

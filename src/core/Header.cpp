@@ -16,7 +16,27 @@ Header::Header(char buffer[BUFFER_SIZE]) {
   Header header(string);
 }
 
-Header::Header(std::string &bufferString) { (void)bufferString; }
+Header::Header(std::string &bufferString) {
+  for (std::string::iterator iter; iter != bufferString.end(); ++iter) {
+    this->requestLine_ += *iter;
+    if ((int)*iter == 13 && (int)*std::next(iter) == 10) {
+      iter += 2;
+      break;
+    }
+  }
+  std::string line;
+  for (std::string::iterator iter; iter != bufferString.end(); ++iter) {
+    line += *iter;
+    if ((int)*iter == 13 && (int)*std::next(iter) == 10) {
+      iter += 2;
+      std::pair<std::string, std::string> keyPair;
+      keyPair.first = line.substr(0, line.find(": "));
+      keyPair.second = line.substr(line.find(": "));
+      this->headerContent_.insert(keyPair);
+      line.clear();
+    }
+  }
+}
 
 Header::~Header() {}
 
