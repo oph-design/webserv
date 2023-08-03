@@ -6,6 +6,7 @@
 #include <map>
 #include <string>
 #include <utility>
+#include <sstream>
 
 #ifndef BUFFER_SIZE
 #define BUFFER_SIZE 1024
@@ -15,7 +16,7 @@ class Header {
  public:
   Header();
   Header(char buffer[BUFFER_SIZE]);
-  Header(std::string &bufferString);
+  Header(std::string bufferString);
   ~Header();
   Header(const Header &obj);
   Header &operator=(const Header &obj);

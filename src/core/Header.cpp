@@ -13,29 +13,59 @@ Header::Header() {
 
 Header::Header(char buffer[BUFFER_SIZE]) {
   std::string string(buffer);
-  Header header(string);
+  *this = Header(string);
 }
 
-Header::Header(std::string &bufferString) {
-  for (std::string::iterator iter; iter != bufferString.end(); ++iter) {
-    this->requestLine_ += *iter;
-    if ((int)*iter == 13 && (int)*std::next(iter) == 10) {
-      iter += 2;
-      break;
-    }
+// Header::Header(std::string &bufferString) {
+//   std::string::iterator iter = bufferString.begin();
+//   for (; iter != bufferString.end(); ++iter) {
+//     this->requestLine_ += *iter;
+//     if ((int)*iter == 13 && (int)*std::next(iter) == 10) {
+//       iter += 2;
+//       break;
+//     }
+//   }
+//   std::string line;
+//   for (; iter < bufferString.end(); ++iter) {
+//     if ((int)*iter == 13)
+//       continue;
+//     line += *iter;
+//     if ((int)*iter == 10) {
+//       iter += 2;
+//       std::pair<std::string, std::string> keyPair;
+//       keyPair.first = line.substr(0, line.find(": "));
+//       keyPair.second = line.substr(line.find(": "));
+//       this->headerContent_.insert(keyPair);
+//       line.clear();
+//     }
+//   }
+// }
+
+Header::Header(std::string bufferString) {
+  // for (std::string::iterator iter = bufferString.begin(); iter != bufferString.end(); iter += bufferString.find("\n\r", iter - bufferString.begin()) + 2) {
+  //   // std::pair<std::string, std::string> pair;
+  //   // pair.first = bufferString.substr(bufferString.find(": ", iter - bufferString.begin()));
+  //   // pair.second = bufferString.substr(bufferString.find(": ", iter - bufferString.begin(), bufferString.find("\10\13")));
+  //   // this->headerContent_.insert(pair);
+  //   std::cout << "line" << std::endl;
+  // }
+
+  std::stringstream ss(bufferString);
+  std::string firstLine;
+  std::getline(ss, firstLine);
+  firstLine.erase('\r');
+  std::cout << "--" << firstLine << "--" << std::endl;
+  while (true) {
+    // std::string line;
+    char buffer[100] = {0};
+    ss.getline(buffer, 100);
+    std::string line(buffer);
+    line.erase('\r');
+    if (line.size() == 0)
+      break ;
+    std::cout << "--" << line << "--" << std::endl;
   }
-  std::string line;
-  for (std::string::iterator iter; iter != bufferString.end(); ++iter) {
-    line += *iter;
-    if ((int)*iter == 13 && (int)*std::next(iter) == 10) {
-      iter += 2;
-      std::pair<std::string, std::string> keyPair;
-      keyPair.first = line.substr(0, line.find(": "));
-      keyPair.second = line.substr(line.find(": "));
-      this->headerContent_.insert(keyPair);
-      line.clear();
-    }
-  }
+  // strea
 }
 
 Header::~Header() {}

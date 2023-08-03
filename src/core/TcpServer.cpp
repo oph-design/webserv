@@ -1,4 +1,5 @@
 #include "TcpServer.hpp"
+#include "Header.hpp"
 
 void TcpServer::_bootServer() {
   _listening_socket = socket(AF_INET, SOCK_STREAM, 0);
@@ -78,6 +79,12 @@ void TcpServer::_existingConnection(int &i) {
   bytes_read = read(_fds[i].fd, buffer, sizeof(buffer));
   if (bytes_read > 0) {
     std::cout << "connection established with socket " << i << " " << std::endl;
+    Header header(buffer);
+    std::cout << "before buffer" << std::endl;
+    std::cout << buffer << std::endl;
+    std::cout << "before header" << std::endl;
+    std::cout << header << std::endl;
+    std::cout << "after header" << std::endl;
     std::string response = _createResponse();
     write(_fds[i].fd, response.c_str(), response.size());
   } else if (bytes_read == 0) {
