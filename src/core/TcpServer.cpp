@@ -79,11 +79,11 @@ void TcpServer::_existingConnection(int &i) {
   size_t bytes_read = 0;
   bytes_read = recv(_fds[i].fd, buffer, sizeof(buffer), 0);
   if (bytes_read > 0) {
-    std::cout << "connection established with socket " << i << " " << std::endl;
+    std::cout << "connection established with socket " << _fds[i].fd << " " << std::endl;
     std::string response = _createResponse();
     send(_fds[i].fd, response.c_str(), response.size(), 0);
   } else if (bytes_read == 0 || !isKeepAlive()) {
-    std::cout << "client closed connection on socket " << i << " " << std::endl;
+    std::cout << "client closed connection on socket " << _fds[i].fd << " " << std::endl;
     close(_fds[i].fd);
     for (int j = i; j < _nfds - 1; ++j) {
       _fds[j] = _fds[j + 1];
