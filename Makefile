@@ -63,8 +63,16 @@ REDIRECT					= $(HOME)/goinfre/docker
 $(REDIRECT):
 	./docker/setup.sh
 
-docker: $(REDIRECT)
-	./docker/docker_run.sh
+linux: $(REDIRECT)
+	./docker/linux/docker_run.sh
+
+nginx: $(REDIRECT)
+	./docker/nginx/docker_run.sh
+
+docker_clean:
+	-docker kill $(docker ps -q)
+	docker system prune --all --volumes  -f
+
 
 $(ALL_OBJ_DIR):
 	mkdir -p $(ALL_OBJ_DIR)
@@ -83,4 +91,4 @@ RED								=	"\033[31m"
 ################################################################################
 ################################################################################
 
-.PHONY: all clean fclean re docker norm
+.PHONY: all clean fclean re norm linux nginx docker_clean
