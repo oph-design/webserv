@@ -1,5 +1,7 @@
 #include "TcpServer.hpp"
 
+#include <string>
+
 void TcpServer::_bootServer() {
   _listening_socket = socket(AF_INET, SOCK_STREAM, 0);
   if (_listening_socket == -1) {
@@ -88,8 +90,7 @@ void TcpServer::_existingConnection(int &i) {
     }
     --_nfds;
     --i;
-  } else
-    std::cout << "some kind of error" << std::endl;
+	}
 }
 
 bool TcpServer::isKeepAlive(){

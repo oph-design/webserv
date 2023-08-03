@@ -1,46 +1,44 @@
 #ifndef TCPSERVER_HPP
 #define TCPSERVER_HPP
 
+#include <fcntl.h>
 #include <netinet/in.h>
 #include <poll.h>
 #include <sys/socket.h>
 #include <unistd.h>
+
 #include <cstring>
 #include <fstream>
 #include <iostream>
 #include <sstream>
 #include <string>
-#include <fcntl.h>
 
 #define MAX_CLIENTS 1024
 
 class TcpServer {
-	public:
+ public:
+  TcpServer(std::string ip_addr, int port);
+  TcpServer(const TcpServer &);
+  ~TcpServer();
+  TcpServer &operator=(const TcpServer &);
+  void boot();
 
-	TcpServer(std::string ip_addr, int port);
-	TcpServer(const TcpServer &);
-	~TcpServer();
-	TcpServer& operator=(const TcpServer &);
-	void boot();
-
-	private:
-	//functions
-	void _bootServer();
-	void _serverLoop();
-	void _initNewConnection();
-	void _existingConnection(int &);
+ private:
+  void _bootServer();
+  void _serverLoop();
+  void _initNewConnection();
+  void _existingConnection(int &);
 	bool isKeepAlive();
-	std::string _createResponse();
-	void _error();
+  std::string _createResponse();
+  void _error();
 
-	//variables
-	int _listening_socket;
-	sockaddr_in _servaddr;
-	struct pollfd _fds[MAX_CLIENTS];
-	std::string _ip_addr;
-	int _port;
-	int _nfds;
-	int _socketopt;
+  int _listening_socket;
+  sockaddr_in _servaddr;
+  struct pollfd _fds[MAX_CLIENTS];
+  std::string _ip_addr;
+  int _port;
+  int _nfds;
+  int _socketopt;
 };
 
-#endif  //  TCPSERVER_HPP_
+#endif  // TCPSERVER_HPP
