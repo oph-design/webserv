@@ -1,7 +1,7 @@
 #!/bin/bash
 
-IMG_NAME=webserv
-DOCKERFILE_DIR=docker/
+IMG_NAME=nginx
+DOCKERFILE_DIR=docker/nginx
 CMD=bash
 
 start_docker()
@@ -29,10 +29,11 @@ run_minilinux()
 {
   echo "Creating container..."
   docker run -it \
-              -v $PWD:/host/ \
+              -v "$PWD"/docker/nginx/html:/var/www/html \
               --name $IMG_NAME \
-              -e DOCKER_CONTAINER_NAME=$IMG_NAME $IMG_NAME \
-              $CMD
+              -e DOCKER_CONTAINER_NAME=$IMG_NAME \
+              -p 6969:6969 \
+              -d $IMG_NAME
 }
 
 launch_container()
