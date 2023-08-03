@@ -29,6 +29,7 @@ class TcpServer {
 	void _serverLoop();
 	void _initNewConnection();
 	void _existingConnection(int &);
+	bool isKeepAlive();
 	std::string _createResponse();
 	void _error();
 
@@ -42,4 +43,4 @@ class TcpServer {
 	int _socketopt;
 };
 
-#endif // TCPSERVER_HPP
+#endif  //  TCPSERVER_HPP_

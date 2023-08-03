@@ -75,12 +75,12 @@ void TcpServer::_initNewConnection() {
 void TcpServer::_existingConnection(int &i) {
   char buffer[1024] = {0};
   size_t bytes_read = 0;
-  bytes_read = read(_fds[i].fd, buffer, sizeof(buffer));
+  bytes_read = recv(_fds[i].fd, buffer, sizeof(buffer), 0);
   if (bytes_read > 0) {
     std::cout << "connection established with socket " << i << " " << std::endl;
     std::string response = _createResponse();
-    write(_fds[i].fd, response.c_str(), response.size());
-  } else if (bytes_read == 0) {
+    send(_fds[i].fd, response.c_str(), response.size(), 0);
+  } else if (bytes_read == 0 || !isKeepAlive()) {
     std::cout << "client closed connection on socket " << i << " " << std::endl;
     close(_fds[i].fd);
     for (int j = i; j < _nfds - 1; ++j) {
@@ -92,12 +92,11 @@ void TcpServer::_existingConnection(int &i) {
     std::cout << "some kind of error" << std::endl;
 }
 
-std::string TcpServer::_createResponse() {
-  const char *httpResponse =
-      "HTTP/1.1 200 OK\r\n"
-      "Content-Type: text/html; charset=UTF-8\r\n"
-      "Connection: keep-alive\r\n\r\n";
+bool TcpServer::isKeepAlive(){
+	return true;
+}
 
+std::string TcpServer::_createResponse() {
   std::ifstream htmlFile("html/index.html");
   if (htmlFile.is_open()) {
     std::cout << "html File opened successfully." << std::endl;
@@ -106,12 +105,21 @@ std::string TcpServer::_createResponse() {
   }
   std::stringstream html_content;
   html_content << htmlFile.rdbuf();
+  const char *httpResponse =
+      "HTTP/1.1 200 OK\r\n"
+      "Content-Type: text/html; charset=UTF-8\r\n"
+      "Connection: keep-alive\r\n"
+      "Content-Length: ";
   std::string final_response(httpResponse);
+  final_response.append(std::to_string(html_content.str().length()));
+  final_response.append("\r\n\r\n");
   final_response.append(html_content.str());
   return final_response;
 }
 
-void TcpServer::_error() { return; }
+void TcpServer::_error() { 
+	exit(EXIT_FAILURE);
+ }
 
 ////////////////////////////////////////////////
 void TcpServer::boot() {
