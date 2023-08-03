@@ -42,30 +42,23 @@ Header::Header(char buffer[BUFFER_SIZE]) {
 // }
 
 Header::Header(std::string bufferString) {
-  // for (std::string::iterator iter = bufferString.begin(); iter != bufferString.end(); iter += bufferString.find("\n\r", iter - bufferString.begin()) + 2) {
-  //   // std::pair<std::string, std::string> pair;
-  //   // pair.first = bufferString.substr(bufferString.find(": ", iter - bufferString.begin()));
-  //   // pair.second = bufferString.substr(bufferString.find(": ", iter - bufferString.begin(), bufferString.find("\10\13")));
-  //   // this->headerContent_.insert(pair);
-  //   std::cout << "line" << std::endl;
-  // }
-
   std::stringstream ss(bufferString);
   std::string firstLine;
   std::getline(ss, firstLine);
-  firstLine.erase('\r');
-  std::cout << "--" << firstLine << "--" << std::endl;
+  firstLine.erase(std::remove(firstLine.begin(), firstLine.end(), '\n'), firstLine.end());
+  firstLine.erase(std::remove(firstLine.begin(), firstLine.end(), '\r'), firstLine.end());
   while (true) {
-    // std::string line;
-    char buffer[100] = {0};
-    ss.getline(buffer, 100);
-    std::string line(buffer);
-    line.erase('\r');
+    std::string line;
+    std::getline(ss, line);
+    line.erase(std::remove(line.begin(), line.end(), '\r'), line.end());
+    line.erase(std::remove(line.begin(), line.end(), '\n'), line.end());
     if (line.size() == 0)
       break ;
-    std::cout << "--" << line << "--" << std::endl;
+    std::pair<std::string, std::string> keyPair;
+    keyPair.first = line.substr(0, line.find(": "));
+    keyPair.second = line.substr(line.find(": ") + 2, line.end() - line.begin());
+    this->headerContent_.insert(keyPair);
   }
-  // strea
 }
 
 Header::~Header() {}
