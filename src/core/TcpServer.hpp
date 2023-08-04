@@ -12,7 +12,7 @@
 #include <iostream>
 #include <sstream>
 #include <string>
-
+#include "Request.hpp"
 #include "Socket.hpp"
 
 #define MAX_CLIENTS 1024

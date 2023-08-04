@@ -1,13 +1,18 @@
 #include "Request.hpp"
 
-Request::Request() { this->requestMethodType_ = INVALID; }
+Request::Request() {
+  this->requestMethodType_ = INVALID;
+  this->requestBodyExists_ = false;
+}
 
 Request::Request(char buffer[BUFFER_SIZE]) {
+  this->requestBodyExists_ = false;
   std::string string(buffer);
   *this = Request(string);
 }
 
 Request::Request(std::string bufferString) {
+  requestBodyExists_ = false;
   std::stringstream ss(bufferString);
   std::string line;
   std::getline(ss, line);
@@ -17,6 +22,7 @@ Request::Request(std::string bufferString) {
   while (true) {
     line.clear();
     std::getline(ss, line);
+    std::cout << "top: " << line << std::endl;
     line.erase(std::remove(line.begin(), line.end(), '\r'), line.end());
     line.erase(std::remove(line.begin(), line.end(), '\n'), line.end());
     if (line.size() == 0) break;
@@ -26,6 +32,15 @@ Request::Request(std::string bufferString) {
         line.substr(line.find(": ") + 2, line.end() - line.begin());
     this->requestHeaderFields_.insert(keyPair);
   }
+  while (true) {
+    line.clear();
+    std::getline(ss, line);
+    line.erase(std::remove(line.begin(), line.end(), '\r'), line.end());
+    if (line.size() == 0) break;
+    this->requestBody_.append(line);
+    this->requestBody_.append("\n");
+  }
+  if (requestBody_.size() != 0) this->requestBodyExists_ = true;
 }
 
 Request::~Request() {}
@@ -38,6 +53,8 @@ Request &Request::operator=(const Request &obj) {
   this->requestMethodString_ = obj.requestMethodString_;
   this->URI_ = obj.URI_;
   this->httpVersion_ = obj.httpVersion_;
+  this->requestBody_ = obj.requestBody_;
+  this->requestBodyExists_ = obj.requestBodyExists_;
   return *this;
 }
 
@@ -84,7 +101,8 @@ std::ostream &operator<<(std::ostream &stream, const Request &header) {
            header.requestHeaderFields_.begin();
        iter != header.requestHeaderFields_.end(); ++iter) {
     stream << "[" << iter->first << "=" << iter->second << "]";
-    if (std::next(iter) != header.requestHeaderFields_.end()) stream << "\n";
+    stream << "\n";
   }
+  if (header.requestBodyExists_) stream << header.requestBody_;
   return stream;
 }

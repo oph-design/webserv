@@ -47,6 +47,8 @@ class Request {
   std::string requestMethodString_;
   std::string URI_;
   std::string httpVersion_;
+  bool requestBodyExists_;
+  std::string requestBody_;
 };
 
 #endif  // HEADER_HPP_

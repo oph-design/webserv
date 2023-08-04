@@ -103,6 +103,12 @@ void TcpServer::_existingConnection(int &i) {
     pollSockets_[i].setTimestamp();
     std::cout << "connection established with socket " << _fds[i].fd << " "
               << std::endl;
+    Request request(buffer);
+    std::cout << "------------" << std::endl;
+    std::cout << buffer << std::endl;
+    std::cout << "------------" << std::endl;
+    std::cout << request << std::endl;
+    std::cout << "------------" << std::endl;
     std::string response = _createResponse();
     send(_fds[i].fd, response.c_str(), response.size(), 0);
   } else if (bytes_read == 0 || !isKeepAlive(pollSockets_[i])) {
