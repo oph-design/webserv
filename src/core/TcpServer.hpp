@@ -30,16 +30,16 @@ class TcpServer {
   void _serverLoop();
   void _initNewConnection();
   void _existingConnection(int &);
-	bool isKeepAlive(const Socket &socket);
-	void closeConnection_(Socket &socket, pollfd &fd, int &i);
+  bool isKeepAlive(const Socket &socket);
+  void closeConnection_(Socket &socket, pollfd &fd, int &i);
   std::string _createResponse();
   void _error();
-	void updateFds();
+  void updateFds();
 
   int _listening_socket;
   sockaddr_in _servaddr;
   struct pollfd _fds[MAX_CLIENTS];
-	Socket pollSockets_[MAX_CLIENTS];
+  Socket pollSockets_[MAX_CLIENTS];
   std::string _ip_addr;
   int _port;
   int _nfds;

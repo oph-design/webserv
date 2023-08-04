@@ -38,15 +38,15 @@ void TcpServer::_bootServer() {
   pollSockets_[0].setFd(_listening_socket);
 }
 
-	void TcpServer::updateFds(){
-		for(size_t i = 0; i < MAX_CLIENTS; i++){
-			_fds[i] = pollSockets_[i].getSocketFd();
-		}
-	}
+void TcpServer::updateFds() {
+  for (size_t i = 0; i < MAX_CLIENTS; i++) {
+    _fds[i] = pollSockets_[i].getSocketFd();
+  }
+}
 
 void TcpServer::_serverLoop() {
   while (true) {
-		updateFds();
+    updateFds();
     int ret = poll(_fds, _nfds, 50000);
     if (ret == -1) {
       std::cout << "poll error" << std::endl;
@@ -63,25 +63,25 @@ void TcpServer::_serverLoop() {
         } else {
           _existingConnection(i);
         }
-			if(pollSockets_[i].checkTimeout()){
-				std::cout << "Timeout of Socket: " << _fds[i].fd << std::endl;
-				closeConnection_(pollSockets_[i], _fds[i], i);
-			}
+        if (pollSockets_[i].checkTimeout()) {
+          std::cout << "Timeout of Socket: " << _fds[i].fd << std::endl;
+          closeConnection_(pollSockets_[i], _fds[i], i);
+        }
       }
     }
   }
 }
 
-void TcpServer::closeConnection_(Socket &socket, pollfd &fd, int &i){
-    close(fd.fd);
-    socket.closeSocket();
-		socket.setInUse(false);
-    for (int j = i; j < _nfds - 1; ++j) {
-      _fds[j] = _fds[j + 1];
-			pollSockets_[j].setPollfd(pollSockets_[j + 1].getSocketFd());
-    }
-    --_nfds;
-    --i;
+void TcpServer::closeConnection_(Socket &socket, pollfd &fd, int &i) {
+  close(fd.fd);
+  socket.closeSocket();
+  socket.setInUse(false);
+  for (int j = i; j < _nfds - 1; ++j) {
+    _fds[j] = _fds[j + 1];
+    pollSockets_[j].setPollfd(pollSockets_[j + 1].getSocketFd());
+  }
+  --_nfds;
+  --i;
 }
 
 void TcpServer::_initNewConnection() {
@@ -90,8 +90,8 @@ void TcpServer::_initNewConnection() {
   int new_client_sock = accept(_listening_socket,
                                (struct sockaddr *)&clientaddr, &clientaddr_len);
   pollSockets_[_nfds].setFd(new_client_sock);
-	pollSockets_[_nfds].setTimestamp();
-	pollSockets_[_nfds].setInUse(true);
+  pollSockets_[_nfds].setTimestamp();
+  pollSockets_[_nfds].setInUse(true);
   ++_nfds;
 }
 
@@ -100,18 +100,20 @@ void TcpServer::_existingConnection(int &i) {
   size_t bytes_read = 0;
   bytes_read = recv(_fds[i].fd, buffer, sizeof(buffer), 0);
   if (bytes_read > 0) {
-		pollSockets_[i].setTimestamp();
-    std::cout << "connection established with socket " << _fds[i].fd << " " << std::endl;
+    pollSockets_[i].setTimestamp();
+    std::cout << "connection established with socket " << _fds[i].fd << " "
+              << std::endl;
     std::string response = _createResponse();
     send(_fds[i].fd, response.c_str(), response.size(), 0);
   } else if (bytes_read == 0 || !isKeepAlive(pollSockets_[i])) {
-    std::cout << "client closed connection on socket " << _fds[i].fd << " " << std::endl;
+    std::cout << "client closed connection on socket " << _fds[i].fd << " "
+              << std::endl;
     closeConnection_(pollSockets_[i], _fds[i], i);
-	}
+  }
 }
 
-bool TcpServer::isKeepAlive(const Socket &socket){
-	return socket.getKeepAlive();
+bool TcpServer::isKeepAlive(const Socket &socket) {
+  return socket.getKeepAlive();
 }
 
 std::string TcpServer::_createResponse() {
@@ -135,9 +137,7 @@ std::string TcpServer::_createResponse() {
   return final_response;
 }
 
-void TcpServer::_error() { 
-	exit(EXIT_FAILURE);
- }
+void TcpServer::_error() { exit(EXIT_FAILURE); }
 
 ////////////////////////////////////////////////
 void TcpServer::boot() {
