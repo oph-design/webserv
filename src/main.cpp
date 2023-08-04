@@ -1,6 +1,6 @@
-#include "TcpServer.hpp"
+#include <iostream>
 
 int main(void) {
-	TcpServer Server("localhost", 1234);
-	Server.boot();
-	 return 0; }
+  std::cout << "Hello World" << std::endl;
+  return 0;
+}
