@@ -1,8 +1,6 @@
 #include "Header.hpp"
 
-Header::Header() {
-  this->method_ = INVALID;
-}
+Header::Header() { this->method_ = INVALID; }
 
 Header::Header(char buffer[BUFFER_SIZE]) {
   std::string string(buffer);
@@ -15,7 +13,6 @@ Header::Header(std::string bufferString) {
   std::getline(ss, line);
   line.erase(std::remove(line.begin(), line.end(), '\n'), line.end());
   line.erase(std::remove(line.begin(), line.end(), '\r'), line.end());
-  this->requestLine_ = line;
   this->parseRequestLine_(line);
   while (true) {
     line.clear();
@@ -36,7 +33,6 @@ Header::~Header() {}
 Header::Header(const Header &obj) { *this = obj; }
 
 Header &Header::operator=(const Header &obj) {
-  this->requestLine_ = obj.requestLine_;
   this->headerContent_ = obj.headerContent_;
   this->method_ = obj.method_;
   this->methodString_ = obj.methodString_;
@@ -54,8 +50,7 @@ const std::string &Header::operator[](const char *key) const {
   return this->headerContent_.at(stringKey);
 }
 
-void Header::parseRequestLine_(std::string &requestLine)
-{
+void Header::parseRequestLine_(std::string &requestLine) {
   std::stringstream ss(requestLine);
   std::getline(ss, this->methodString_, ' ');
   std::getline(ss, this->URI_, ' ');
@@ -82,10 +77,9 @@ void Header::parseRequestLine_(std::string &requestLine)
 }
 
 std::ostream &operator<<(std::ostream &stream, const Header &header) {
-  stream << header.requestLine_ << "\n";
-  stream << "Method String: " << header.methodString_ << "\n";
-  stream << "URI_: " << header.URI_ << "\n";
-  stream << "httpVersion: " << header.httpVersion_ << "\n";
+  stream << "Method=" << header.methodString_ << "\n";
+  stream << "URI_=" << header.URI_ << "\n";
+  stream << "httpVersion=" << header.httpVersion_ << "\n";
   for (std::map<std::string, std::string>::const_iterator iter =
            header.headerContent_.begin();
        iter != header.headerContent_.end(); ++iter) {

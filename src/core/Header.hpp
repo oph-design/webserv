@@ -43,7 +43,6 @@ class Header {
   void parseRequestLine_(std::string &requestLine);
 
   std::map<std::string, std::string> headerContent_;
-  std::string requestLine_;
   t_method method_;
   std::string methodString_;
   std::string URI_;
