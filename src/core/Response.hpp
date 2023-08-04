@@ -24,13 +24,13 @@ class Response {
   ~Response();
 
   std::string toString() const;
+  static void fillFileTypes();
 
  private:
   static std::string readBody_(std::string dir);
-  static std::string findType(std::string url);
-  void fillFileTypes_();
+  static std::string findType_(std::string url);
 
-  typeMap fileTypes_;
+  static typeMap fileTypes_;
   contentVector header_;
   std::string body_;
 };

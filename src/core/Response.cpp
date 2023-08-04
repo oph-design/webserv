@@ -1,9 +1,10 @@
 #include "Response.hpp"
 
+typeMap Response::fileTypes_;
+
 Response::Response() : body_("Server is online") {
-  fillFileTypes_();
   header_.push_back(contentField("HTTP/1.1", "200 OK"));
-  header_.push_back(contentField("Content-Type", "text/plain; charset=UTF-8"));
+  header_.push_back(contentField("Content-Type", findType_(".txt")));
   header_.push_back(contentField("Connection", "keep-alive"));
   header_.push_back(contentField("Content-Length", "16"));
 }
@@ -11,9 +12,8 @@ Response::Response() : body_("Server is online") {
 Response::Response(std::string url) : body_(readBody_(url)) {
   std::string length = std::to_string(body_.length());
 
-  fillFileTypes_();
   header_.push_back(contentField("HTTP/1.1", "200 OK"));
-  header_.push_back(contentField("Content-Type", "text/plain; charset=UTF-8"));
+  header_.push_back(contentField("Content-Type", findType_(url)));
   header_.push_back(contentField("Connection", "keep-alive"));
   header_.push_back(contentField("Content-Length", length));
 }
@@ -39,7 +39,6 @@ std::string Response::toString() const {
     res.append(it->second + "\r\n");
   }
   res.append("\r\n" + body_);
-  std::cout << res << "\n";
   return (res);
 }
 
@@ -58,7 +57,23 @@ std::string Response::readBody_(std::string dir) {
   return (html_content.str());
 }
 
-void Response::fillFileTypes_() {
+std::string Response::findType_(std::string url) {
+  std::string extention;
+  typeMap::iterator search;
+  std::string type;
+
+  extention = url.substr(url.rfind(".") + 1, url.length());
+  search = fileTypes_.find(extention);
+  if (search != fileTypes_.end()) {
+    type = fileTypes_[extention];
+  } else {
+    type = "text/plain";
+  }
+  type.append("; charset=UTF-8");
+  return (type);
+}
+
+void Response::fillFileTypes() {
   fileTypes_.insert(contentField("txt", "text/plain"));
   fileTypes_.insert(contentField("html", "text/html"));
   fileTypes_.insert(contentField("htm", "text/html"));
