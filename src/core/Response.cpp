@@ -9,11 +9,11 @@ Response::Response() : body_("Server is online") {
   header_.push_back(contentField("Content-Length", "16"));
 }
 
-Response::Response(Request request) : body_(readBody_(request.getUri())) {
+Response::Response(Request request) : body_(readBody_(request.getURI())) {
   std::string length = std::to_string(body_.length());
 
-  header_.push_back(contentField("HTTP/1.1", "200 OK"));
-  header_.push_back(contentField("Content-Type", findType_(request.getUri())));
+  header_.push_back(contentField(request.getHTTPVersion(), "200 OK"));
+  header_.push_back(contentField("Content-Type", findType_(request.getURI())));
   header_.push_back(contentField("Connection", "keep-alive"));
   header_.push_back(contentField("Content-Length", length));
 }

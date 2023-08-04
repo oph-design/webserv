@@ -38,7 +38,13 @@ class Request {
   const std::string &operator[](const std::string &key) const;
   const std::string &operator[](const char *key) const;
   friend std::ostream &operator<<(std::ostream &stream, const Request &header);
-  std::string getUri() const;
+
+  std::string getURI() const;
+  t_methodTypes getRequestMethodType() const;
+  std::string getRequestMethodString() const;
+  std::string getHTTPVersion() const;
+  bool getRequestBodyExists() const;
+  std::string getRequestBody() const;
 
  private:
   void parseRequestLine_(std::string &requestLine);
@@ -48,6 +54,8 @@ class Request {
   std::string requestMethodString_;
   std::string URI_;
   std::string httpVersion_;
+  bool requestBodyExists_;
+  std::string requestBody_;
 };
 
 #endif  // HEADER_HPP_
