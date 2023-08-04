@@ -1,7 +1,7 @@
 NAME							=	webserv
 
 CC								=	c++
-LCFLAGS						=	# -fsanitize=address
+LCFLAGS						=	 -fsanitize=address
 HEADERFLAGS				=	-I src/core
 CFLAGS						=	$(LCFLAGS) $(HEADERFLAGS) \
 											-std=c++98 -Wall -Wextra -Werror -g -pedantic
@@ -16,7 +16,7 @@ SRC_FILES					=	main.cpp
 
 CORE							=	$(addprefix $(CORE_DIR), $(CORE_FILES))
 CORE_DIR					=	src/core/
-CORE_FILES				=	TcpServer.cpp
+CORE_FILES				=	TcpServer.cpp Socket.cpp
 
 ALL_SRC						=	$(SRC) $(CORE)
 
