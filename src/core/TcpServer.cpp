@@ -2,7 +2,11 @@
 
 #include <string>
 
+#include "Request.hpp"
+#include "Response.hpp"
+
 void TcpServer::_bootServer() {
+  Response::fillFileTypes();
   _listening_socket = socket(AF_INET, SOCK_STREAM, 0);
   if (_listening_socket == -1) {
     std::cout << "socket creation failed" << std::endl;
@@ -98,12 +102,15 @@ void TcpServer::_initNewConnection() {
 void TcpServer::_existingConnection(int &i) {
   char buffer[1024] = {0};
   size_t bytes_read = 0;
+
   bytes_read = recv(_fds[i].fd, buffer, sizeof(buffer), 0);
   if (bytes_read > 0) {
+    Request request(buffer);
+    Response resobj(request);
     pollSockets_[i].setTimestamp();
     std::cout << "connection established with socket " << _fds[i].fd << " "
               << std::endl;
-    std::string response = _createResponse();
+    std::string response = resobj.toString();
     send(_fds[i].fd, response.c_str(), response.size(), 0);
   } else if (bytes_read == 0 || !isKeepAlive(pollSockets_[i])) {
     std::cout << "client closed connection on socket " << _fds[i].fd << " "
