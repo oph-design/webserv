@@ -8,9 +8,9 @@ Response::Response() : body_("Server is online") {
   header_.push_back(contentField("Content-Length", "16"));
 }
 
-Response::Response(const Response& rhs) { *this = rhs; }
+Response::Response(const Response &rhs) { *this = rhs; }
 
-Response& Response::operator=(const Response& rhs) {
+Response &Response::operator=(const Response &rhs) {
   this->body_ = rhs.body_;
   this->header_ = rhs.header_;
   return (*this);
@@ -34,7 +34,7 @@ std::string Response::readBody_(std::string dir) {
 std::string Response::toString() const {
   contentVector::const_iterator it = header_.begin();
   std::string res(it->first);
-  
+
   res.append(" " + it->second + "\r\n");
   std::advance(it, 1);
   for (; it != header_.end(); ++it) {
@@ -43,5 +43,5 @@ std::string Response::toString() const {
   }
   res.append("\r\n" + body_);
   std::cout << res << "\n";
-  return (res); 
+  return (res);
 }
