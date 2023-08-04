@@ -1,4 +1,5 @@
 #include "TcpServer.hpp"
+#include "Response.hpp"
 
 #include <string>
 
@@ -77,10 +78,12 @@ void TcpServer::_initNewConnection() {
 void TcpServer::_existingConnection(int &i) {
   char buffer[1024] = {0};
   size_t bytes_read = 0;
+  Response resp;
+
   bytes_read = read(_fds[i].fd, buffer, sizeof(buffer));
   if (bytes_read > 0) {
     std::cout << "connection established with socket " << i << " " << std::endl;
-    std::string response = _createResponse();
+    std::string response = resp.toString(); //_createResponse();
     write(_fds[i].fd, response.c_str(), response.size());
   } else {
     std::cout << "client closed connection on socket " << i << " " << std::endl;
@@ -91,27 +94,6 @@ void TcpServer::_existingConnection(int &i) {
     --_nfds;
     --i;
   }
-}
-
-std::string TcpServer::_createResponse() {
-  std::ifstream htmlFile("html/index.html");
-  if (htmlFile.is_open()) {
-    std::cout << "html File opened successfully." << std::endl;
-  } else {
-    std::cerr << "Failed to open the html file." << std::endl;
-  }
-  std::stringstream html_content;
-  html_content << htmlFile.rdbuf();
-  const char *httpResponse =
-      "HTTP/1.1 200 OK\r\n"
-      "Content-Type: text/plain; charset=UTF-8\r\n"
-      "Connection: keep-alive\r\n"
-      "Content-Length: ";
-  std::string final_response(httpResponse);
-  final_response.append(std::to_string(html_content.str().length()));
-  final_response.append("\r\n\r\n");
-  final_response.append(html_content.str());
-  return final_response;
 }
 
 void TcpServer::_error() { return; }
