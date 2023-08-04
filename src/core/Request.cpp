@@ -72,7 +72,7 @@ void Request::parseRequestLine_(std::string &requestLine) {
     this->requestMethodType_ = TRACE;
   else if (this->requestMethodString_ == "CONNECT")
     this->requestMethodType_ = CONNECT;
-  else if (this->requestMethodString_ == "INVALID")
+  else
     this->requestMethodType_ = INVALID;
 }
 
