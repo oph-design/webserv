@@ -36,13 +36,18 @@ void TcpServer::_bootServer() {
     _error();
   }
 
-  _fds[0].fd = _listening_socket;
-  _fds[0].events = POLLIN;
-  _fds[0].revents = 0;
+  pollSockets_[0].setFd(_listening_socket);
+}
+
+void TcpServer::updateFds() {
+  for (size_t i = 0; i < MAX_CLIENTS; i++) {
+    _fds[i] = pollSockets_[i].getSocketFd();
+  }
 }
 
 void TcpServer::_serverLoop() {
   while (true) {
+    updateFds();
     int ret = poll(_fds, _nfds, 50000);
     if (ret == -1) {
       std::cout << "poll error" << std::endl;
@@ -59,9 +64,25 @@ void TcpServer::_serverLoop() {
         } else {
           _existingConnection(i);
         }
+        if (pollSockets_[i].checkTimeout()) {
+          std::cout << "Timeout of Socket: " << _fds[i].fd << std::endl;
+          closeConnection_(pollSockets_[i], _fds[i], i);
+        }
       }
     }
   }
+}
+
+void TcpServer::closeConnection_(Socket &socket, pollfd &fd, int &i) {
+  close(fd.fd);
+  socket.closeSocket();
+  socket.setInUse(false);
+  for (int j = i; j < _nfds - 1; ++j) {
+    _fds[j] = _fds[j + 1];
+    pollSockets_[j].setPollfd(pollSockets_[j + 1].getSocketFd());
+  }
+  --_nfds;
+  --i;
 }
 
 void TcpServer::_initNewConnection() {
@@ -69,34 +90,55 @@ void TcpServer::_initNewConnection() {
   socklen_t clientaddr_len = sizeof(clientaddr);
   int new_client_sock = accept(_listening_socket,
                                (struct sockaddr *)&clientaddr, &clientaddr_len);
-  _fds[_nfds].fd = new_client_sock;
-  _fds[_nfds].events = POLLIN;
-  _fds[_nfds].revents = 0;
+  pollSockets_[_nfds].setFd(new_client_sock);
+  pollSockets_[_nfds].setTimestamp();
+  pollSockets_[_nfds].setInUse(true);
   ++_nfds;
 }
 
 void TcpServer::_existingConnection(int &i) {
   char buffer[1024] = {0};
   size_t bytes_read = 0;
-  Response resp;
-
-  bytes_read = read(_fds[i].fd, buffer, sizeof(buffer));
+  bytes_read = recv(_fds[i].fd, buffer, sizeof(buffer), 0);
   if (bytes_read > 0) {
-    std::cout << "connection established with socket " << i << " " << std::endl;
-    std::string response = resp.toString(); //_createResponse();
-    write(_fds[i].fd, response.c_str(), response.size());
-  } else {
-    std::cout << "client closed connection on socket " << i << " " << std::endl;
-    close(_fds[i].fd);
-    for (int j = i; j < _nfds - 1; ++j) {
-      _fds[j] = _fds[j + 1];
-    }
-    --_nfds;
-    --i;
+    pollSockets_[i].setTimestamp();
+    std::cout << "connection established with socket " << _fds[i].fd << " "
+              << std::endl;
+    std::string response = _createResponse();
+    send(_fds[i].fd, response.c_str(), response.size(), 0);
+  } else if (bytes_read == 0 || !isKeepAlive(pollSockets_[i])) {
+    std::cout << "client closed connection on socket " << _fds[i].fd << " "
+              << std::endl;
+    closeConnection_(pollSockets_[i], _fds[i], i);
   }
 }
 
-void TcpServer::_error() { return; }
+bool TcpServer::isKeepAlive(const Socket &socket) {
+  return socket.getKeepAlive();
+}
+
+std::string TcpServer::_createResponse() {
+  std::ifstream htmlFile("html/index.html");
+  if (htmlFile.is_open()) {
+    std::cout << "html File opened successfully." << std::endl;
+  } else {
+    std::cerr << "Failed to open the html file." << std::endl;
+  }
+  std::stringstream html_content;
+  html_content << htmlFile.rdbuf();
+  const char *httpResponse =
+      "HTTP/1.1 200 OK\r\n"
+      "Content-Type: text/html; charset=UTF-8\r\n"
+      "Connection: keep-alive\r\n"
+      "Content-Length: ";
+  std::string final_response(httpResponse);
+  final_response.append(std::to_string(html_content.str().length()));
+  final_response.append("\r\n\r\n");
+  final_response.append(html_content.str());
+  return final_response;
+}
+
+void TcpServer::_error() { exit(EXIT_FAILURE); }
 
 ////////////////////////////////////////////////
 void TcpServer::boot() {
