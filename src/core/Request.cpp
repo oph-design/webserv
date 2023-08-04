@@ -22,7 +22,6 @@ Request::Request(std::string bufferString) {
   while (true) {
     line.clear();
     std::getline(ss, line);
-    std::cout << "top: " << line << std::endl;
     line.erase(std::remove(line.begin(), line.end(), '\r'), line.end());
     line.erase(std::remove(line.begin(), line.end(), '\n'), line.end());
     if (line.size() == 0) break;
