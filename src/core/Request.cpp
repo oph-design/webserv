@@ -32,6 +32,8 @@ Request::~Request() {}
 
 Request::Request(const Request &obj) { *this = obj; }
 
+std::string Request::getUri() const { return this->URI_; }
+
 Request &Request::operator=(const Request &obj) {
   this->requestHeaderFields_ = obj.requestHeaderFields_;
   this->requestMethodType_ = obj.requestMethodType_;

@@ -38,6 +38,7 @@ class Request {
   const std::string &operator[](const std::string &key) const;
   const std::string &operator[](const char *key) const;
   friend std::ostream &operator<<(std::ostream &stream, const Request &header);
+  std::string getUri() const;
 
  private:
   void parseRequestLine_(std::string &requestLine);

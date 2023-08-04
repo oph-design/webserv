@@ -9,11 +9,11 @@ Response::Response() : body_("Server is online") {
   header_.push_back(contentField("Content-Length", "16"));
 }
 
-Response::Response(std::string url) : body_(readBody_(url)) {
+Response::Response(Request request) : body_(readBody_(request.getUri())) {
   std::string length = std::to_string(body_.length());
 
   header_.push_back(contentField("HTTP/1.1", "200 OK"));
-  header_.push_back(contentField("Content-Type", findType_(url)));
+  header_.push_back(contentField("Content-Type", findType_(request.getUri())));
   header_.push_back(contentField("Connection", "keep-alive"));
   header_.push_back(contentField("Content-Length", length));
 }
@@ -45,7 +45,7 @@ std::string Response::toString() const {
 /*            private functions                  */
 
 std::string Response::readBody_(std::string dir) {
-  std::ifstream htmlFile(dir);
+  std::ifstream htmlFile("." + dir);
 
   if (htmlFile.is_open()) {
     std::cout << "File opened successfully." << std::endl;

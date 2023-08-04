@@ -11,6 +11,8 @@
 #include <string>
 #include <vector>
 
+#include "Request.hpp"
+
 typedef std::pair<std::string, std::string> contentField;
 typedef std::map<std::string, std::string> typeMap;
 typedef std::vector<contentField> contentVector;
@@ -18,7 +20,7 @@ typedef std::vector<contentField> contentVector;
 class Response {
  public:
   Response();
-  Response(std::string url);
+  Response(Request request);
   Response(const Response& rhs);
   Response& operator=(const Response& rhs);
   ~Response();

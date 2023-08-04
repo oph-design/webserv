@@ -2,6 +2,7 @@
 
 #include <string>
 
+#include "Request.hpp"
 #include "Response.hpp"
 
 void TcpServer::_bootServer() {
@@ -101,10 +102,11 @@ void TcpServer::_initNewConnection() {
 void TcpServer::_existingConnection(int &i) {
   char buffer[1024] = {0};
   size_t bytes_read = 0;
-  Response resobj("html/example.jpeg");
 
   bytes_read = recv(_fds[i].fd, buffer, sizeof(buffer), 0);
   if (bytes_read > 0) {
+    Request request(buffer);
+    Response resobj(request);
     pollSockets_[i].setTimestamp();
     std::cout << "connection established with socket " << _fds[i].fd << " "
               << std::endl;
