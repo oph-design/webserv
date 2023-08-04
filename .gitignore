@@ -2,6 +2,7 @@
 webserv.dSYM
 obj
 .vscode
+src/*/server.cpp
 
 # Prerequisites
 *.d
@@ -35,5 +36,5 @@ obj
 *.exe
 *.out
 *.app
-**server
+resources/*/server
 webserv
