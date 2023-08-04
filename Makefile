@@ -16,7 +16,7 @@ SRC_FILES					=	main.cpp
 
 CORE							=	$(addprefix $(CORE_DIR), $(CORE_FILES))
 CORE_DIR					=	src/core/
-CORE_FILES				=	Header.cpp TcpServer.cpp
+CORE_FILES				=	Request.cpp TcpServer.cpp
 
 ALL_SRC						=	$(SRC) $(CORE)
 

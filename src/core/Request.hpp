@@ -12,8 +12,8 @@
 #define BUFFER_SIZE 1024
 #endif
 
-class Header {
-  typedef enum e_method {
+class Request {
+  typedef enum e_methodTypes {
     GET = 0,
     POST = 1,
     DELETE = 2,
@@ -23,28 +23,28 @@ class Header {
     TRACE = 6,
     CONNECT = 7,
     INVALID = 8
-  } t_method;
+  } t_methodTypes;
 
  public:
-  Header();
-  Header(char buffer[BUFFER_SIZE]);
-  Header(std::string bufferString);
-  ~Header();
-  Header(const Header &obj);
-  Header &operator=(const Header &obj);
+  Request();
+  Request(char buffer[BUFFER_SIZE]);
+  Request(std::string bufferString);
+  ~Request();
+  Request(const Request &obj);
+  Request &operator=(const Request &obj);
 
   void addField(std::pair<std::string, std::string> &fieldWithContent);
 
   const std::string &operator[](const std::string &key) const;
   const std::string &operator[](const char *key) const;
-  friend std::ostream &operator<<(std::ostream &stream, const Header &header);
+  friend std::ostream &operator<<(std::ostream &stream, const Request &header);
 
  private:
   void parseRequestLine_(std::string &requestLine);
 
-  std::map<std::string, std::string> headerContent_;
-  t_method method_;
-  std::string methodString_;
+  std::map<std::string, std::string> requestHeaderFields_;
+  t_methodTypes requestMethodType_;
+  std::string requestMethodString_;
   std::string URI_;
   std::string httpVersion_;
 };
