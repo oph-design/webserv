@@ -39,6 +39,13 @@ class Request {
   const std::string &operator[](const char *key) const;
   friend std::ostream &operator<<(std::ostream &stream, const Request &header);
 
+  std::string getURI() const;
+  t_methodTypes getRequestMethodType() const;
+  std::string getRequestMethodString() const;
+  std::string getHTTPVersion() const;
+  bool getRequestBodyExists() const;
+  std::string getRequestBody() const;
+
  private:
   void parseRequestLine_(std::string &requestLine);
 

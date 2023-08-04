@@ -2,7 +2,7 @@
 webserv.dSYM
 obj
 .vscode
-src/*/server.cpp
+.clang-format
 
 # Prerequisites
 *.d

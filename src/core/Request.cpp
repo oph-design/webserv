@@ -67,6 +67,18 @@ const std::string &Request::operator[](const char *key) const {
   return this->requestHeaderFields_.at(stringKey);
 }
 
+std::string Request::getURI() const { return this->URI_; }
+
+Request::t_methodTypes Request::getRequestMethodType() const {
+  return this->requestMethodType_;
+}
+
+std::string Request::getRequestBody() const { return this->requestBody_; }
+
+std::string Request::getRequestMethodString() const {
+  return this->requestMethodString_;
+}
+
 void Request::parseRequestLine_(std::string &requestLine) {
   std::stringstream ss(requestLine);
   std::getline(ss, this->requestMethodString_, ' ');
