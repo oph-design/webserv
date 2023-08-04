@@ -79,10 +79,7 @@ std::string Request::getRequestMethodString() const {
   return this->requestMethodString_;
 }
 
-std::string Request::getHTTPVersion() const
-{
-  return this->httpVersion_;
-}
+std::string Request::getHTTPVersion() const { return this->httpVersion_; }
 
 void Request::parseRequestLine_(std::string &requestLine) {
   std::stringstream ss(requestLine);
