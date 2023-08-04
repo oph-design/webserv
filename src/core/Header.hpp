@@ -13,14 +13,6 @@
 #endif
 
 class Header {
- public:
-  Header();
-  Header(char buffer[BUFFER_SIZE]);
-  Header(std::string bufferString);
-  ~Header();
-  Header(const Header &obj);
-  Header &operator=(const Header &obj);
-
   typedef enum e_method {
     GET = 0,
     POST = 1,
@@ -33,6 +25,14 @@ class Header {
     INVALID = 8
   } t_method;
 
+ public:
+  Header();
+  Header(char buffer[BUFFER_SIZE]);
+  Header(std::string bufferString);
+  ~Header();
+  Header(const Header &obj);
+  Header &operator=(const Header &obj);
+
   void addField(std::pair<std::string, std::string> &fieldWithContent);
 
   const std::string &operator[](const std::string &key) const;
@@ -40,9 +40,14 @@ class Header {
   friend std::ostream &operator<<(std::ostream &stream, const Header &header);
 
  private:
+  void parseRequestLine_(std::string &requestLine);
+
   std::map<std::string, std::string> headerContent_;
   std::string requestLine_;
   t_method method_;
+  std::string methodString_;
+  std::string URI_;
+  std::string httpVersion_;
 };
 
 #endif  // HEADER_HPP_
