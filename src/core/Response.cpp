@@ -4,16 +4,18 @@ typeMap Response::fileTypes_;
 
 Response::Response() : body_("Server is online") {
   header_.push_back(contentField("HTTP/1.1", "200 OK"));
-  header_.push_back(contentField("Content-Type", findType_(".txt")));
+  header_.push_back(contentField("Content-Type", "text/plain"));
   header_.push_back(contentField("Connection", "keep-alive"));
   header_.push_back(contentField("Content-Length", "16"));
 }
 
-Response::Response(Request request) : body_(readBody_(request.getURI())) {
+Response::Response(Request request) : status_("200 OK") {
+  body_ = readBody_(request.getURI());
+  std::string type = findType_(request.getURI());
   std::string length = std::to_string(body_.length());
 
-  header_.push_back(contentField(request.getHTTPVersion(), "200 OK"));
-  header_.push_back(contentField("Content-Type", findType_(request.getURI())));
+  header_.push_back(contentField(request.getHTTPVersion(), status_));
+  header_.push_back(contentField("Content-Type", type));
   header_.push_back(contentField("Connection", "keep-alive"));
   header_.push_back(contentField("Content-Length", length));
 }
@@ -38,6 +40,7 @@ std::string Response::toString() const {
     res.append(it->first + " : ");
     res.append(it->second + "\r\n");
   }
+  std::cout << res << std::endl;
   res.append("\r\n" + body_);
   return (res);
 }
@@ -45,16 +48,23 @@ std::string Response::toString() const {
 /*            private functions                  */
 
 std::string Response::readBody_(std::string dir) {
-  std::ifstream htmlFile("." + dir);
+  if (!dir.compare("/")) dir.append("index.html");
+  std::ifstream file("./html" + dir);
 
-  if (htmlFile.is_open()) {
+  if (file.is_open()) {
     std::cout << "File opened successfully." << std::endl;
   } else {
     std::cerr << "Failed to open file." << std::endl;
+    this->status_ = "404 Not Found";
   }
-  std::stringstream html_content;
-  html_content << htmlFile.rdbuf();
-  return (html_content.str());
+  if (status_.compare("200 OK")) {
+    file.close();
+    file.open("./html/" + status_.substr(0, status_.find(" ")) + ".html");
+  }
+  std::stringstream content;
+  content << file.rdbuf();
+  file.close();
+  return (content.str());
 }
 
 std::string Response::findType_(std::string url) {
@@ -62,12 +72,15 @@ std::string Response::findType_(std::string url) {
   typeMap::iterator search;
   std::string type;
 
+  if (!url.compare("/")) url.append("index.html");
   extention = url.substr(url.rfind(".") + 1, url.length());
   search = fileTypes_.find(extention);
   if (search != fileTypes_.end()) {
     type = fileTypes_[extention];
   } else {
-    type = "text/plain";
+    this->status_ = "415 Unsupported Media Type";
+    type = "text/html";
+    this->body_ = readBody_(url);
   }
   type.append("; charset=UTF-8");
   return (type);
@@ -86,6 +99,7 @@ void Response::fillFileTypes() {
   fileTypes_.insert(contentField("jpg", "image/jpeg"));
   fileTypes_.insert(contentField("jpeg", "image/jpeg"));
   fileTypes_.insert(contentField("png", "image/png"));
+  fileTypes_.insert(contentField("ico", "image/x-ico"));
   fileTypes_.insert(contentField("mp3", "audio/mpeg"));
   fileTypes_.insert(contentField("mp4", "video/mp4"));
 }
