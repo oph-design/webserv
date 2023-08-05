@@ -29,12 +29,13 @@ class Response {
   static void fillFileTypes();
 
  private:
-  static std::string readBody_(std::string dir);
-  static std::string findType_(std::string url);
+  std::string readBody_(std::string dir);
+  std::string findType_(std::string url);
 
   static typeMap fileTypes_;
   contentVector header_;
   std::string body_;
+  std::string status_;
 };
 
 #endif  // !RESPONSE_HPP
