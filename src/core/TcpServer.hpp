@@ -13,8 +13,10 @@
 #include <sstream>
 #include <string>
 
+
 #include "Request.hpp"
 #include "Socket.hpp"
+#include "Response.hpp"
 
 #define MAX_CLIENTS 1024
 
@@ -31,7 +33,7 @@ class TcpServer {
   void _serverLoop();
   void _initNewConnection();
   void _existingConnection(int &);
-	void sendFile_(int, std::string const);
+	void sendFile_(int, std::list<std::string>);
   bool isKeepAlive(const Socket &socket);
   void closeConnection_(Socket &socket, pollfd &fd, int &i);
   std::string _createResponse();

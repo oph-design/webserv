@@ -1,10 +1,5 @@
 #include "TcpServer.hpp"
 
-#include <string>
-
-#include "Request.hpp"
-#include "Response.hpp"
-
 void TcpServer::_bootServer() {
   Response::fillFileTypes();
   _listening_socket = socket(AF_INET, SOCK_STREAM, 0);
@@ -112,8 +107,10 @@ void TcpServer::_existingConnection(int &i) {
               << std::endl;
     std::string response = resobj.getHeader() + resobj.getBody().front();
     std::cout << response << std::endl;
-    sendFile_(_fds[i].fd, response);
-    // send(_fds[i].fd, response.c_str(), response.size(), 0);
+		std::string header = resobj.getHeader();
+		std::list<std::string> body = resobj.getBody();
+    send(_fds[i].fd, header.c_str(), header.size(), 0);
+    sendFile_(_fds[i].fd, body);
   } else if (bytes_read == 0 || !isKeepAlive(pollSockets_[i])) {
     std::cout << "client closed connection on socket " << _fds[i].fd << " "
               << std::endl;
@@ -121,8 +118,8 @@ void TcpServer::_existingConnection(int &i) {
   }
 }
 
-void TcpServer::sendFile_(int fd, const std::string response) {
-  size_t totalSend = 0;
+void TcpServer::sendFile_(int fd, std::list<std::string> body) {
+/*   size_t totalSend = 0;
   while (totalSend < response.size()) {
     size_t toSend =
         std::min(response.size() - totalSend, static_cast<size_t>(512));
@@ -132,7 +129,11 @@ void TcpServer::sendFile_(int fd, const std::string response) {
 			return ;
 		}
 		totalSend += sent;
-  }
+  } */
+	for(std::list<std::string>::iterator it = body.begin(); it != body.end(); it++){
+		std::cout << *it << std::endl;
+		send(fd, it->c_str(), it->size(), 0);
+	}
 }
 
 bool TcpServer::isKeepAlive(const Socket &socket) {
