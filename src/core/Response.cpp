@@ -10,8 +10,8 @@ Response::Response() : body_("Server is online") {
 }
 
 Response::Response(Request request) : status_("200 OK") {
-  body_ = readBody_(request.getURI());
-  std::string type = findType_(request.getURI());
+  body_ = readBody_(request.getPath());
+  std::string type = findType_(request.getPath());
   std::string length = std::to_string(body_.length());
 
   header_.push_back(contentField(request.getHTTPVersion(), status_));

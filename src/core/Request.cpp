@@ -69,7 +69,7 @@ const std::string &Request::operator[](const char *key) const {
   return this->requestHeaderFields_.at(stringKey);
 }
 
-std::string Request::getURI() const { return this->URI_; }
+std::string Request::getPath() const { return this->path_; }
 
 Request::t_methodTypes Request::getRequestMethodType() const {
   return this->requestMethodType_;
