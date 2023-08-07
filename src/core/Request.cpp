@@ -142,9 +142,20 @@ void Request::splitURI_() {
   }
 }
 
-void Request::splitQuery_()
-{
-  
+void Request::splitQuery_() {
+  std::stringstream ss(this->queryString_);
+  std::string queryLine;
+  while (std::getline(ss, queryLine, '&')) {
+    if (queryLine.size() == 0) continue;
+    std::size_t equalPosition = queryLine.find('=');
+    if (equalPosition != queryLine.npos && equalPosition + 1 != queryLine.npos)
+      this->queryTable_.insert(
+          std::make_pair(queryLine.substr(0, equalPosition),
+                         queryLine.substr(equalPosition + 1)));
+    else
+      this->queryTable_.insert(std::make_pair(queryLine, ""));
+    queryLine.clear();
+  }
 }
 
 std::ostream &operator<<(std::ostream &stream, const Request &header) {
@@ -152,7 +163,7 @@ std::ostream &operator<<(std::ostream &stream, const Request &header) {
   stream << "URI_=" << header.URI_ << "\n";
   stream << "httpVersion=" << header.httpVersion_ << "\n";
   stream << "PATH=" << header.path_ << "\n";
-  stream << "QUERY=" << header.queryString_ << "\n";
+
   for (std::map<std::string, std::string>::const_iterator iter =
            header.requestHeaderFields_.begin();
        iter != header.requestHeaderFields_.end(); ++iter) {
@@ -160,5 +171,12 @@ std::ostream &operator<<(std::ostream &stream, const Request &header) {
     stream << "\n";
   }
   if (header.requestBodyExists_) stream << header.requestBody_;
+  stream << "QUERY=" << header.queryString_ << "\n";
+  for (std::map<std::string, std::string>::const_iterator iter =
+           header.queryTable_.begin();
+       iter != header.queryTable_.end(); ++iter) {
+    stream << "[" << iter->first << "=" << iter->second << "]";
+    stream << "\n";
+  }
   return stream;
 }
