@@ -41,7 +41,7 @@ class Request {
   const std::string &operator[](const char *key) const;
   friend std::ostream &operator<<(std::ostream &stream, const Request &header);
 
-  std::string getURI() const;
+  std::string getPath() const;
   t_methodTypes getRequestMethodType() const;
   std::string getRequestMethodString() const;
   std::string getHTTPVersion() const;
