@@ -48,9 +48,12 @@ Request::Request(const Request &obj) { *this = obj; }
 
 Request &Request::operator=(const Request &obj) {
   this->requestHeaderFields_ = obj.requestHeaderFields_;
+  this->queryTable_ = obj.queryTable_;
   this->requestMethodType_ = obj.requestMethodType_;
+  this->queryString_ = obj.queryString_;
   this->requestMethodString_ = obj.requestMethodString_;
   this->URI_ = obj.URI_;
+  this->path_ = obj.path_;
   this->httpVersion_ = obj.httpVersion_;
   this->requestBody_ = obj.requestBody_;
   this->requestBodyExists_ = obj.requestBodyExists_;
@@ -84,7 +87,8 @@ void Request::parseRequestLine_(std::string &requestLine) {
   std::stringstream ss(requestLine);
   std::getline(ss, this->requestMethodString_, ' ');
   std::getline(ss, this->URI_, ' ');
-  decodeURI_();
+  this->decodeURI_();
+  this->splitURI_();
   std::getline(ss, this->httpVersion_, ' ');
 
   if (this->requestMethodString_ == "GET")
@@ -127,10 +131,22 @@ void Request::decodeURI_() {
   this->URI_ = newUri;
 }
 
+void Request::splitURI_() {
+  std::size_t queryBegin = this->URI_.find('?');
+  if (queryBegin != this->URI_.npos && queryBegin + 1 != this->URI_.npos) {
+    this->path_ = this->URI_.substr(0, queryBegin);
+    this->queryString_ = this->URI_.substr(queryBegin + 1);
+  } else {
+    this->path_ = this->URI_;
+  }
+}
+
 std::ostream &operator<<(std::ostream &stream, const Request &header) {
   stream << "Method=" << header.requestMethodString_ << "\n";
   stream << "URI_=" << header.URI_ << "\n";
   stream << "httpVersion=" << header.httpVersion_ << "\n";
+  stream << "PATH=" << header.path_ << "\n";
+  stream << "QUERY=" << header.queryString_ << "\n";
   for (std::map<std::string, std::string>::const_iterator iter =
            header.requestHeaderFields_.begin();
        iter != header.requestHeaderFields_.end(); ++iter) {
