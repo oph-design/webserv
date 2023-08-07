@@ -52,6 +52,7 @@ class Request {
   void parseRequestLine_(std::string &requestLine);
   void decodeURI_();
   void splitURI_();
+  void splitQuery_();
 
   std::map<std::string, std::string> requestHeaderFields_;
   std::map<std::string, std::string> queryTable_;

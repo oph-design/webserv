@@ -89,6 +89,7 @@ void Request::parseRequestLine_(std::string &requestLine) {
   std::getline(ss, this->URI_, ' ');
   this->decodeURI_();
   this->splitURI_();
+  this->splitQuery_();
   std::getline(ss, this->httpVersion_, ' ');
 
   if (this->requestMethodString_ == "GET")
@@ -139,6 +140,11 @@ void Request::splitURI_() {
   } else {
     this->path_ = this->URI_;
   }
+}
+
+void Request::splitQuery_()
+{
+  
 }
 
 std::ostream &operator<<(std::ostream &stream, const Request &header) {
