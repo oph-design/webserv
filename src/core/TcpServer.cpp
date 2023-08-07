@@ -110,7 +110,8 @@ void TcpServer::_existingConnection(int &i) {
     pollSockets_[i].setTimestamp();
     std::cout << "connection established with socket " << _fds[i].fd << " "
               << std::endl;
-    std::string response = resobj.toString();
+    std::string response = resobj.getHeader() + resobj.getBody().front();
+    std::cout << response << std::endl;
     sendFile_(_fds[i].fd, response);
     // send(_fds[i].fd, response.c_str(), response.size(), 0);
   } else if (bytes_read == 0 || !isKeepAlive(pollSockets_[i])) {
