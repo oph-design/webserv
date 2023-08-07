@@ -3,6 +3,7 @@ webserv.dSYM
 obj
 .vscode
 .clang-format
+Large.mp4
 
 # Prerequisites
 *.d
