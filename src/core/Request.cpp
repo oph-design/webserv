@@ -115,13 +115,14 @@ void Request::decodeURI_() {
         iter + 2 != this->URI_.end()) {
       char numberChar[3] = {*(iter + 1), *(iter + 2), 0};
       char *endptr = NULL;
-      unsigned long numberInt = std::strtoul(numberChar, &endptr, 16);
+      u_int64_t numberInt = std::strtoul(numberChar, &endptr, 16);
       if (endptr && *endptr == 0) {
         newUri += static_cast<char>(numberInt);
         iter += 2;
       }
-    } else
+    } else {
       newUri += *iter;
+    }
   }
   this->URI_ = newUri;
 }
