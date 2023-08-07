@@ -71,36 +71,17 @@ std::string Response::readBody_(std::string dir) {
   return (content.str());
 }
 
-std::string Response::buildChunk_(int chunkSize, std::string bodyStr) {
-  std::stringstream hex;
-  std::string res;
-  std::string chunk;
-
-  hex << std::hex << chunkSize;
-  chunk = bodyStr.substr(0, chunkSize);
-  res = hex.str() + "\r\n" + chunk + "\r\n";
-  return (res);
-}
-
 void Response::chunkBody_(std::string newBody) {
   size_t i = 0;
 
-  if (newBody.length() < CHUNKSIZE) {
-    body_.push_back(newBody);
-    return;
-  }
   for (std::string::iterator it = newBody.begin(); it < newBody.end(); ++it) {
     if (i++ == CHUNKSIZE) {
-      body_.push_back(buildChunk_(CHUNKSIZE, newBody));
+      body_.push_back(newBody.substr(0, CHUNKSIZE));
       newBody = newBody.substr(CHUNKSIZE, newBody.length());
       i = 0;
     }
   }
-  if (newBody.length() > 0)
-    body_.push_back(buildChunk_(newBody.length(), newBody));
-  body_.push_back("0\r\n\r\n");
-  header_.erase(header_.end() - 1);
-  header_.push_back(contentField("Transfer-Encoding", "chunked"));
+  if (newBody.length() > 0) body_.push_back(newBody);
 }
 
 std::string Response::findType_(std::string url) {
