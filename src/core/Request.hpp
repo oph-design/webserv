@@ -48,6 +48,7 @@ class Request {
 
  private:
   void parseRequestLine_(std::string &requestLine);
+  void decodeURI_();
 
   std::map<std::string, std::string> requestHeaderFields_;
   t_methodTypes requestMethodType_;

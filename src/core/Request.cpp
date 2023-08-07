@@ -84,6 +84,7 @@ void Request::parseRequestLine_(std::string &requestLine) {
   std::stringstream ss(requestLine);
   std::getline(ss, this->requestMethodString_, ' ');
   std::getline(ss, this->URI_, ' ');
+  decodeURI_();
   std::getline(ss, this->httpVersion_, ' ');
 
   if (this->requestMethodString_ == "GET")
@@ -104,6 +105,25 @@ void Request::parseRequestLine_(std::string &requestLine) {
     this->requestMethodType_ = CONNECT;
   else
     this->requestMethodType_ = INVALID;
+}
+
+void Request::decodeURI_()
+{
+  std::string newUri;
+  for (std::string::iterator iter = this->URI_.begin(); iter != this->URI_.end(); ++iter) {
+    if (*iter == '%' && iter + 1 != this->URI_.end() && iter + 2 != this->URI_.end()) {
+      char numberChar[2] = {*(iter + 1), *(iter + 2)};
+      std::stringstream ss;
+      ss << std::hex << numberChar;
+      unsigned int numberInt;
+      ss >> numberInt;
+      newUri += numberInt;
+      iter += 2;
+    }
+    else
+      newUri += *iter;
+  }
+  this->URI_ = newUri;
 }
 
 std::ostream &operator<<(std::ostream &stream, const Request &header) {
