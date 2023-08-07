@@ -107,8 +107,8 @@ void TcpServer::_existingConnection(int &i) {
               << std::endl;
     std::string response = resobj.getHeader() + resobj.getBody().front();
     std::cout << response << std::endl;
-		std::string header = resobj.getHeader();
-		std::list<std::string> body = resobj.getBody();
+    std::string header = resobj.getHeader();
+    std::list<std::string> body = resobj.getBody();
     send(_fds[i].fd, header.c_str(), header.size(), 0);
     sendFile_(_fds[i].fd, body);
   } else if (bytes_read == 0 || !isKeepAlive(pollSockets_[i])) {
@@ -119,21 +119,21 @@ void TcpServer::_existingConnection(int &i) {
 }
 
 void TcpServer::sendFile_(int fd, std::list<std::string> body) {
-/*   size_t totalSend = 0;
-  while (totalSend < response.size()) {
-    size_t toSend =
-        std::min(response.size() - totalSend, static_cast<size_t>(512));
-		size_t sent = send(fd, response.data() + totalSend, toSend, 0);
-		if(sent < 0){
-			std::cerr << "Error in response send" << std::endl;
-			return ;
-		}
-		totalSend += sent;
-  } */
-	for(std::list<std::string>::iterator it = body.begin(); it != body.end(); it++){
-		std::cout << *it << std::endl;
-		send(fd, it->c_str(), it->size(), 0);
-	}
+  /*   size_t totalSend = 0;
+    while (totalSend < response.size()) {
+      size_t toSend =
+          std::min(response.size() - totalSend, static_cast<size_t>(512));
+                  size_t sent = send(fd, response.data() + totalSend, toSend,
+    0); if(sent < 0){ std::cerr << "Error in response send" << std::endl; return
+    ;
+                  }
+                  totalSend += sent;
+    } */
+  for (std::list<std::string>::iterator it = body.begin(); it != body.end();
+       it++) {
+    // std::cout << *it << std::endl;
+    send(fd, it->c_str(), it->size(), 0);
+  }
 }
 
 bool TcpServer::isKeepAlive(const Socket &socket) {
@@ -161,9 +161,10 @@ std::string TcpServer::_createResponse() {
   return final_response;
 }
 
-void TcpServer::_error() { 
-	std::cerr << "ERROR" << std::endl;
-	exit(EXIT_FAILURE); }
+void TcpServer::_error() {
+  std::cerr << "ERROR" << std::endl;
+  exit(EXIT_FAILURE);
+}
 
 ////////////////////////////////////////////////
 void TcpServer::boot() {

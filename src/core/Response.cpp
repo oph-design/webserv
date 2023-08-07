@@ -1,5 +1,7 @@
 #include "Response.hpp"
 
+#include <sstream>
+
 typeMap Response::fileTypes_;
 
 Response::Response() {
@@ -69,6 +71,17 @@ std::string Response::readBody_(std::string dir) {
   return (content.str());
 }
 
+std::string Response::buildChunk_(int chunkSize, std::string bodyStr) {
+  std::stringstream hex;
+  std::string res;
+  std::string chunk;
+
+  hex << std::hex << chunkSize;
+  chunk = bodyStr.substr(0, chunkSize);
+  res = hex.str() + "\r\n" + chunk + "\r\n";
+  return (res);
+}
+
 void Response::chunkBody_(std::string newBody) {
   size_t i = 0;
 
@@ -78,13 +91,14 @@ void Response::chunkBody_(std::string newBody) {
   }
   for (std::string::iterator it = newBody.begin(); it < newBody.end(); ++it) {
     if (i++ == CHUNKSIZE) {
-      body_.push_back("1024\r\n" + newBody.substr(0, CHUNKSIZE) + "\r\n");
+      body_.push_back(buildChunk_(CHUNKSIZE, newBody));
       newBody = newBody.substr(CHUNKSIZE, newBody.length());
       i = 0;
     }
   }
   if (newBody.length() > 0)
-    body_.push_back(std::to_string(i) + "\r\n" + newBody + "\r\n");
+    body_.push_back(buildChunk_(newBody.length(), newBody));
+  body_.push_back("0\r\n\r\n");
   header_.erase(header_.end() - 1);
   header_.push_back(contentField("Transfer-Encoding", "chunked"));
 }

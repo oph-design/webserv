@@ -34,6 +34,7 @@ class Response {
 
  private:
   std::string readBody_(std::string dir);
+  static std::string buildChunk_(int chunkSize, std::string bodyStr);
   void chunkBody_(std::string newBody);
   std::string findType_(std::string url);
 
