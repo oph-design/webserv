@@ -29,6 +29,7 @@ class Response {
   ~Response();
 
   std::list<std::string> getBody() const;
+  std::string getFullBody() const;
   std::string getHeader() const;
   static void fillFileTypes();
 
@@ -41,6 +42,7 @@ class Response {
   contentVector header_;
   std::list<std::string> body_;
   std::string status_;
+  std::string bodyFull_;
 };
 
 #endif  // !RESPONSE_HPP

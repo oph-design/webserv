@@ -15,6 +15,7 @@ Response::Response(Request request) : status_("200 OK") {
   std::string newBody = readBody_(request.getURI());
   std::string type = findType_(request.getURI());
   std::string length = std::to_string(newBody.length());
+  bodyFull_ = newBody;
 
   header_.push_back(contentField(request.getHTTPVersion(), status_));
   header_.push_back(contentField("Content-Type", type));
@@ -48,6 +49,8 @@ std::string Response::getHeader() const {
   res.append("\r\n");
   return (res);
 }
+
+std::string Response::getFullBody() const { return (bodyFull_); }
 
 /*            private functions                  */
 
