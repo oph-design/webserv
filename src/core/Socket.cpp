@@ -2,7 +2,8 @@
 
 // public
 Socket::Socket()
-    : keepAlive_(true),
+    : pendingSend(false),
+      keepAlive_(true),
       socketOpt_(1),
       timestamp_(0),
       timeout_(5.0),

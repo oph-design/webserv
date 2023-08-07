@@ -6,6 +6,7 @@
 #include <poll.h>
 #include <sys/socket.h>
 #include <unistd.h>
+#include <list>
 
 #include <cstring>
 #include <ctime>
@@ -32,6 +33,10 @@ class Socket {
   // other functions
   bool checkTimeout();
   void closeSocket();
+	std::list<std::string> response_;
+	std::list<std::string>::iterator it;
+	bool pendingSend;
+	
 
  private:
   struct pollfd socketFd_;

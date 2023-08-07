@@ -19,6 +19,7 @@
 #include "Response.hpp"
 
 #define MAX_CLIENTS 1024
+#define CHUNK_SIZE 1024
 
 class TcpServer {
  public:
@@ -39,6 +40,7 @@ class TcpServer {
   std::string _createResponse();
   void _error();
   void updateFds();
+	void handleSegmentedTransmission(int &, std::list<std::string>, std::string);
 
   int _listening_socket;
   sockaddr_in _servaddr;
