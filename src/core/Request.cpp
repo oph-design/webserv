@@ -107,20 +107,20 @@ void Request::parseRequestLine_(std::string &requestLine) {
     this->requestMethodType_ = INVALID;
 }
 
-void Request::decodeURI_()
-{
+void Request::decodeURI_() {
   std::string newUri;
-  for (std::string::iterator iter = this->URI_.begin(); iter != this->URI_.end(); ++iter) {
-    if (*iter == '%' && iter + 1 != this->URI_.end() && iter + 2 != this->URI_.end()) {
+  for (std::string::iterator iter = this->URI_.begin();
+       iter != this->URI_.end(); ++iter) {
+    if (*iter == '%' && iter + 1 != this->URI_.end() &&
+        iter + 2 != this->URI_.end()) {
       char numberChar[3] = {*(iter + 1), *(iter + 2), 0};
-      std::stringstream ss;
-      ss << std::hex << numberChar;
-      unsigned int numberInt;
-      ss >> numberInt;
-      newUri += numberInt;
-      iter += 2;
-    }
-    else
+      char *endptr = NULL;
+      unsigned long numberInt = std::strtoul(numberChar, &endptr, 16);
+      if (endptr && *endptr == 0) {
+        newUri += static_cast<char>(numberInt);
+        iter += 2;
+      }
+    } else
       newUri += *iter;
   }
   this->URI_ = newUri;
