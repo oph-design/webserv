@@ -106,6 +106,7 @@ void TcpServer::_existingConnection(int &i) {
   bytes_read = recv(_fds[i].fd, buffer, sizeof(buffer), 0);
   if (bytes_read > 0) {
     Request request(buffer);
+    std::cout << request << std::endl;
     Response resobj(request);
     pollSockets_[i].setTimestamp();
     std::cout << "connection established with socket " << _fds[i].fd << " "
