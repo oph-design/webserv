@@ -31,6 +31,7 @@ class TcpServer {
   void _serverLoop();
   void _initNewConnection();
   void _existingConnection(int &);
+	void sendFile_(int, std::string const);
   bool isKeepAlive(const Socket &socket);
   void closeConnection_(Socket &socket, pollfd &fd, int &i);
   std::string _createResponse();

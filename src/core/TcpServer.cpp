@@ -111,11 +111,26 @@ void TcpServer::_existingConnection(int &i) {
     std::cout << "connection established with socket " << _fds[i].fd << " "
               << std::endl;
     std::string response = resobj.toString();
-    send(_fds[i].fd, response.c_str(), response.size(), 0);
+    sendFile_(_fds[i].fd, response);
+    // send(_fds[i].fd, response.c_str(), response.size(), 0);
   } else if (bytes_read == 0 || !isKeepAlive(pollSockets_[i])) {
     std::cout << "client closed connection on socket " << _fds[i].fd << " "
               << std::endl;
     closeConnection_(pollSockets_[i], _fds[i], i);
+  }
+}
+
+void TcpServer::sendFile_(int fd, const std::string response) {
+  size_t totalSend = 0;
+  while (totalSend < response.size()) {
+    size_t toSend =
+        std::min(response.size() - totalSend, static_cast<size_t>(512));
+		size_t sent = send(fd, response.data() + totalSend, toSend, 0);
+		if(sent < 0){
+			std::cerr << "Error in response send" << std::endl;
+			return ;
+		}
+		totalSend += sent;
   }
 }
 
@@ -144,7 +159,9 @@ std::string TcpServer::_createResponse() {
   return final_response;
 }
 
-void TcpServer::_error() { exit(EXIT_FAILURE); }
+void TcpServer::_error() { 
+	std::cerr << "ERROR" << std::endl;
+	exit(EXIT_FAILURE); }
 
 ////////////////////////////////////////////////
 void TcpServer::boot() {
