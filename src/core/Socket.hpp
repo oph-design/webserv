@@ -23,8 +23,9 @@ class Socket {
   Socket &operator=(const Socket &);
   // getter
   int getRevents(void) const;
-  struct pollfd getSocketFd() const;
+  struct pollfd getSocketPoll() const;
   bool getKeepAlive() const;
+	int	getSocketFd();
   // setter
   void setFd(int fd);
   void setPollfd(const struct pollfd);
@@ -33,9 +34,11 @@ class Socket {
   // other functions
   bool checkTimeout();
   void closeSocket();
-	std::list<std::string> response_;
+	//public vars
+	std::string response_;
 	std::list<std::string>::iterator it;
 	bool pendingSend;
+	size_t dataSend;
 	
 
  private:

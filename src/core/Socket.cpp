@@ -29,9 +29,13 @@ Socket &Socket::operator=(const Socket &rhs) {
 
 int Socket::getRevents() const { return socketFd_.revents; }
 
-struct pollfd Socket::getSocketFd() const { return socketFd_; }
+struct pollfd Socket::getSocketPoll() const { return socketFd_; }
 
 bool Socket::getKeepAlive() const { return keepAlive_; }
+
+int	Socket::getSocketFd(){
+	return socketFd_.fd;
+}
 
 // setter
 

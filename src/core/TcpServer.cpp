@@ -39,7 +39,7 @@ void TcpServer::_bootServer() {
 
 void TcpServer::updateFds() {
   for (size_t i = 0; i < MAX_CLIENTS; i++) {
-    _fds[i] = pollSockets_[i].getSocketFd();
+    _fds[i] = pollSockets_[i].getSocketPoll();
   }
 }
 
@@ -51,6 +51,9 @@ void TcpServer::_serverLoop() {
       std::cout << "poll error" << std::endl;
       break;
     }
+		std::cout << "BEFORE CHECK PENDING" << std::endl;
+		checkPending_();
+		std::cout << "AFTER CHECK PENDING" << std::endl;
     for (int i = 0; i < _nfds; i++) {
       std::cout << "fds[" << i << "].revents: " << _fds[i].revents << std::endl;
       if (_fds[i].revents & POLLHUP) {
@@ -60,7 +63,8 @@ void TcpServer::_serverLoop() {
         if (_fds[i].fd == _listening_socket) {
           _initNewConnection();
         } else {
-          _existingConnection(i);
+          if (_existingConnection(pollSockets_[i]) == false)
+            closeConnection_(pollSockets_[i], _fds[i], i);
         }
         if (pollSockets_[i].checkTimeout()) {
           std::cout << "Timeout of Socket: " << _fds[i].fd << std::endl;
@@ -71,13 +75,22 @@ void TcpServer::_serverLoop() {
   }
 }
 
+void TcpServer::checkPending_(){
+	for(int i = 0; i < _nfds; i++){
+		if(pollSockets_[i].pendingSend == true){
+			sendResponse_(pollSockets_[i]);
+			return ;
+		}
+	}
+}
+
 void TcpServer::closeConnection_(Socket &socket, pollfd &fd, int &i) {
   close(fd.fd);
   socket.closeSocket();
   socket.setInUse(false);
   for (int j = i; j < _nfds - 1; ++j) {
     _fds[j] = _fds[j + 1];
-    pollSockets_[j].setPollfd(pollSockets_[j + 1].getSocketFd());
+    pollSockets_[j].setPollfd(pollSockets_[j + 1].getSocketPoll());
   }
   --_nfds;
   --i;
@@ -94,7 +107,47 @@ void TcpServer::_initNewConnection() {
   ++_nfds;
 }
 
-void TcpServer::_existingConnection(int &i) {
+std::string TcpServer::_createResponse(char buffer[1024]) {
+  Request request(buffer);
+  Response resobj(request);
+  std::string response = resobj.getHeader() + resobj.getFullBody();
+  return response;
+}
+
+void TcpServer::sendResponse_(Socket &socket){
+	std::cout << "BEFORE" << std::endl;
+	socket.dataSend = send(socket.getSocketFd(), socket.response_.c_str(),
+													socket.response_.size(), 0);
+	if (socket.dataSend < socket.response_.size()) {
+		socket.pendingSend = true;
+		socket.response_ = socket.response_.substr(socket.dataSend);
+	} else
+		socket.pendingSend = false;
+	std::cout << "AFTER" << std::endl;
+}
+
+bool TcpServer::_existingConnection(Socket &socket) {
+  char buffer[1024] = {0};
+  size_t bytes_read = 0;
+
+  bytes_read = recv(socket.getSocketFd(), buffer, sizeof(buffer), 0);
+  if (bytes_read > 0) {
+    std::cout << "connection established with socket " << socket.getSocketFd()
+              << " " << std::endl;
+    socket.setTimestamp();
+		if (socket.pendingSend == false) {
+			socket.response_ = _createResponse(buffer);
+		}
+    sendResponse_(socket);
+  } else if (bytes_read == 0 || !isKeepAlive(socket)) {
+    std::cout << "client closed connection on socket " << socket.getSocketFd()
+              << " " << std::endl;
+    return false;
+  }
+  return true;
+}
+
+/* void TcpServer::_existingConnection(int &i) {
   char buffer[1024] = {0};
   size_t bytes_read = 0;
 
@@ -105,21 +158,23 @@ void TcpServer::_existingConnection(int &i) {
     pollSockets_[i].setTimestamp();
     std::cout << "connection established with socket " << _fds[i].fd << " "
               << std::endl;
-    std::string response = resobj.getHeader() + resobj.getBody().front();
+    std::string response = resobj.getHeader() + resobj.getFullBody();
     std::cout << response << std::endl;              //// RESPONSE PRINT
     std::string header = resobj.getHeader();         //// HEADER
     std::list<std::string> body = resobj.getBody();  /// BODY LIST
 
-		send(_fds[i].fd, response.c_str(), response.size(), 0);
-		//send(_fds[i].fd, header.c_str(), header.size(), 0);
+                std::cout << "BYTES SEND: " << send(_fds[i].fd,
+response.c_str(), response.size(), 0) << std::endl; std::cout << "CONTENT
+LENGTH: " << response.size() << std::endl;
+                //send(_fds[i].fd, header.c_str(), header.size(), 0);
     //send(_fds[i].fd, body.front().c_str(), body.front().size(), 0);
 
-/*     if (body.size() == 1 && pollSockets_[i].pendingSend == false) {
+    if (body.size() == 1 && pollSockets_[i].pendingSend == false) {
       send(_fds[i].fd, header.c_str(), header.size(), 0);
       send(_fds[i].fd, body.front().c_str(), body.front().size(), 0);
     } else {
-				handleSegmentedTransmission(i, body, header);
-    } */
+                                handleSegmentedTransmission(i, body, header);
+    }
   } else if (bytes_read == 0 || !isKeepAlive(pollSockets_[i])) {
     std::cout << "client closed connection on socket " << _fds[i].fd << " "
               << std::endl;
@@ -127,27 +182,26 @@ void TcpServer::_existingConnection(int &i) {
   }
 }
 
-void TcpServer::handleSegmentedTransmission(int &i, std::list<std::string> body, std::string header){
-			if (pollSockets_[i].pendingSend == false) {
-			pollSockets_[i].response_ = body;
-			pollSockets_[i].it = pollSockets_[i].response_.begin();
-			send(_fds[i].fd, header.c_str(), header.size(), 0);
-			send(_fds[i].fd, pollSockets_[i].it->c_str(),
-						pollSockets_[i].it->size(), 0);
-			pollSockets_[i].it++;
-			pollSockets_[i].pendingSend = true;
-			return ;
-		} else if (pollSockets_[i].it == pollSockets_[i].response_.end()) {
-			pollSockets_[i].pendingSend = false;
-		} else if (pollSockets_[i].pendingSend == true) {
-			send(_fds[i].fd, pollSockets_[i].it->c_str(),
-						pollSockets_[i].it->size(), 0);
-			pollSockets_[i].it++;
-		}
+void TcpServer::handleSegmentedTransmission(int &i, std::list<std::string>
+body, std::string header){ if (pollSockets_[i].pendingSend == false) {
+                        pollSockets_[i].response_ = body;
+                        pollSockets_[i].it = pollSockets_[i].response_.begin();
+                        send(_fds[i].fd, header.c_str(), header.size(), 0);
+                        send(_fds[i].fd, pollSockets_[i].it->c_str(),
+                                                pollSockets_[i].it->size(), 0);
+                        pollSockets_[i].it++;
+                        pollSockets_[i].pendingSend = true;
+                        return ;
+                } else if (pollSockets_[i].it ==
+pollSockets_[i].response_.end()) { pollSockets_[i].pendingSend = false; } else
+if (pollSockets_[i].pendingSend == true) { send(_fds[i].fd,
+pollSockets_[i].it->c_str(), pollSockets_[i].it->size(), 0);
+                        pollSockets_[i].it++;
+                }
 }
 
 void TcpServer::sendFile_(int fd, std::list<std::string> body) {
-  /*   size_t totalSend = 0;
+   size_t totalSend = 0;
     while (totalSend < response.size()) {
       size_t toSend =
           std::min(response.size() - totalSend, static_cast<size_t>(512));
@@ -156,38 +210,17 @@ void TcpServer::sendFile_(int fd, std::list<std::string> body) {
     ;
                   }
                   totalSend += sent;
-    } */
+    }
   for (std::list<std::string>::iterator it = body.begin(); it != body.end();
        it++) {
     // std::cout << *it << std::endl;
     send(fd, it->c_str(), it->size(), 0);
     usleep(2000);
   }
-}
+} */
 
 bool TcpServer::isKeepAlive(const Socket &socket) {
   return socket.getKeepAlive();
-}
-
-std::string TcpServer::_createResponse() {
-  std::ifstream htmlFile("html/index.html");
-  if (htmlFile.is_open()) {
-    std::cout << "html File opened successfully." << std::endl;
-  } else {
-    std::cerr << "Failed to open the html file." << std::endl;
-  }
-  std::stringstream html_content;
-  html_content << htmlFile.rdbuf();
-  const char *httpResponse =
-      "HTTP/1.1 200 OK\r\n"
-      "Content-Type: text/html; charset=UTF-8\r\n"
-      "Connection: keep-alive\r\n"
-      "Content-Length: ";
-  std::string final_response(httpResponse);
-  final_response.append(std::to_string(html_content.str().length()));
-  final_response.append("\r\n\r\n");
-  final_response.append(html_content.str());
-  return final_response;
 }
 
 void TcpServer::_error() {

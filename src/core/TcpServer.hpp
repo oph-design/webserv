@@ -33,11 +33,13 @@ class TcpServer {
   void _bootServer();
   void _serverLoop();
   void _initNewConnection();
-  void _existingConnection(int &);
+  bool _existingConnection(Socket &);
 	void sendFile_(int, std::list<std::string>);
   bool isKeepAlive(const Socket &socket);
   void closeConnection_(Socket &socket, pollfd &fd, int &i);
-  std::string _createResponse();
+  std::string _createResponse(char[1024]);
+	void sendResponse_(Socket &);
+	void checkPending_();
   void _error();
   void updateFds();
 	void handleSegmentedTransmission(int &, std::list<std::string>, std::string);
