@@ -21,6 +21,7 @@ class Config {
 
   bool openFile(int argc, char* argv[]);
 
+  friend std::ostream &operator<<(std::ostream &stream, const Config &config);
  private:
   std::vector<Line> content_;
 };

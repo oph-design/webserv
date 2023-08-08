@@ -37,3 +37,14 @@ bool Config::openFile(int argc, char* argv[]) {
   }
   return true;
 }
+
+std::ostream &operator<<(std::ostream &stream, const Config &config)
+{
+  stream << "Line\tError\tContent\n";
+  stream << std::boolalpha;
+  for (std::vector<Line>::const_iterator iter = config.content_.begin(); iter != config.content_.end(); ++iter) {
+    stream << *iter << "\n";
+  }
+  stream << std::flush;
+  return stream;
+}

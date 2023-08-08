@@ -15,3 +15,9 @@ Line& Line::operator=(const Line& obj) {
   this->error_ = obj.error_;
   return *this;
 }
+
+std::ostream &operator<<(std::ostream &stream, const Line &line)
+{
+  stream << line.lineNumber_ << ":\t" << line.error_ << ":\t" << line.content_;
+  return stream;
+}
