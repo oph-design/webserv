@@ -11,12 +11,21 @@ Config& Config::operator=(const Config& obj) {
   return *this;
 }
 
-int Config::openConfigFile(int argc, char* argv[]) {
+bool Config::openFile(int argc, char* argv[]) {
   std::string path;
-  if (argc < 2)
+  if (argc < 2) {
     path = STD_CONF_PATH;
-  else
+  } else if (argc == 2) {
     path = argv[1];
-  std::cout << path << std::endl;
-  return 0;
+  } else {
+    std::cerr << "Error: Webserv requires zero to one arguments" << std::endl;
+    return false;
+  }
+  std::ifstream file;
+  file.open(path.c_str(), std::ios::in);
+  if (!file.is_open()) {
+    std::cerr << "Error: Can't open config file" << std::endl;
+    return false;
+  }
+  return true;
 }

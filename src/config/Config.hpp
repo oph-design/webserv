@@ -8,17 +8,18 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <fstream>
 
 #include "Line.hpp"
 
 class Config {
  public:
-  Config();
   ~Config();
+  Config();
   Config(const Config& obj);
   Config& operator=(const Config& obj);
 
-  static int openConfigFile(int argc, char* argv[]);
+  bool openFile(int argc, char *argv[]);
 
  private:
   std::vector<Line> content_;
