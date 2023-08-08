@@ -2,7 +2,7 @@ NAME							=	webserv
 
 CC								=	c++
 LCFLAGS						=	-fsanitize=address
-HEADERFLAGS				=	-I src/core -I include
+HEADERFLAGS				=	-I src/core -I include -I src/config
 CFLAGS						=	$(LCFLAGS) $(HEADERFLAGS) \
 											-std=c++98 -Wall -Wextra -Werror -g -pedantic
 LFLAGS						=	$(LCFLAGS)
@@ -22,7 +22,7 @@ CONFIG						=	$(addprefix $(CONFIG_DIR), $(CONFIG_FILES))
 CONFIG_DIR				=	src/config/
 CONFIG_FILES			=	Config.cpp Line.cpp
 
-ALL_SRC						=	$(SRC) $(CORE)
+ALL_SRC						=	$(SRC) $(CORE) $(CONFIG)
 
 ################################################################################
 ################################################################################
