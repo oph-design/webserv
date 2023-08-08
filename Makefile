@@ -18,6 +18,10 @@ CORE							=	$(addprefix $(CORE_DIR), $(CORE_FILES))
 CORE_DIR					=	src/core/
 CORE_FILES				=	Request.cpp Response.cpp Socket.cpp TcpServer.cpp
 
+CONFIG						=	$(addprefix $(CONFIG_DIR), $(CONFIG_FILES))
+CONFIG_DIR				=	src/config/
+CONFIG_FILES			=	Config.cpp Line.cpp
+
 ALL_SRC						=	$(SRC) $(CORE)
 
 ################################################################################
