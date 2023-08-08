@@ -5,10 +5,10 @@
 #define STD_CONF_PATH "./conf/webserv.conf"
 #endif  // STD_CONF_PATH
 
+#include <fstream>
 #include <iostream>
 #include <string>
 #include <vector>
-#include <fstream>
 
 #include "Line.hpp"
 
@@ -19,7 +19,7 @@ class Config {
   Config(const Config& obj);
   Config& operator=(const Config& obj);
 
-  bool openFile(int argc, char *argv[]);
+  bool openFile(int argc, char* argv[]);
 
  private:
   std::vector<Line> content_;
