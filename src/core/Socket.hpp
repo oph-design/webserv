@@ -31,6 +31,7 @@ class Socket {
   void setPollfd(const struct pollfd);
   void setTimestamp();
   void setInUse(bool);
+	void setRevent(int);
   // other functions
   bool checkTimeout();
   void closeSocket();

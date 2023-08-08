@@ -8,9 +8,10 @@ Socket::Socket()
       timestamp_(0),
       timeout_(5.0),
       inUse_(false) {
-  socketFd_.fd = -1;
+  socketFd_.fd = 0;
   socketFd_.events = POLLIN;
   socketFd_.revents = 0;
+	fcntl(socketFd_.fd, F_SETFL, O_NONBLOCK, FD_CLOEXEC);
 }
 
 Socket::~Socket() {}
@@ -46,6 +47,10 @@ void Socket::setPollfd(const struct pollfd rhs) { this->socketFd_ = rhs; }
 void Socket::setTimestamp() { this->timestamp_ = std::time(NULL); }
 
 void Socket::setInUse(bool set) { inUse_ = set; }
+
+void Socket::setRevent(int revent){
+	socketFd_.revents = revent;
+}
 
 // other functions
 bool Socket::checkTimeout() {
