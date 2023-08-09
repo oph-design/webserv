@@ -16,8 +16,33 @@ Line& Line::operator=(const Line& obj) {
   return *this;
 }
 
-std::ostream &operator<<(std::ostream &stream, const Line &line)
-{
+void Line::trimWhitespace() {
+  std::istringstream iss(this->content_);
+  std::ostringstream oss;
+  std::string word;
+  bool firstWord = true;
+  while (iss >> word) {
+    if (!firstWord) oss << ' ';
+    oss << word;
+    firstWord = false;
+  }
+  this->content_ = oss.str();
+}
+
+void Line::removeComment() {
+  std::size_t pos = this->content_.find('#');
+  if (pos != this->content_.npos)
+    this->content_ = this->content_.substr(0, pos);
+}
+
+bool Line::isEmpty() const {
+  if (this->content_.size() == 0)
+    return true;
+  else
+    return false;
+}
+
+std::ostream& operator<<(std::ostream& stream, const Line& line) {
   stream << line.lineNumber_ << ":\t" << line.error_ << ":\t" << line.content_;
   return stream;
 }

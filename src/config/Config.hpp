@@ -20,6 +20,7 @@ class Config {
   Config& operator=(const Config& obj);
 
   bool openFile(int argc, char* argv[]);
+  void cleanContent();
 
   friend std::ostream &operator<<(std::ostream &stream, const Config &config);
  private:

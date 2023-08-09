@@ -38,11 +38,22 @@ bool Config::openFile(int argc, char* argv[]) {
   return true;
 }
 
-std::ostream &operator<<(std::ostream &stream, const Config &config)
-{
+void Config::cleanContent() {
+  std::vector<Line> newContent;
+  for (std::vector<Line>::iterator iter = this->content_.begin();
+       iter != this->content_.end(); ++iter) {
+    (*iter).trimWhitespace();
+    (*iter).removeComment();
+    if (!(*iter).isEmpty()) newContent.push_back(*iter);
+  }
+  this->content_ = newContent;
+}
+
+std::ostream& operator<<(std::ostream& stream, const Config& config) {
   stream << "Line\tError\tContent\n";
   stream << std::boolalpha;
-  for (std::vector<Line>::const_iterator iter = config.content_.begin(); iter != config.content_.end(); ++iter) {
+  for (std::vector<Line>::const_iterator iter = config.content_.begin();
+       iter != config.content_.end(); ++iter) {
     stream << *iter << "\n";
   }
   stream << std::flush;
