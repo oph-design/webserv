@@ -8,6 +8,8 @@
 #include <string>
 #include <utility>
 
+#include "colors.hpp"
+
 #ifndef BUFFER_SIZE
 #define BUFFER_SIZE 1024
 #endif
@@ -39,7 +41,7 @@ class Request {
   const std::string &operator[](const char *key) const;
   friend std::ostream &operator<<(std::ostream &stream, const Request &header);
 
-  std::string getURI() const;
+  std::string getPath() const;
   t_methodTypes getRequestMethodType() const;
   std::string getRequestMethodString() const;
   std::string getHTTPVersion() const;
@@ -48,14 +50,20 @@ class Request {
 
  private:
   void parseRequestLine_(std::string &requestLine);
+  void decodeURI_();
+  void splitURI_();
+  void splitQuery_();
 
   std::map<std::string, std::string> requestHeaderFields_;
+  std::map<std::string, std::string> queryTable_;
   t_methodTypes requestMethodType_;
+  std::string queryString_;
   std::string requestMethodString_;
   std::string URI_;
+  std::string path_;
   std::string httpVersion_;
-  bool requestBodyExists_;
   std::string requestBody_;
+  bool requestBodyExists_;
 };
 
 #endif  // HEADER_HPP_

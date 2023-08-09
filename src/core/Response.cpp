@@ -12,8 +12,8 @@ Response::Response() {
 }
 
 Response::Response(Request request) : status_("200 OK") {
-  std::string newBody = readBody_(request.getURI());
-  std::string type = findType_(request.getURI());
+  std::string newBody = readBody_(request.getPath());
+  std::string type = findType_(request.getPath());
   std::string length = std::to_string(newBody.length());
   bodyFull_ = newBody;
 
