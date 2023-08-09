@@ -5,6 +5,7 @@ obj
 .clang-format
 **Large.mp4
 .idea
+.DS_Store
 
 # Prerequisites
 *.d
