@@ -8,10 +8,9 @@ Socket::Socket()
       timestamp_(0),
       timeout_(5.0),
       inUse_(false) {
-  socketFd_.fd = 0;
+  socketFd_.fd = -1;
   socketFd_.events = POLLIN;
   socketFd_.revents = 0;
-	fcntl(socketFd_.fd, F_SETFL, O_NONBLOCK, FD_CLOEXEC);
 }
 
 Socket::~Socket() {}
@@ -34,9 +33,7 @@ struct pollfd Socket::getSocketPoll() const { return socketFd_; }
 
 bool Socket::getKeepAlive() const { return keepAlive_; }
 
-int	Socket::getSocketFd(){
-	return socketFd_.fd;
-}
+int Socket::getSocketFd() { return socketFd_.fd; }
 
 // setter
 
@@ -48,9 +45,11 @@ void Socket::setTimestamp() { this->timestamp_ = std::time(NULL); }
 
 void Socket::setInUse(bool set) { inUse_ = set; }
 
-void Socket::setRevent(int revent){
-	socketFd_.revents = revent;
-}
+void Socket::setRevent(int revent) { socketFd_.revents = revent; }
+
+void Socket::setEvent(int event) { socketFd_.events = event; }
+
+void Socket::setKeepAlive(bool set) { keepAlive_ = set; }
 
 // other functions
 bool Socket::checkTimeout() {
