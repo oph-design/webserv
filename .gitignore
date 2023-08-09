@@ -9,7 +9,6 @@ obj
 
 # Prerequisites
 *.d
-favicon.ico
 
 # Compiled Object files
 *.slo
