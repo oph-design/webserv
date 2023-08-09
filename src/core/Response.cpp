@@ -1,8 +1,10 @@
 #include "Response.hpp"
 
+#include <sstream>
+
 typeMap Response::fileTypes_;
 
-Response::Response() : body_("Server is online") {
+Response::Response() {
   header_.push_back(contentField("HTTP/1.1", "200 OK"));
   header_.push_back(contentField("Content-Type", "text/plain"));
   header_.push_back(contentField("Connection", "keep-alive"));
@@ -10,14 +12,16 @@ Response::Response() : body_("Server is online") {
 }
 
 Response::Response(Request request) : status_("200 OK") {
-  body_ = readBody_(request.getPath());
+  std::string newBody = readBody_(request.getPath());
   std::string type = findType_(request.getPath());
-  std::string length = std::to_string(body_.length());
+  std::string length = std::to_string(newBody.length());
+  bodyFull_ = newBody;
 
   header_.push_back(contentField(request.getHTTPVersion(), status_));
   header_.push_back(contentField("Content-Type", type));
   header_.push_back(contentField("Connection", "keep-alive"));
   header_.push_back(contentField("Content-Length", length));
+  chunkBody_(newBody);
 }
 
 Response::Response(const Response &rhs) { *this = rhs; }
@@ -30,7 +34,9 @@ Response &Response::operator=(const Response &rhs) {
 
 Response::~Response() { this->body_.clear(); }
 
-std::string Response::toString() const {
+std::list<std::string> Response::getBody() const { return (body_); }
+
+std::string Response::getHeader() const {
   contentVector::const_iterator it = header_.begin();
   std::string res(it->first);
 
@@ -40,10 +46,11 @@ std::string Response::toString() const {
     res.append(it->first + " : ");
     res.append(it->second + "\r\n");
   }
-  std::cout << res << std::endl;
-  res.append("\r\n" + body_);
+  res.append("\r\n");
   return (res);
 }
+
+std::string Response::getFullBody() const { return (bodyFull_); }
 
 /*            private functions                  */
 
@@ -67,6 +74,19 @@ std::string Response::readBody_(std::string dir) {
   return (content.str());
 }
 
+void Response::chunkBody_(std::string newBody) {
+  size_t i = 0;
+
+  for (std::string::iterator it = newBody.begin(); it < newBody.end(); ++it) {
+    if (i++ == CHUNKSIZE) {
+      body_.push_back(newBody.substr(0, CHUNKSIZE));
+      newBody = newBody.substr(CHUNKSIZE, newBody.length());
+      i = 0;
+    }
+  }
+  if (newBody.length() > 0) body_.push_back(newBody);
+}
+
 std::string Response::findType_(std::string url) {
   std::string extention;
   typeMap::iterator search;
@@ -79,8 +99,6 @@ std::string Response::findType_(std::string url) {
     type = fileTypes_[extention];
   } else {
     this->status_ = "415 Unsupported Media Type";
-    type = "text/html";
-    this->body_ = readBody_(url);
   }
   type.append("; charset=UTF-8");
   return (type);

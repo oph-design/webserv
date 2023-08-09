@@ -2,7 +2,8 @@
 
 // public
 Socket::Socket()
-    : keepAlive_(true),
+    : pendingSend(false),
+      keepAlive_(true),
       socketOpt_(1),
       timestamp_(0),
       timeout_(5.0),
@@ -28,9 +29,11 @@ Socket &Socket::operator=(const Socket &rhs) {
 
 int Socket::getRevents() const { return socketFd_.revents; }
 
-struct pollfd Socket::getSocketFd() const { return socketFd_; }
+struct pollfd Socket::getSocketPoll() const { return socketFd_; }
 
 bool Socket::getKeepAlive() const { return keepAlive_; }
+
+int Socket::getSocketFd() { return socketFd_.fd; }
 
 // setter
 
@@ -41,6 +44,12 @@ void Socket::setPollfd(const struct pollfd rhs) { this->socketFd_ = rhs; }
 void Socket::setTimestamp() { this->timestamp_ = std::time(NULL); }
 
 void Socket::setInUse(bool set) { inUse_ = set; }
+
+void Socket::setRevent(int revent) { socketFd_.revents = revent; }
+
+void Socket::setEvent(int event) { socketFd_.events = event; }
+
+void Socket::setKeepAlive(bool set) { keepAlive_ = set; }
 
 // other functions
 bool Socket::checkTimeout() {

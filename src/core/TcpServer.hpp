@@ -14,9 +14,11 @@
 #include <string>
 
 #include "Request.hpp"
+#include "Response.hpp"
 #include "Socket.hpp"
 
 #define MAX_CLIENTS 1024
+#define BUFFER_SIZE 1024
 
 class TcpServer {
  public:
@@ -27,24 +29,28 @@ class TcpServer {
   void boot();
 
  private:
-  void _bootServer();
-  void _serverLoop();
-  void _initNewConnection();
-  void _existingConnection(int &);
+  void bootServer_();
+  void serverLoop_();
+  void initNewConnection_();
+  bool existingConnection_(Socket &, pollfd &, int &);
+  void sendFile_(int, std::list<std::string>);
   bool isKeepAlive(const Socket &socket);
   void closeConnection_(Socket &socket, pollfd &fd, int &i);
-  std::string _createResponse();
-  void _error();
+  std::string createResponse_(char[MAX_CLIENTS]);
+  void sendResponse_(Socket &, pollfd &, int &);
+  void checkPending_();
+  void error_();
   void updateFds();
+  void handleSegmentedTransmission(int &, std::list<std::string>, std::string);
 
-  int _listening_socket;
-  sockaddr_in _servaddr;
-  struct pollfd _fds[MAX_CLIENTS];
+  int listening_socket_;
+  sockaddr_in servaddr_;
+  struct pollfd fds_[MAX_CLIENTS];
   Socket pollSockets_[MAX_CLIENTS];
-  std::string _ip_addr;
-  int _port;
-  int _nfds;
-  int _socketopt;
+  std::string ip_addr_;
+  int port_;
+  int nfds_;
+  int socketopt_;
 };
 
 #endif  // TCPSERVER_HPP
