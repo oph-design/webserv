@@ -3,10 +3,12 @@ webserv.dSYM
 obj
 .vscode
 .clang-format
+**Large.mp4
+.idea
+.DS_Store
 
 # Prerequisites
 *.d
-favicon.ico
 
 # Compiled Object files
 *.slo
