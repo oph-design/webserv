@@ -28,21 +28,20 @@ class Response {
   Response& operator=(const Response& rhs);
   ~Response();
 
-  std::list<std::string> getBody() const;
-  std::string getFullBody() const;
+  std::list<std::string> getBodyChunked() const;
+  std::string getBody() const;
   std::string getHeader() const;
   static void fillFileTypes();
 
  private:
+  static std::string buildChunk(std::string line);
   std::string readBody_(std::string dir);
-  void chunkBody_(std::string newBody);
   std::string findType_(std::string url);
 
   static typeMap fileTypes_;
   contentVector header_;
-  std::list<std::string> body_;
   std::string status_;
-  std::string bodyFull_;
+  std::string body_;
 };
 
 #endif  // !RESPONSE_HPP

@@ -118,7 +118,7 @@ void TcpServer::initNewConnection_() {
 std::string TcpServer::createResponse_(char buffer[1024]) {
   Request request(buffer);
   Response resobj(request);
-  std::string response = resobj.getHeader() + resobj.getFullBody();
+  std::string response = resobj.getHeader() + resobj.getBody();
   return response;
 }
 

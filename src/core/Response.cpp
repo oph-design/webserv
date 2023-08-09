@@ -4,24 +4,22 @@
 
 typeMap Response::fileTypes_;
 
-Response::Response() {
-  header_.push_back(contentField("HTTP/1.1", "200 OK"));
-  header_.push_back(contentField("Content-Type", "text/plain"));
-  header_.push_back(contentField("Connection", "keep-alive"));
-  header_.push_back(contentField("Content-Length", "16"));
+Response::Response() : body_("Server is online") {
+  this->header_.push_back(contentField("HTTP/1.1", "200 OK"));
+  this->header_.push_back(contentField("Content-Type", "text/plain"));
+  this->header_.push_back(contentField("Connection", "keep-alive"));
+  this->header_.push_back(contentField("Content-Length", "16"));
 }
 
 Response::Response(Request request) : status_("200 OK") {
-  std::string newBody = readBody_(request.getPath());
+  this->body_ = readBody_(request.getPath());
   std::string type = findType_(request.getPath());
-  std::string length = std::to_string(newBody.length());
-  bodyFull_ = newBody;
+  std::string length = std::to_string(this->body_.length());
 
-  header_.push_back(contentField(request.getHTTPVersion(), status_));
-  header_.push_back(contentField("Content-Type", type));
-  header_.push_back(contentField("Connection", "keep-alive"));
-  header_.push_back(contentField("Content-Length", length));
-  chunkBody_(newBody);
+  this->header_.push_back(contentField(request.getHTTPVersion(), status_));
+  this->header_.push_back(contentField("Content-Type", type));
+  this->header_.push_back(contentField("Connection", "keep-alive"));
+  this->header_.push_back(contentField("Content-Length", length));
 }
 
 Response::Response(const Response &rhs) { *this = rhs; }
@@ -34,15 +32,13 @@ Response &Response::operator=(const Response &rhs) {
 
 Response::~Response() { this->body_.clear(); }
 
-std::list<std::string> Response::getBody() const { return (body_); }
-
 std::string Response::getHeader() const {
-  contentVector::const_iterator it = header_.begin();
+  contentVector::const_iterator it = this->header_.begin();
   std::string res(it->first);
 
   res.append(" " + it->second + "\r\n");
   std::advance(it, 1);
-  for (; it != header_.end(); ++it) {
+  for (; it != this->header_.end(); ++it) {
     res.append(it->first + " : ");
     res.append(it->second + "\r\n");
   }
@@ -50,9 +46,34 @@ std::string Response::getHeader() const {
   return (res);
 }
 
-std::string Response::getFullBody() const { return (bodyFull_); }
+std::string Response::getBody() const { return (body_); }
+
+std::list<std::string> Response::getBodyChunked() const {
+  size_t i = 0;
+  std::string tmp = this->body_;
+  std::list<std::string> res;
+
+  for (std::string::iterator it = tmp.begin(); it < tmp.end(); ++it) {
+    if (tmp.at(i) == '\n') {
+      res.push_back(buildChunk(tmp.substr(0, i + 1)));
+      tmp = tmp.substr(i + 1, tmp.length());
+      i = 0;
+    }
+  }
+  if (tmp.length() > 0) res.push_back(buildChunk(tmp));
+  return (res);
+}
 
 /*            private functions                  */
+
+std::string Response::buildChunk(std::string line) {
+  std::stringstream bytes;
+  std::string res;
+
+  bytes << std::hex << line.length();
+  res = bytes.str() + "\r\n" + line + "\r\n";
+  return (res);
+}
 
 std::string Response::readBody_(std::string dir) {
   if (!dir.compare("/")) dir.append("index.html");
@@ -74,19 +95,6 @@ std::string Response::readBody_(std::string dir) {
   return (content.str());
 }
 
-void Response::chunkBody_(std::string newBody) {
-  size_t i = 0;
-
-  for (std::string::iterator it = newBody.begin(); it < newBody.end(); ++it) {
-    if (i++ == CHUNKSIZE) {
-      body_.push_back(newBody.substr(0, CHUNKSIZE));
-      newBody = newBody.substr(CHUNKSIZE, newBody.length());
-      i = 0;
-    }
-  }
-  if (newBody.length() > 0) body_.push_back(newBody);
-}
-
 std::string Response::findType_(std::string url) {
   std::string extention;
   typeMap::iterator search;
@@ -99,6 +107,8 @@ std::string Response::findType_(std::string url) {
     type = fileTypes_[extention];
   } else {
     this->status_ = "415 Unsupported Media Type";
+    this->body_ = readBody_("./html/415.html");
+    type = "text/html";
   }
   type.append("; charset=UTF-8");
   return (type);
