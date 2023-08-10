@@ -20,7 +20,7 @@ CORE_FILES				=	Request.cpp Response.cpp Socket.cpp TcpServer.cpp
 
 UTILS							=	$(addprefix $(UTILS_DIR), $(UTILS_FILES))
 UTILS_DIR					=	src/utils/
-UTILS_FILES				=	ToString.cpp
+UTILS_FILES				=
 
 ALL_SRC						=	$(SRC) $(CORE) $(UTILS)
 
