@@ -14,8 +14,8 @@ void TcpServer::bootServer_() {
     error_();
   }
 
-  if (setsockopt(this->listening_socket_, SOL_SOCKET, SO_REUSEADDR, &this->socketopt_,
-                 sizeof(this->socketopt_)) == -1) {
+  if (setsockopt(this->listening_socket_, SOL_SOCKET, SO_REUSEADDR,
+                 &this->socketopt_, sizeof(this->socketopt_)) == -1) {
     std::cerr << "Error setting SO_REUSEADDR" << std::endl;
     error_();
   }
@@ -55,8 +55,8 @@ void TcpServer::serverLoop_() {
     }
     this->checkPending_();
     for (int i = 0; i < this->nfds_; i++) {
-      std::cout << "fds[" << this->fds_[i].fd << "].revents: " << this->fds_[i].revents
-                << std::endl;
+      std::cout << "fds[" << this->fds_[i].fd
+                << "].revents: " << this->fds_[i].revents << std::endl;
       if (this->fds_[i].revents & POLLHUP) {
         std::cout << "HANGUP " << i << " " << std::endl;
       }
@@ -65,7 +65,8 @@ void TcpServer::serverLoop_() {
           this->initNewConnection_();
           break;
         } else {
-          if (this->existingConnection_(this->pollSockets_[i], this->fds_[i], i) == false)
+          if (this->existingConnection_(this->pollSockets_[i], this->fds_[i],
+                                        i) == false)
             this->closeConnection_(this->pollSockets_[i], this->fds_[i], i);
         }
       }
