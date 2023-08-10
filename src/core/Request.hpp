@@ -7,6 +7,7 @@
 #include <sstream>
 #include <string>
 #include <utility>
+#include <algorithm>
 
 #include "colors.hpp"
 

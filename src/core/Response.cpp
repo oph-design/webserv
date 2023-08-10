@@ -2,6 +2,8 @@
 
 #include <sstream>
 
+#include "ToString.hpp"
+
 typeMap Response::fileTypes_;
 
 Response::Response() : body_("Server is online") {
@@ -14,7 +16,7 @@ Response::Response() : body_("Server is online") {
 Response::Response(Request request) : status_("200 OK") {
   this->body_ = readBody_(request.getPath());
   std::string type = findType_(request.getPath());
-  std::string length = std::to_string(this->body_.length());
+  std::string length = toString<std::size_t>(this->body_.length());
 
   this->header_.push_back(contentField(request.getHTTPVersion(), status_));
   this->header_.push_back(contentField("Content-Type", type));
@@ -77,7 +79,7 @@ std::string Response::buildChunk(std::string line) {
 
 std::string Response::readBody_(std::string dir) {
   if (!dir.compare("/")) dir.append("index.html");
-  std::ifstream file("./html" + dir);
+  std::ifstream file(("./html" + dir).c_str());
 
   if (file.is_open()) {
     std::cout << "File opened successfully." << std::endl;
@@ -87,7 +89,8 @@ std::string Response::readBody_(std::string dir) {
   }
   if (status_.compare("200 OK")) {
     file.close();
-    file.open("./html/" + status_.substr(0, status_.find(" ")) + ".html");
+    file.open(
+        ("./html/" + status_.substr(0, status_.find(" ")) + ".html").c_str());
   }
   std::stringstream content;
   content << file.rdbuf();
