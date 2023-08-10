@@ -3,7 +3,7 @@ name: Run compile check
 on:
   pull_request:
     branches:
-      - main  # Change this to your main branch name
+      - main
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -15,8 +15,8 @@ jobs:
 
     - name: Build with make
       run: |
-        make # Replace with the path to your C++ project
-      continue-on-error: true  # To allow the workflow to continue even if the build fails
+        make
+      continue-on-error: true
 
     - name: Check build status
       run: |
