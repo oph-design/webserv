@@ -4,10 +4,10 @@ on:
   pull_request:
     branches:
       - main
+
 jobs:
   build:
     runs-on: ubuntu-latest
-
 
     steps:
     - name: Checkout repository
@@ -21,18 +21,18 @@ jobs:
       run: |
         ./webserv&
 
-    - name: Build with make
+    - name: curl homepage
       run: |
         curl localhost:1234
 
-    - name: Build with make
+    - name: curl index.html
       run: |
         curl localhost:1234/index.html
 
-    - name: Build with make
+    - name: curl large.jpg
       run: |
         curl localhost:1234/large.jpg
 
-    - name: Build with make
+    - name: curl with space
       run: |
         curl "localhost:1234/sp ace.html"
