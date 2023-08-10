@@ -57,18 +57,18 @@ std::list<std::string> Response::getBodyChunked() const {
 
   for (std::string::iterator it = tmp.begin(); it < tmp.end(); ++it) {
     if (tmp.at(i) == '\n') {
-      res.push_back(buildChunk(tmp.substr(0, i + 1)));
+      res.push_back(buildChunk_(tmp.substr(0, i + 1)));
       tmp = tmp.substr(i + 1, tmp.length());
       i = 0;
     }
   }
-  if (tmp.length() > 0) res.push_back(buildChunk(tmp));
+  if (tmp.length() > 0) res.push_back(buildChunk_(tmp));
   return (res);
 }
 
 /*            private functions                  */
 
-std::string Response::buildChunk(std::string line) {
+std::string Response::buildChunk_(std::string line) {
   std::stringstream bytes;
   std::string res;
 

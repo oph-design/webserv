@@ -34,7 +34,7 @@ class Response {
   static void fillFileTypes();
 
  private:
-  static std::string buildChunk(std::string line);
+  static std::string buildChunk_(std::string line);
   std::string readBody_(std::string dir);
   std::string findType_(std::string url);
 
