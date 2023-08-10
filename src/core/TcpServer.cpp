@@ -10,29 +10,29 @@ void TcpServer::bootServer_() {
 
   this->listening_socket_ = socket(AF_INET, SOCK_STREAM, 0);
   if (this->listening_socket_ == -1) {
-    std::cout << "socket creation failed" << std::endl;
+    std::cerr << "Error: Socket creation failed" << std::endl;
     error_();
   }
 
   if (setsockopt(this->listening_socket_, SOL_SOCKET, SO_REUSEADDR,
                  &this->socketopt_, sizeof(this->socketopt_)) == -1) {
-    std::cerr << "Error setting SO_REUSEADDR" << std::endl;
+    std::cerr << "Error: Setting SO_REUSEADDR" << std::endl;
     error_();
   }
 
   if (bind(this->listening_socket_, (struct sockaddr *)&this->servaddr_,
            sizeof(this->servaddr_)) != 0) {
-    std::cerr << "Could not bind socket\n";
+    std::cerr << "Error: Could not bind socket" << std::endl;
     error_();
   }
 
   if (listen(this->listening_socket_, 25) != 0) {
-    std::cerr << "Error in listen\n";
+    std::cerr << "Error: Listen" << std::endl;
     error_();
   }
 
   if (fcntl(this->listening_socket_, F_SETFL, O_NONBLOCK, FD_CLOEXEC) == -1) {
-    std::cerr << "Error setting socket to nonblocking" << std::endl;
+    std::cerr << "Error: Setting socket to nonblocking" << std::endl;
     error_();
   }
   this->pollSockets_[0].setFd(this->listening_socket_);
@@ -107,7 +107,7 @@ void TcpServer::initNewConnection_() {
   int new_client_sock = accept(this->listening_socket_,
                                (struct sockaddr *)&clientaddr, &clientaddr_len);
   if (fcntl(new_client_sock, F_SETFL, O_NONBLOCK, FD_CLOEXEC) == -1) {
-    std::cerr << "Error setting socket to nonblocking" << std::endl;
+    std::cerr << "Error: Setting socket to nonblocking" << std::endl;
     error_();
   }
   this->pollSockets_[nfds_].setFd(new_client_sock);
