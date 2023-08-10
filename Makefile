@@ -71,6 +71,8 @@ linux: $(REDIRECT)
 	./docker/linux/docker_run.sh
 
 nginx: $(REDIRECT)
+	rm -f ./docker/nginx/nginx.conf
+	cp ./conf/webserv.conf ./docker/nginx/nginx.conf
 	./docker/nginx/docker_run.sh
 
 docker_clean:
