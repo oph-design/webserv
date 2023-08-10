@@ -1,8 +1,8 @@
 #ifndef TOSTRING_HPP_
 #define TOSTRING_HPP_
 
-#include <string>
 #include <sstream>
+#include <string>
 
 template <typename Type>
 std::string toString(Type obj) {
