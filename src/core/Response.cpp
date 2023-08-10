@@ -2,6 +2,8 @@
 
 #include <sstream>
 
+#include "ToString.hpp"
+
 typeMap Response::fileTypes_;
 
 Response::Response() : body_("Server is online") {
@@ -14,7 +16,7 @@ Response::Response() : body_("Server is online") {
 Response::Response(Request request) : status_("200 OK") {
   this->body_ = readBody_(request.getPath());
   std::string type = findType_(request.getPath());
-  std::string length = std::to_string(this->body_.length());
+  std::string length = toString<std::size_t>(this->body_.length());
 
   this->header_.push_back(contentField(request.getHTTPVersion(), status_));
   this->header_.push_back(contentField("Content-Type", type));
@@ -55,18 +57,18 @@ std::list<std::string> Response::getBodyChunked() const {
 
   for (std::string::iterator it = tmp.begin(); it < tmp.end(); ++it) {
     if (tmp.at(i) == '\n') {
-      res.push_back(buildChunk(tmp.substr(0, i + 1)));
+      res.push_back(buildChunk_(tmp.substr(0, i + 1)));
       tmp = tmp.substr(i + 1, tmp.length());
       i = 0;
     }
   }
-  if (tmp.length() > 0) res.push_back(buildChunk(tmp));
+  if (tmp.length() > 0) res.push_back(buildChunk_(tmp));
   return (res);
 }
 
 /*            private functions                  */
 
-std::string Response::buildChunk(std::string line) {
+std::string Response::buildChunk_(std::string line) {
   std::stringstream bytes;
   std::string res;
 
@@ -77,7 +79,7 @@ std::string Response::buildChunk(std::string line) {
 
 std::string Response::readBody_(std::string dir) {
   if (!dir.compare("/")) dir.append("index.html");
-  std::ifstream file("./html" + dir);
+  std::ifstream file(("./html" + dir).c_str());
 
   if (file.is_open()) {
     std::cout << "File opened successfully." << std::endl;
@@ -87,7 +89,8 @@ std::string Response::readBody_(std::string dir) {
   }
   if (status_.compare("200 OK")) {
     file.close();
-    file.open("./html/" + status_.substr(0, status_.find(" ")) + ".html");
+    file.open(
+        ("./html/" + status_.substr(0, status_.find(" ")) + ".html").c_str());
   }
   std::stringstream content;
   content << file.rdbuf();
@@ -102,9 +105,9 @@ std::string Response::findType_(std::string url) {
 
   if (!url.compare("/")) url.append("index.html");
   extention = url.substr(url.rfind(".") + 1, url.length());
-  search = fileTypes_.find(extention);
-  if (search != fileTypes_.end()) {
-    type = fileTypes_[extention];
+  search = Response::fileTypes_.find(extention);
+  if (search != Response::fileTypes_.end()) {
+    type = Response::fileTypes_[extention];
   } else {
     this->status_ = "415 Unsupported Media Type";
     this->body_ = readBody_("./html/415.html");
@@ -115,19 +118,19 @@ std::string Response::findType_(std::string url) {
 }
 
 void Response::fillFileTypes() {
-  fileTypes_.insert(contentField("txt", "text/plain"));
-  fileTypes_.insert(contentField("html", "text/html"));
-  fileTypes_.insert(contentField("htm", "text/html"));
-  fileTypes_.insert(contentField("css", "text/css"));
-  fileTypes_.insert(contentField("js", "text/javascript"));
-  fileTypes_.insert(contentField("json", "apllication/json"));
-  fileTypes_.insert(contentField("xml", "apllication/xml"));
-  fileTypes_.insert(contentField("pdf", "apllication/pdf"));
-  fileTypes_.insert(contentField("zip", "apllication/zip"));
-  fileTypes_.insert(contentField("jpg", "image/jpeg"));
-  fileTypes_.insert(contentField("jpeg", "image/jpeg"));
-  fileTypes_.insert(contentField("png", "image/png"));
-  fileTypes_.insert(contentField("ico", "image/x-ico"));
-  fileTypes_.insert(contentField("mp3", "audio/mpeg"));
-  fileTypes_.insert(contentField("mp4", "video/mp4"));
+  Response::fileTypes_.insert(contentField("txt", "text/plain"));
+  Response::fileTypes_.insert(contentField("html", "text/html"));
+  Response::fileTypes_.insert(contentField("htm", "text/html"));
+  Response::fileTypes_.insert(contentField("css", "text/css"));
+  Response::fileTypes_.insert(contentField("js", "text/javascript"));
+  Response::fileTypes_.insert(contentField("json", "apllication/json"));
+  Response::fileTypes_.insert(contentField("xml", "apllication/xml"));
+  Response::fileTypes_.insert(contentField("pdf", "apllication/pdf"));
+  Response::fileTypes_.insert(contentField("zip", "apllication/zip"));
+  Response::fileTypes_.insert(contentField("jpg", "image/jpeg"));
+  Response::fileTypes_.insert(contentField("jpeg", "image/jpeg"));
+  Response::fileTypes_.insert(contentField("png", "image/png"));
+  Response::fileTypes_.insert(contentField("ico", "image/x-ico"));
+  Response::fileTypes_.insert(contentField("mp3", "audio/mpeg"));
+  Response::fileTypes_.insert(contentField("mp4", "video/mp4"));
 }

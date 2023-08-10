@@ -12,7 +12,7 @@ Request::Request(char buffer[BUFFER_SIZE]) {
 }
 
 Request::Request(std::string bufferString) {
-  requestBodyExists_ = false;
+  this->requestBodyExists_ = false;
   std::stringstream ss(bufferString);
   std::string line;
   std::getline(ss, line);
