@@ -16,65 +16,23 @@ jobs:
     - name: Build with make
       run: |
         make
-      continue-on-error: true 
 
     - name: Run our webserver
       run: |
         ./webserv&
-      continue-on-error: true
 
     - name: Build with make
       run: |
         curl localhost:1234
-      continue-on-error: true
-
-    - name: Check build status
-      run: |
-        if [ $? -eq 0 ]; then
-          echo "Build succeeded!"
-        else
-          echo "Build failed!"
-          exit 1
-        fi
 
     - name: Build with make
       run: |
         curl localhost:1234/index.html
-      continue-on-error: true
-
-    - name: Check build status
-      run: |
-        if [ $? -eq 0 ]; then
-          echo "Build succeeded!"
-        else
-          echo "Build failed!"
-          exit 1
-        fi
 
     - name: Build with make
       run: |
         curl localhost:1234/large.jpg
-      continue-on-error: true
-
-    - name: Check build status
-      run: |
-        if [ $? -eq 0 ]; then
-          echo "Build succeeded!"
-        else
-          echo "Build failed!"
-          exit 1
-        fi
 
     - name: Build with make
       run: |
         curl "localhost:1234/sp ace.html"
-      continue-on-error: true
-
-    - name: Check build status
-      run: |
-        if [ $? -eq 0 ]; then
-          echo "Build succeeded!"
-        else
-          echo "Build failed!"
-          exit 1
-        fi
