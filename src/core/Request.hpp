@@ -1,6 +1,7 @@
 #ifndef HEADER_HPP_
 #define HEADER_HPP_
 
+#include <algorithm>
 #include <iostream>
 #include <iterator>
 #include <map>
