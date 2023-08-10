@@ -34,7 +34,7 @@ jobs:
           echo "Build succeeded!"
         else
           echo "Build failed!"
-          exit 1  # Exit with a non-zero status code to indicate a build failure
+          exit 1
         fi
 
     - name: Build with make
@@ -48,7 +48,7 @@ jobs:
           echo "Build succeeded!"
         else
           echo "Build failed!"
-          exit 1  # Exit with a non-zero status code to indicate a build failure
+          exit 1
         fi
 
     - name: Build with make
@@ -62,7 +62,7 @@ jobs:
           echo "Build succeeded!"
         else
           echo "Build failed!"
-          exit 1  # Exit with a non-zero status code to indicate a build failure
+          exit 1
         fi
 
     - name: Build with make
@@ -76,5 +76,5 @@ jobs:
           echo "Build succeeded!"
         else
           echo "Build failed!"
-          exit 1  # Exit with a non-zero status code to indicate a build failure
+          exit 1
         fi
