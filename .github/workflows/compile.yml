@@ -4,10 +4,10 @@ on:
   pull_request:
     branches:
       - main
+
 jobs:
   build:
     runs-on: ubuntu-latest
-
 
     steps:
     - name: Checkout repository
@@ -15,14 +15,4 @@ jobs:
 
     - name: Build with make
       run: |
-        make
-      continue-on-error: true
-
-    - name: Check build status
-      run: |
-        if [ $? -eq 0 ]; then
-          echo "Build succeeded!"
-        else
-          echo "Build failed!"
-          exit 1
-        fi
+        make all
