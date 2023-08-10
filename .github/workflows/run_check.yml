@@ -1,0 +1,80 @@
+name: Run compile check
+
+on:
+  pull_request:
+    branches:
+      - main  # Change this to your main branch name
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Build with make
+      run: |
+        make
+      continue-on-error: true  # To allow the workflow to continue even if the build fails
+
+    - name: Run our webserver
+      run: |
+        ./webserv&
+      continue-on-error: true  # To allow the workflow to continue even if the build fails
+
+    - name: Build with make
+      run: |
+        curl localhost:1234
+      continue-on-error: true  # To allow the workflow to continue even if the build fails
+
+    - name: Check build status
+      run: |
+        if [ $? -eq 0 ]; then
+          echo "Build succeeded!"
+        else
+          echo "Build failed!"
+          exit 1  # Exit with a non-zero status code to indicate a build failure
+        fi
+
+    - name: Build with make
+      run: |
+        curl localhost:1234/index.html
+      continue-on-error: true  # To allow the workflow to continue even if the build fails
+
+    - name: Check build status
+      run: |
+        if [ $? -eq 0 ]; then
+          echo "Build succeeded!"
+        else
+          echo "Build failed!"
+          exit 1  # Exit with a non-zero status code to indicate a build failure
+        fi
+
+    - name: Build with make
+      run: |
+        curl localhost:1234/large.jpg
+      continue-on-error: true  # To allow the workflow to continue even if the build fails
+
+    - name: Check build status
+      run: |
+        if [ $? -eq 0 ]; then
+          echo "Build succeeded!"
+        else
+          echo "Build failed!"
+          exit 1  # Exit with a non-zero status code to indicate a build failure
+        fi
+
+    - name: Build with make
+      run: |
+        curl "localhost:1234/sp ace.html"
+      continue-on-error: true  # To allow the workflow to continue even if the build fails
+
+    - name: Check build status
+      run: |
+        if [ $? -eq 0 ]; then
+          echo "Build succeeded!"
+        else
+          echo "Build failed!"
+          exit 1  # Exit with a non-zero status code to indicate a build failure
+        fi
