@@ -35,4 +35,8 @@ jobs:
 
     - name: curl with space
       run: |
-        curl "localhost:1234/sp ace.html"
+        curl localhost:1234/sp%20ace.html
+
+    - name: curl mp3
+      run: |
+        curl localhost:1234/yessss.mp3
