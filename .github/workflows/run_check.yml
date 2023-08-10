@@ -1,4 +1,4 @@
-name: Run compile check
+name: Run curl check
 
 on:
   pull_request:
