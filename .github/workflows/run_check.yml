@@ -3,7 +3,7 @@ name: Run curl check
 on:
   pull_request:
     branches:
-      - main  # Change this to your main branch name
+      - main
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -16,17 +16,17 @@ jobs:
     - name: Build with make
       run: |
         make
-      continue-on-error: true  # To allow the workflow to continue even if the build fails
+      continue-on-error: true 
 
     - name: Run our webserver
       run: |
         ./webserv&
-      continue-on-error: true  # To allow the workflow to continue even if the build fails
+      continue-on-error: true
 
     - name: Build with make
       run: |
         curl localhost:1234
-      continue-on-error: true  # To allow the workflow to continue even if the build fails
+      continue-on-error: true
 
     - name: Check build status
       run: |
@@ -40,7 +40,7 @@ jobs:
     - name: Build with make
       run: |
         curl localhost:1234/index.html
-      continue-on-error: true  # To allow the workflow to continue even if the build fails
+      continue-on-error: true
 
     - name: Check build status
       run: |
@@ -54,7 +54,7 @@ jobs:
     - name: Build with make
       run: |
         curl localhost:1234/large.jpg
-      continue-on-error: true  # To allow the workflow to continue even if the build fails
+      continue-on-error: true
 
     - name: Check build status
       run: |
@@ -68,7 +68,7 @@ jobs:
     - name: Build with make
       run: |
         curl "localhost:1234/sp ace.html"
-      continue-on-error: true  # To allow the workflow to continue even if the build fails
+      continue-on-error: true
 
     - name: Check build status
       run: |
