@@ -3,86 +3,86 @@
 void TcpServer::bootServer_() {
   Response::fillFileTypes();
 
-  memset(&servaddr_, 0, sizeof(servaddr_));
-  servaddr_.sin_family = AF_INET;
-  servaddr_.sin_addr.s_addr = htonl(INADDR_ANY);
-  servaddr_.sin_port = htons(port_);
+  memset(&this->servaddr_, 0, sizeof(this->servaddr_));
+  this->servaddr_.sin_family = AF_INET;
+  this->servaddr_.sin_addr.s_addr = htonl(INADDR_ANY);
+  this->servaddr_.sin_port = htons(port_);
 
-  listening_socket_ = socket(AF_INET, SOCK_STREAM, 0);
-  if (listening_socket_ == -1) {
+  this->listening_socket_ = socket(AF_INET, SOCK_STREAM, 0);
+  if (this->listening_socket_ == -1) {
     std::cout << "socket creation failed" << std::endl;
     error_();
   }
 
-  if (setsockopt(listening_socket_, SOL_SOCKET, SO_REUSEADDR, &socketopt_,
-                 sizeof(socketopt_)) == -1) {
+  if (setsockopt(this->listening_socket_, SOL_SOCKET, SO_REUSEADDR, &this->socketopt_,
+                 sizeof(this->socketopt_)) == -1) {
     std::cerr << "Error setting SO_REUSEADDR" << std::endl;
     error_();
   }
 
-  if (bind(listening_socket_, (struct sockaddr *)&servaddr_,
-           sizeof(servaddr_)) != 0) {
+  if (bind(this->listening_socket_, (struct sockaddr *)&this->servaddr_,
+           sizeof(this->servaddr_)) != 0) {
     std::cerr << "Could not bind socket\n";
     error_();
   }
 
-  if (listen(listening_socket_, 25) != 0) {
+  if (listen(this->listening_socket_, 25) != 0) {
     std::cerr << "Error in listen\n";
     error_();
   }
 
-  if (fcntl(listening_socket_, F_SETFL, O_NONBLOCK, FD_CLOEXEC) == -1) {
+  if (fcntl(this->listening_socket_, F_SETFL, O_NONBLOCK, FD_CLOEXEC) == -1) {
     std::cerr << "Error setting socket to nonblocking" << std::endl;
     error_();
   }
-  pollSockets_[0].setFd(listening_socket_);
-  fds_[0].fd = listening_socket_;
+  this->pollSockets_[0].setFd(this->listening_socket_);
+  this->fds_[0].fd = this->listening_socket_;
 }
 
-void TcpServer::updateFds() {
+void TcpServer::updateFds_() {
   for (size_t i = 0; i < MAX_CLIENTS; i++) {
-    fds_[i] = pollSockets_[i].getSocketPoll();
+    this->fds_[i] = this->pollSockets_[i].getSocketPoll();
   }
 }
 
 void TcpServer::serverLoop_() {
   while (true) {
-    updateFds();
-    int ret = poll(fds_, nfds_, 5000);
+    this->updateFds_();
+    int ret = poll(this->fds_, this->nfds_, 5000);
     if (ret == -1) {
       perror("poll error");
       break;
     }
-    checkPending_();
-    for (int i = 0; i < nfds_; i++) {
-      std::cout << "fds[" << fds_[i].fd << "].revents: " << fds_[i].revents
+    this->checkPending_();
+    for (int i = 0; i < this->nfds_; i++) {
+      std::cout << "fds[" << this->fds_[i].fd << "].revents: " << this->fds_[i].revents
                 << std::endl;
-      if (fds_[i].revents & POLLHUP) {
+      if (this->fds_[i].revents & POLLHUP) {
         std::cout << "HANGUP " << i << " " << std::endl;
       }
-      if (fds_[i].revents & POLLIN) {  // if incoming connection
-        if (fds_[i].fd == listening_socket_) {
-          initNewConnection_();
+      if (this->fds_[i].revents & POLLIN) {  // if incoming connection
+        if (this->fds_[i].fd == this->listening_socket_) {
+          this->initNewConnection_();
           break;
         } else {
-          if (existingConnection_(pollSockets_[i], fds_[i], i) == false)
-            closeConnection_(pollSockets_[i], fds_[i], i);
+          if (this->existingConnection_(this->pollSockets_[i], this->fds_[i], i) == false)
+            this->closeConnection_(this->pollSockets_[i], this->fds_[i], i);
         }
       }
-      if (pollSockets_[i].checkTimeout()) {
-        std::cout << "Timeout of Socket: " << fds_[i].fd << std::endl;
-        closeConnection_(pollSockets_[i], fds_[i], i);
+      if (this->pollSockets_[i].checkTimeout()) {
+        std::cout << "Timeout of Socket: " << this->fds_[i].fd << std::endl;
+        this->closeConnection_(this->pollSockets_[i], this->fds_[i], i);
       }
-      pollSockets_[i].setRevent(0);
-      fds_[i].revents = 0;
+      this->pollSockets_[i].setRevent(0);
+      this->fds_[i].revents = 0;
     }
   }
 }
 
 void TcpServer::checkPending_() {
   for (int i = 0; i < nfds_; i++) {
-    if (pollSockets_[i].pendingSend == true) {
-      sendResponse_(pollSockets_[i], fds_[i], i);
+    if (this->pollSockets_[i].pendingSend == true) {
+      this->sendResponse_(this->pollSockets_[i], fds_[i], i);
       return;
     }
   }
@@ -93,8 +93,8 @@ void TcpServer::closeConnection_(Socket &socket, pollfd &fd, int &i) {
   socket.closeSocket();
   socket.setInUse(false);
   for (int j = i; j < nfds_ - 1; ++j) {
-    fds_[j] = fds_[j + 1];
-    pollSockets_[j].setPollfd(pollSockets_[j + 1].getSocketPoll());
+    this->fds_[j] = this->fds_[j + 1];
+    this->pollSockets_[j].setPollfd(this->pollSockets_[j + 1].getSocketPoll());
   }
   --nfds_;
   --i;
@@ -103,15 +103,15 @@ void TcpServer::closeConnection_(Socket &socket, pollfd &fd, int &i) {
 void TcpServer::initNewConnection_() {
   struct sockaddr_in clientaddr;
   socklen_t clientaddr_len = sizeof(clientaddr);
-  int new_client_sock = accept(listening_socket_,
+  int new_client_sock = accept(this->listening_socket_,
                                (struct sockaddr *)&clientaddr, &clientaddr_len);
   if (fcntl(new_client_sock, F_SETFL, O_NONBLOCK, FD_CLOEXEC) == -1) {
     std::cerr << "Error setting socket to nonblocking" << std::endl;
     error_();
   }
-  pollSockets_[nfds_].setFd(new_client_sock);
-  pollSockets_[nfds_].setTimestamp();
-  pollSockets_[nfds_].setInUse(true);
+  this->pollSockets_[nfds_].setFd(new_client_sock);
+  this->pollSockets_[nfds_].setTimestamp();
+  this->pollSockets_[nfds_].setInUse(true);
   ++nfds_;
 }
 
@@ -146,9 +146,9 @@ bool TcpServer::existingConnection_(Socket &socket, pollfd &fd, int &i) {
               << " " << std::endl;
     socket.setTimestamp();
     if (socket.pendingSend == false) {
-      socket.response_ = createResponse_(buffer);
+      socket.response_ = this->createResponse_(buffer);
     }
-    sendResponse_(socket, fd, i);
+    this->sendResponse_(socket, fd, i);
   }
   if (bytes_read == (size_t)-1 && (errno == EWOULDBLOCK || errno == EAGAIN)) {
     std::cout << "BLOCKER: " << socket.getSocketFd() << std::endl;
@@ -160,7 +160,7 @@ bool TcpServer::existingConnection_(Socket &socket, pollfd &fd, int &i) {
   return true;
 }
 
-bool TcpServer::isKeepAlive(const Socket &socket) {
+bool TcpServer::isKeepAlive_(const Socket &socket) {
   return socket.getKeepAlive();
 }
 
@@ -171,8 +171,8 @@ void TcpServer::error_() {
 
 ////////////////////////////////////////////////
 void TcpServer::boot() {
-  bootServer_();
-  serverLoop_();
+  this->bootServer_();
+  this->serverLoop_();
 }
 
 TcpServer::TcpServer(std::string ip_addr, int port)

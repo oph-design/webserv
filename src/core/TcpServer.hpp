@@ -34,14 +34,14 @@ class TcpServer {
   void initNewConnection_();
   bool existingConnection_(Socket &, pollfd &, int &);
   void sendFile_(int, std::list<std::string>);
-  bool isKeepAlive(const Socket &socket);
+  bool isKeepAlive_(const Socket &socket);
   void closeConnection_(Socket &socket, pollfd &fd, int &i);
   std::string createResponse_(char[MAX_CLIENTS]);
   void sendResponse_(Socket &, pollfd &, int &);
   void checkPending_();
   void error_();
-  void updateFds();
-  void handleSegmentedTransmission(int &, std::list<std::string>, std::string);
+  void updateFds_();
+  void handleSegmentedTransmission_(int &, std::list<std::string>, std::string);
 
   int listening_socket_;
   sockaddr_in servaddr_;
