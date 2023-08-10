@@ -102,9 +102,9 @@ std::string Response::findType_(std::string url) {
 
   if (!url.compare("/")) url.append("index.html");
   extention = url.substr(url.rfind(".") + 1, url.length());
-  search = fileTypes_.find(extention);
-  if (search != fileTypes_.end()) {
-    type = fileTypes_[extention];
+  search = Response::fileTypes_.find(extention);
+  if (search != Response::fileTypes_.end()) {
+    type = Response::fileTypes_[extention];
   } else {
     this->status_ = "415 Unsupported Media Type";
     this->body_ = readBody_("./html/415.html");
@@ -115,19 +115,19 @@ std::string Response::findType_(std::string url) {
 }
 
 void Response::fillFileTypes() {
-  fileTypes_.insert(contentField("txt", "text/plain"));
-  fileTypes_.insert(contentField("html", "text/html"));
-  fileTypes_.insert(contentField("htm", "text/html"));
-  fileTypes_.insert(contentField("css", "text/css"));
-  fileTypes_.insert(contentField("js", "text/javascript"));
-  fileTypes_.insert(contentField("json", "apllication/json"));
-  fileTypes_.insert(contentField("xml", "apllication/xml"));
-  fileTypes_.insert(contentField("pdf", "apllication/pdf"));
-  fileTypes_.insert(contentField("zip", "apllication/zip"));
-  fileTypes_.insert(contentField("jpg", "image/jpeg"));
-  fileTypes_.insert(contentField("jpeg", "image/jpeg"));
-  fileTypes_.insert(contentField("png", "image/png"));
-  fileTypes_.insert(contentField("ico", "image/x-ico"));
-  fileTypes_.insert(contentField("mp3", "audio/mpeg"));
-  fileTypes_.insert(contentField("mp4", "video/mp4"));
+  Response::fileTypes_.insert(contentField("txt", "text/plain"));
+  Response::fileTypes_.insert(contentField("html", "text/html"));
+  Response::fileTypes_.insert(contentField("htm", "text/html"));
+  Response::fileTypes_.insert(contentField("css", "text/css"));
+  Response::fileTypes_.insert(contentField("js", "text/javascript"));
+  Response::fileTypes_.insert(contentField("json", "apllication/json"));
+  Response::fileTypes_.insert(contentField("xml", "apllication/xml"));
+  Response::fileTypes_.insert(contentField("pdf", "apllication/pdf"));
+  Response::fileTypes_.insert(contentField("zip", "apllication/zip"));
+  Response::fileTypes_.insert(contentField("jpg", "image/jpeg"));
+  Response::fileTypes_.insert(contentField("jpeg", "image/jpeg"));
+  Response::fileTypes_.insert(contentField("png", "image/png"));
+  Response::fileTypes_.insert(contentField("ico", "image/x-ico"));
+  Response::fileTypes_.insert(contentField("mp3", "audio/mpeg"));
+  Response::fileTypes_.insert(contentField("mp4", "video/mp4"));
 }
