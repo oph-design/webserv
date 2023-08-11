@@ -1,10 +1,5 @@
 #include "Response.hpp"
 
-#include <sstream>
-#include <stdexcept>
-
-#include "ToString.hpp"
-
 typeMap Response::fileTypes_;
 
 Response::Response() : body_("Server is online") {
@@ -39,17 +34,16 @@ const std::string &Response::operator[](const std::string &key) {
   size_t i = 0;
   for (contentVector::iterator it = header_.begin();
        it < header_.end() && it->first != key; ++it)
-      i++;
-  if (i >= header_.size())
-    throw std::runtime_error("key not in header");
+    i++;
+  if (i >= header_.size()) throw std::runtime_error("key not in header");
   return (header_.at(i).first);
 }
 
-const std::string& Response::operator[](const char* key) {
+const std::string &Response::operator[](const char *key) {
   return ((*this)[std::string(key)]);
 }
 
-std::ostream& operator<<(std::ostream &stream, const Response& resp) {
+std::ostream &operator<<(std::ostream &stream, const Response &resp) {
   stream << resp.getHeader() << resp.getBody();
   return (stream);
 }

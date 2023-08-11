@@ -9,10 +9,12 @@
 #include <list>
 #include <map>
 #include <sstream>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
 #include "Request.hpp"
+#include "ToString.hpp"
 
 #define CHUNKSIZE 1024
 
