@@ -1,8 +1,6 @@
 #include "TcpServer.hpp"
 
 void TcpServer::bootServer_() {
-  Response::fillFileTypes();
-
   memset(&this->servaddr_, 0, sizeof(this->servaddr_));
   this->servaddr_.sin_family = AF_INET;
   this->servaddr_.sin_addr.s_addr = htonl(INADDR_ANY);

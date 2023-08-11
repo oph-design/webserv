@@ -2,7 +2,7 @@ NAME							=	webserv
 
 CC								=	c++
 LCFLAGS						=	-fsanitize=address
-HEADERFLAGS				=	-I src/core -I include -I src/utils
+HEADERFLAGS				=	-I src/core -I include -I src/utils 
 CFLAGS						=	$(LCFLAGS) $(HEADERFLAGS) \
 											-std=c++98 -Wall -Wextra -Werror -g -pedantic
 LFLAGS						=	$(LCFLAGS)
@@ -16,7 +16,7 @@ SRC_FILES					=	main.cpp
 
 CORE							=	$(addprefix $(CORE_DIR), $(CORE_FILES))
 CORE_DIR					=	src/core/
-CORE_FILES				=	Request.cpp Response.cpp Socket.cpp TcpServer.cpp
+CORE_FILES				=	Request.cpp Response.cpp Socket.cpp TcpServer.cpp Status.cpp
 
 UTILS							=	$(addprefix $(UTILS_DIR), $(UTILS_FILES))
 UTILS_DIR					=	src/utils/
@@ -71,6 +71,8 @@ linux: $(REDIRECT)
 	./docker/linux/docker_run.sh
 
 nginx: $(REDIRECT)
+	rm -f ./docker/nginx/nginx.conf
+	cp ./conf/webserv.conf ./docker/nginx/nginx.conf
 	./docker/nginx/docker_run.sh
 
 docker_clean:

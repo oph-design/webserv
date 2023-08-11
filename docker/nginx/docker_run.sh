@@ -29,10 +29,14 @@ run_minilinux()
 {
   echo "Creating container..."
   docker run -it \
-              -v "$PWD"/docker/nginx/html:/var/www/html \
+              -v "$PWD"/html:/var/www/html \
               --name $IMG_NAME \
               -e DOCKER_CONTAINER_NAME=$IMG_NAME \
               -p 6969:6969 \
+              -p 7070:7070 \
+              -p 7171:7171 \
+              -p 7272:7272 \
+              -p 7373:7373 \
               -d $IMG_NAME
 }
 
