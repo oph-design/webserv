@@ -11,16 +11,15 @@
 #include <sstream>
 #include <stdexcept>
 #include <string>
-#include <vector>
 
 #include "Request.hpp"
+#include "Status.hpp"
 #include "ToString.hpp"
 
 #define CHUNKSIZE 1024
 
 typedef std::pair<std::string, std::string> contentField;
-typedef std::map<std::string, std::string> typeMap;
-typedef std::vector<contentField> contentVector;
+typedef std::map<std::string, std::string> contentMap;
 
 class Response {
  public:
@@ -43,9 +42,9 @@ class Response {
   std::string readBody_(std::string dir);
   std::string findType_(std::string url);
 
-  static typeMap fileTypes_;
-  contentVector header_;
-  std::string status_;
+  static contentMap fileTypes_;
+  contentMap header_;
+  Status status_;
   std::string body_;
 };
 

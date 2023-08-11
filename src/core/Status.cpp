@@ -35,7 +35,7 @@ std::string Status::getErrorBody() const {
   body << "\t<meta name=\"viewport\" content=\"width=device-width, "
           "initial-scale=1.0\">\n";
   body << "\t<title>Error " << *this << "</title>\n";
-  body << "<link rel=\"stylesheet\" href=\"styles.css\">\n";
+  body << "<link rel=\"stylesheet\" href=\"error.css\">\n";
   body << "</head>\n";
   body << "<body>\n";
   body << "\t<div class=\"container\">\n";
