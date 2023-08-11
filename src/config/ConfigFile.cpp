@@ -54,6 +54,14 @@ void ConfigFile::vaildateConfigFile() {
   this->checkConfigBlocks();
 }
 
+bool ConfigFile::isValid() const {
+  for (std::vector<Line>::const_iterator iter = this->content_.begin();
+       iter != this->content_.end(); ++iter) {
+    if (!iter->isValid()) return false;
+  }
+  return true;
+}
+
 void ConfigFile::checkSeparator() {
   for (std::vector<Line>::iterator iter = this->content_.begin();
        iter != this->content_.end(); ++iter) {
@@ -91,6 +99,10 @@ std::ostream& operator<<(std::ostream& stream, const ConfigFile& config) {
        iter != config.content_.end(); ++iter) {
     stream << *iter << "\n";
   }
+  if (config.isValid())
+    stream << GREEN << "config is valid\n" << WHITE;
+  else
+    stream << RED << "config is invalid\n" << WHITE;
   stream << std::flush;
   return stream;
 }

@@ -43,6 +43,8 @@ bool Line::isEmpty() const {
     return false;
 }
 
+bool Line::isValid() const { return !this->error_; }
+
 std::ostream& operator<<(std::ostream& stream, const Line& line) {
   stream << line.lineNumber_ << ":\t" << line.error_ << ":\t" << line.content_;
   if (line.error_ == true) {

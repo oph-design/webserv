@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "Line.hpp"
+#include "colors.hpp"
 
 class ConfigFile {
  public:
@@ -23,6 +24,8 @@ class ConfigFile {
   bool openFile(int argc, char* argv[]);
   void cleanContent();
   void vaildateConfigFile();
+
+  bool isValid() const;
 
   friend std::ostream& operator<<(std::ostream& stream,
                                   const ConfigFile& config);

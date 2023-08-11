@@ -18,6 +18,7 @@ class Line {
   void trimWhitespace();
   void removeComment();
   bool isEmpty() const;
+  bool isValid() const;
   void addError(std::string errorMessage);
 
   const int& getLineNumber() const;
