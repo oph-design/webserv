@@ -49,6 +49,8 @@ void ConfigFile::cleanContent() {
   this->content_ = newContent;
 }
 
+void ConfigFile::vaildateConfigFile() {}
+
 std::ostream& operator<<(std::ostream& stream, const ConfigFile& config) {
   stream << "Line\tError\tContent\n";
   stream << std::boolalpha;

@@ -7,7 +7,7 @@ Line::~Line() {}
 Line::Line(const Line& obj) { *this = obj; }
 
 Line::Line(int lineNumber, std::string content)
-    : lineNumber_(lineNumber), content_(content), error_(false) {}
+    : content_(content), lineNumber_(lineNumber), error_(false) {}
 
 Line& Line::operator=(const Line& obj) {
   this->lineNumber_ = obj.lineNumber_;
@@ -45,4 +45,9 @@ bool Line::isEmpty() const {
 std::ostream& operator<<(std::ostream& stream, const Line& line) {
   stream << line.lineNumber_ << ":\t" << line.error_ << ":\t" << line.content_;
   return stream;
+}
+
+void Line::addError(std::string errorMessage) {
+  this->error_ = true;
+  this->errorMessage_.append(errorMessage + "\n");
 }

@@ -21,6 +21,7 @@ class ConfigFile {
 
   bool openFile(int argc, char* argv[]);
   void cleanContent();
+  void vaildateConfigFile();
 
   friend std::ostream &operator<<(std::ostream &stream, const ConfigFile &config);
  private:

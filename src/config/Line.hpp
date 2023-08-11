@@ -18,10 +18,12 @@ class Line {
   void trimWhitespace();
   void removeComment();
   bool isEmpty() const;
+  void addError(std::string errorMessage);
 
  private:
-  int lineNumber_;
   std::string content_;
+  std::string errorMessage_;
+  int lineNumber_;
   bool error_;
 };
 
