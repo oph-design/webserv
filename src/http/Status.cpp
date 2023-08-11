@@ -34,12 +34,12 @@ std::string Status::getErrorBody() const {
   body << "\t<meta charset=\"UTF-8\">\n";
   body << "\t<meta name=\"viewport\" content=\"width=device-width, "
           "initial-scale=1.0\">\n";
-  body << "\t<title>Error " << *this << "</title>\n";
+  body << "\t<title>" << *this << "</title>\n";
   body << "<link rel=\"stylesheet\" href=\"error.css\">\n";
   body << "</head>\n";
   body << "<body>\n";
   body << "\t<div class=\"container\">\n";
-  body << "\t\t<h1>Error " << *this << "</h1>\n";
+  body << "\t\t<h1>Error " << code_ << "</h1>\n";
   body << "\t\t<p>Oops! Looks like your grind wasn't hard enough!</p>\n";
   body << "\t\t<p>Please check the URL or go back to the <a "
           "href=\"/\">homepage</a>.</p>\n";
