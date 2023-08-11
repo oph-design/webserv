@@ -44,6 +44,10 @@ bool Line::isEmpty() const {
 
 std::ostream& operator<<(std::ostream& stream, const Line& line) {
   stream << line.lineNumber_ << ":\t" << line.error_ << ":\t" << line.content_;
+  if (line.error_ == true) {
+    stream << "\n" << line.errorMessage_;
+  }
+  stream << std::flush;
   return stream;
 }
 
@@ -55,5 +59,6 @@ void Line::addError(std::string errorMessage) {
 const char& Line::last() const {
   if (this->content_.size() > 0)
     return *(this->content_.end() - 1);
-  else return *(this->content_.end());
+  else
+    return *(this->content_.end());
 }
