@@ -1,17 +1,17 @@
-#include "Config.hpp"
+#include "ConfigFile.hpp"
 
-Config::Config() {}
+ConfigFile::ConfigFile() {}
 
-Config::~Config() {}
+ConfigFile::~ConfigFile() {}
 
-Config::Config(const Config& obj) { *this = obj; }
+ConfigFile::ConfigFile(const ConfigFile& obj) { *this = obj; }
 
-Config& Config::operator=(const Config& obj) {
+ConfigFile& ConfigFile::operator=(const ConfigFile& obj) {
   this->content_ = obj.content_;
   return *this;
 }
 
-bool Config::openFile(int argc, char* argv[]) {
+bool ConfigFile::openFile(int argc, char* argv[]) {
   std::string path;
   if (argc < 2) {
     path = STD_CONF_PATH;
@@ -38,7 +38,7 @@ bool Config::openFile(int argc, char* argv[]) {
   return true;
 }
 
-void Config::cleanContent() {
+void ConfigFile::cleanContent() {
   std::vector<Line> newContent;
   for (std::vector<Line>::iterator iter = this->content_.begin();
        iter != this->content_.end(); ++iter) {
@@ -49,7 +49,7 @@ void Config::cleanContent() {
   this->content_ = newContent;
 }
 
-std::ostream& operator<<(std::ostream& stream, const Config& config) {
+std::ostream& operator<<(std::ostream& stream, const ConfigFile& config) {
   stream << "Line\tError\tContent\n";
   stream << std::boolalpha;
   for (std::vector<Line>::const_iterator iter = config.content_.begin();

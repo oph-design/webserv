@@ -1,5 +1,5 @@
-#ifndef CONFIG_HPP_
-#define CONFIG_HPP_
+#ifndef CONFIGFILE_HPP_
+#define CONFIGFILE_HPP_
 
 #ifndef STD_CONF_PATH
 #define STD_CONF_PATH "./conf/webserv.conf"
@@ -12,19 +12,19 @@
 
 #include "Line.hpp"
 
-class Config {
+class ConfigFile {
  public:
-  ~Config();
-  Config();
-  Config(const Config& obj);
-  Config& operator=(const Config& obj);
+  ~ConfigFile();
+  ConfigFile();
+  ConfigFile(const ConfigFile& obj);
+  ConfigFile& operator=(const ConfigFile& obj);
 
   bool openFile(int argc, char* argv[]);
   void cleanContent();
 
-  friend std::ostream &operator<<(std::ostream &stream, const Config &config);
+  friend std::ostream &operator<<(std::ostream &stream, const ConfigFile &config);
  private:
   std::vector<Line> content_;
 };
 
-#endif  // CONFIG_HPP_
+#endif  // CONFIGFILE_HPP_
