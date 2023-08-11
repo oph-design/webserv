@@ -37,7 +37,7 @@ run_minilinux()
               -p 7171:7171 \
               -p 7272:7272 \
               -p 7373:7373 \
-              -d $IMG_NAME
+               $IMG_NAME
 }
 
 launch_container()
