@@ -64,6 +64,4 @@ const char& Line::last() const {
     return *(this->content_.end());
 }
 
-const int & Line::getLineNumber() const {
-  return this->lineNumber_;
-}
+const int& Line::getLineNumber() const { return this->lineNumber_; }
