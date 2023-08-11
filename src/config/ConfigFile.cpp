@@ -49,7 +49,16 @@ void ConfigFile::cleanContent() {
   this->content_ = newContent;
 }
 
-void ConfigFile::vaildateConfigFile() {}
+void ConfigFile::vaildateConfigFile() {
+  this->checkSeparator();
+}
+
+void ConfigFile::checkSeparator() {
+  for (std::vector<Line>::iterator iter = this->content_.begin(); iter != this->content_.end(); ++iter) {
+    if ((*iter).last() != ';' && (*iter).last() != '{' && (*iter).last() != '}')
+      (*iter).addError("missing Separator");
+  }
+}
 
 std::ostream& operator<<(std::ostream& stream, const ConfigFile& config) {
   stream << "Line\tError\tContent\n";

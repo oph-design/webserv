@@ -27,6 +27,8 @@ class ConfigFile {
                                   const ConfigFile& config);
 
  private:
+  void checkSeparator();
+
   std::vector<Line> content_;
 };
 

@@ -51,3 +51,9 @@ void Line::addError(std::string errorMessage) {
   this->error_ = true;
   this->errorMessage_.append(errorMessage + "\n");
 }
+
+const char& Line::last() const {
+  if (this->content_.size() > 0)
+    return *(this->content_.end() - 1);
+  else return *(this->content_.end());
+}

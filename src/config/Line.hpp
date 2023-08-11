@@ -20,6 +20,8 @@ class Line {
   bool isEmpty() const;
   void addError(std::string errorMessage);
 
+  const char& last() const;
+
  private:
   std::string content_;
   std::string errorMessage_;
