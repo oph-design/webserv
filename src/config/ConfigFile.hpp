@@ -23,7 +23,9 @@ class ConfigFile {
   void cleanContent();
   void vaildateConfigFile();
 
-  friend std::ostream &operator<<(std::ostream &stream, const ConfigFile &config);
+  friend std::ostream& operator<<(std::ostream& stream,
+                                  const ConfigFile& config);
+
  private:
   std::vector<Line> content_;
 };
