@@ -28,9 +28,12 @@ class Response {
   Response& operator=(const Response& rhs);
   ~Response();
 
-  std::list<std::string> getBodyChunked() const;
-  std::string getBody() const;
-  std::string getHeader() const;
+  const std::string& operator[](const std::string& key);
+  const std::string& operator[](const char* key);
+  friend std::ostream& operator<<(std::ostream& stream, const Response& resp);
+  const std::list<std::string> getBodyChunked() const;
+  const std::string& getBody() const;
+  const std::string getHeader() const;
   static void fillFileTypes();
 
  private:

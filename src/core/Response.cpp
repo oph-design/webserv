@@ -1,6 +1,7 @@
 #include "Response.hpp"
 
 #include <sstream>
+#include <stdexcept>
 
 #include "ToString.hpp"
 
@@ -34,7 +35,26 @@ Response &Response::operator=(const Response &rhs) {
 
 Response::~Response() { this->body_.clear(); }
 
-std::string Response::getHeader() const {
+const std::string &Response::operator[](const std::string &key) {
+  size_t i = 0;
+  for (contentVector::iterator it = header_.begin();
+       it < header_.end() && it->first != key; ++it)
+      i++;
+  if (i >= header_.size())
+    throw std::runtime_error("key not in header");
+  return (header_.at(i).first);
+}
+
+const std::string& Response::operator[](const char* key) {
+  return ((*this)[std::string(key)]);
+}
+
+std::ostream& operator<<(std::ostream &stream, const Response& resp) {
+  stream << resp.getHeader() << resp.getBody();
+  return (stream);
+}
+
+const std::string Response::getHeader() const {
   contentVector::const_iterator it = this->header_.begin();
   std::string res(it->first);
 
@@ -48,9 +68,9 @@ std::string Response::getHeader() const {
   return (res);
 }
 
-std::string Response::getBody() const { return (body_); }
+const std::string &Response::getBody() const { return (body_); }
 
-std::list<std::string> Response::getBodyChunked() const {
+const std::list<std::string> Response::getBodyChunked() const {
   size_t i = 0;
   std::string tmp = this->body_;
   std::list<std::string> res;
