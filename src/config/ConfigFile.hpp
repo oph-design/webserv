@@ -9,6 +9,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <list>
 
 #include "Line.hpp"
 
@@ -28,6 +29,7 @@ class ConfigFile {
 
  private:
   void checkSeparator();
+  void checkConfigBlocks();
 
   std::vector<Line> content_;
 };

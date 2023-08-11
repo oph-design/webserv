@@ -20,6 +20,7 @@ class Line {
   bool isEmpty() const;
   void addError(std::string errorMessage);
 
+  const int &getLineNumber() const;
   const char& last() const;
 
  private:

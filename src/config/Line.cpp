@@ -13,6 +13,7 @@ Line& Line::operator=(const Line& obj) {
   this->lineNumber_ = obj.lineNumber_;
   this->content_ = obj.content_;
   this->error_ = obj.error_;
+  this->errorMessage_ = obj.error_;
   return *this;
 }
 
@@ -61,4 +62,8 @@ const char& Line::last() const {
     return *(this->content_.end() - 1);
   else
     return *(this->content_.end());
+}
+
+const int & Line::getLineNumber() const {
+  return this->lineNumber_;
 }

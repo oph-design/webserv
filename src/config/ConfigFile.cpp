@@ -51,12 +51,34 @@ void ConfigFile::cleanContent() {
 
 void ConfigFile::vaildateConfigFile() {
   this->checkSeparator();
+  this->checkConfigBlocks();
 }
 
 void ConfigFile::checkSeparator() {
   for (std::vector<Line>::iterator iter = this->content_.begin(); iter != this->content_.end(); ++iter) {
     if ((*iter).last() != ';' && (*iter).last() != '{' && (*iter).last() != '}')
       (*iter).addError("missing Separator");
+  }
+}
+
+void ConfigFile::checkConfigBlocks() {
+  std::list<std::vector<Line>::iterator> openings;
+  for (std::vector<Line>::iterator iter = this->content_.begin(); iter != this->content_.end(); ++iter) {
+    if ((*iter).last() == '{') {
+      openings.push_back(iter);
+    }
+    else if ((*iter).last() == '}') {
+      if (openings.size() == 0)
+        iter->addError("Unexpected block closing");
+      else
+        openings.pop_back();
+    }
+  }
+  std::cout << "openings size: " << openings.size() << std::endl;
+  if (openings.size() != 0) {
+    for (std::list<std::vector<Line>::iterator>::iterator iter = openings.begin(); iter != openings.end(); ++iter) {
+      (*iter)->addError("Missing block closing");
+    }
   }
 }
 
