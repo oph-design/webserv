@@ -172,21 +172,20 @@ std::string Response::findType_(std::string url) {
 /*            global funnctions                  */
 
 contentMap Response::createTypeMap() {
+  std::ifstream data("./resources/filetypes.csv");
+  std::string field;
+  std::string key;
+  std::string value;
   contentMap fileTypes;
-  fileTypes.insert(contentField("txt", "text/plain"));
-  fileTypes.insert(contentField("html", "text/html"));
-  fileTypes.insert(contentField("htm", "text/html"));
-  fileTypes.insert(contentField("css", "text/css"));
-  fileTypes.insert(contentField("js", "text/javascript"));
-  fileTypes.insert(contentField("json", "apllication/json"));
-  fileTypes.insert(contentField("xml", "apllication/xml"));
-  fileTypes.insert(contentField("pdf", "apllication/pdf"));
-  fileTypes.insert(contentField("zip", "apllication/zip"));
-  fileTypes.insert(contentField("jpg", "image/jpeg"));
-  fileTypes.insert(contentField("jpeg", "image/jpeg"));
-  fileTypes.insert(contentField("png", "image/png"));
-  fileTypes.insert(contentField("ico", "image/x-ico"));
-  fileTypes.insert(contentField("mp3", "audio/mpeg"));
-  fileTypes.insert(contentField("mp4", "video/mp4"));
+
+  while (data.is_open() && std::getline(data, field)) {
+    try {
+      key = field.substr(0, field.find(","));
+      value = field.substr(field.find(",") + 1);
+    } catch (std::exception &) {
+      continue;
+    }
+    fileTypes.insert(contentField(key, value));
+  }
   return (fileTypes);
 }
