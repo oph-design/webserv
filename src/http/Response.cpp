@@ -1,5 +1,9 @@
 #include "Response.hpp"
 
+#include <exception>
+
+#include "SwapColumns.hpp"
+
 contentMap Response::fileTypes_ = Response::createTypeMap();
 
 /*            constructors                  */
@@ -99,9 +103,21 @@ void Response::handleGetRequest(const Request &request) {
 }
 
 void Response::handlePostRequest(const Request &request) {
-  (void)request;
-  this->status_.setCode(405);
-  this->body_ = this->status_.getErrorBody();
+  std::string type;
+  std::string name;
+  try {
+    type = request["Content-Type"];
+    type = swapColumns(fileTypes_).find(type)->second;
+    name = request["Content-Disposition"];
+    name = name.substr(name.find("name"), name.length());
+    name = name.substr(0, name.find("\""));
+    std::ofstream file("./html/" + name + "." + type);
+    file << request.getRequestBody();
+    this->status_.setCode(201);
+  } catch (std::exception &) {
+    this->status_.setCode(415);
+  }
+  this->header_.insert(contentField("Connection", "keep-alive"));
 }
 
 void Response::handleDeleteRequest(const Request &request) {
