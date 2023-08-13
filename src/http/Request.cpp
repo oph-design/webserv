@@ -71,7 +71,7 @@ const std::string &Request::operator[](const char *key) const {
 
 std::string Request::getPath() const { return this->path_; }
 
-Request::t_methodTypes Request::getRequestMethodType() const {
+t_methodTypes Request::getRequestMethodType() const {
   return this->requestMethodType_;
 }
 

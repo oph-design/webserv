@@ -15,19 +15,19 @@
 #define BUFFER_SIZE 1024
 #endif
 
-class Request {
-  typedef enum e_methodTypes {
-    GET = 0,
-    POST = 1,
-    DELETE = 2,
-    OPTIONS = 3,
-    HEAD = 4,
-    PUT = 5,
-    TRACE = 6,
-    CONNECT = 7,
-    INVALID = 8
-  } t_methodTypes;
+typedef enum e_methodTypes {
+  GET = 0,
+  POST = 1,
+  DELETE = 2,
+  OPTIONS = 3,
+  HEAD = 4,
+  PUT = 5,
+  TRACE = 6,
+  CONNECT = 7,
+  INVALID = 8
+} t_methodTypes;
 
+class Request {
  public:
   Request();
   Request(char buffer[BUFFER_SIZE]);

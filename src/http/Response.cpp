@@ -1,6 +1,8 @@
 #include "Response.hpp"
 
-contentMap Response::fileTypes_;
+contentMap Response::fileTypes_ = Response::createTypeMap();
+
+/*            constructors                  */
 
 Response::Response() : body_("Server is online") {
   this->header_.insert(contentField("Content-Type", "text/plain"));
@@ -8,15 +10,22 @@ Response::Response() : body_("Server is online") {
   this->header_.insert(contentField("Content-Length", "16"));
 }
 
-Response::Response(Request request) {
-  this->body_ = readBody_(request.getPath());
-  std::string type = findType_(request.getPath());
-  if (this->status_.getCode() > 399) this->body_ = status_.getErrorBody();
-  std::string length = toString<std::size_t>(this->body_.length());
-
-  this->header_.insert(contentField("Content-Type", type));
-  this->header_.insert(contentField("Connection", "keep-alive"));
-  this->header_.insert(contentField("Content-Length", length));
+Response::Response(const Request &request) {
+  t_methodTypes method = request.getRequestMethodType();
+  switch (method) {
+    case 0:
+      handleGetRequest(request);
+      break;
+    case 1:
+      handlePostRequest(request);
+      break;
+    case 3:
+      handleDeleteRequest(request);
+      break;
+    default:
+      this->status_.setCode(405);
+      this->body_ = this->status_.getErrorBody();
+  }
 }
 
 Response::Response(const Response &rhs) { *this = rhs; }
@@ -30,6 +39,8 @@ Response &Response::operator=(const Response &rhs) {
 
 Response::~Response() { this->header_.clear(); }
 
+/*            operators                  */
+
 const std::string &Response::operator[](const std::string &key) {
   return (this->header_[key]);
 }
@@ -42,6 +53,8 @@ std::ostream &operator<<(std::ostream &stream, const Response &resp) {
   stream << resp.getHeader() << resp.getBody();
   return (stream);
 }
+
+/*            Public Functions           */
 
 const std::string Response::getHeader() const {
   std::stringstream header;
@@ -73,6 +86,29 @@ const std::list<std::string> Response::getBodyChunked() const {
 }
 
 /*            private functions                  */
+
+void Response::handleGetRequest(const Request &request) {
+  this->body_ = readBody_(request.getPath());
+  std::string type = findType_(request.getPath());
+  if (this->status_.getCode() > 399) this->body_ = status_.getErrorBody();
+  std::string length = toString<std::size_t>(this->body_.length());
+
+  this->header_.insert(contentField("Content-Type", type));
+  this->header_.insert(contentField("Connection", "keep-alive"));
+  this->header_.insert(contentField("Content-Length", length));
+}
+
+void Response::handlePostRequest(const Request &request) {
+  (void)request;
+  this->status_.setCode(405);
+  this->body_ = this->status_.getErrorBody();
+}
+
+void Response::handleDeleteRequest(const Request &request) {
+  (void)request;
+  this->status_.setCode(405);
+  this->body_ = this->status_.getErrorBody();
+}
 
 std::string Response::buildChunk_(std::string line) {
   std::stringstream bytes;
@@ -117,20 +153,24 @@ std::string Response::findType_(std::string url) {
   return (type);
 }
 
-void Response::fillFileTypes() {
-  Response::fileTypes_.insert(contentField("txt", "text/plain"));
-  Response::fileTypes_.insert(contentField("html", "text/html"));
-  Response::fileTypes_.insert(contentField("htm", "text/html"));
-  Response::fileTypes_.insert(contentField("css", "text/css"));
-  Response::fileTypes_.insert(contentField("js", "text/javascript"));
-  Response::fileTypes_.insert(contentField("json", "apllication/json"));
-  Response::fileTypes_.insert(contentField("xml", "apllication/xml"));
-  Response::fileTypes_.insert(contentField("pdf", "apllication/pdf"));
-  Response::fileTypes_.insert(contentField("zip", "apllication/zip"));
-  Response::fileTypes_.insert(contentField("jpg", "image/jpeg"));
-  Response::fileTypes_.insert(contentField("jpeg", "image/jpeg"));
-  Response::fileTypes_.insert(contentField("png", "image/png"));
-  Response::fileTypes_.insert(contentField("ico", "image/x-ico"));
-  Response::fileTypes_.insert(contentField("mp3", "audio/mpeg"));
-  Response::fileTypes_.insert(contentField("mp4", "video/mp4"));
+/*            global funnctions                  */
+
+contentMap Response::createTypeMap() {
+  contentMap fileTypes;
+  fileTypes.insert(contentField("txt", "text/plain"));
+  fileTypes.insert(contentField("html", "text/html"));
+  fileTypes.insert(contentField("htm", "text/html"));
+  fileTypes.insert(contentField("css", "text/css"));
+  fileTypes.insert(contentField("js", "text/javascript"));
+  fileTypes.insert(contentField("json", "apllication/json"));
+  fileTypes.insert(contentField("xml", "apllication/xml"));
+  fileTypes.insert(contentField("pdf", "apllication/pdf"));
+  fileTypes.insert(contentField("zip", "apllication/zip"));
+  fileTypes.insert(contentField("jpg", "image/jpeg"));
+  fileTypes.insert(contentField("jpeg", "image/jpeg"));
+  fileTypes.insert(contentField("png", "image/png"));
+  fileTypes.insert(contentField("ico", "image/x-ico"));
+  fileTypes.insert(contentField("mp3", "audio/mpeg"));
+  fileTypes.insert(contentField("mp4", "video/mp4"));
+  return (fileTypes);
 }

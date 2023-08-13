@@ -18,7 +18,7 @@ class Status {
   Status& operator=(const Status& rhs);
   ~Status();
 
-  static void fillStatusMap();
+  static statusMap createStatusMap();
   const int& getCode() const;
   void setCode(const int& newCode);
   friend std::ostream& operator<<(std::ostream& stream, const Status& status);
