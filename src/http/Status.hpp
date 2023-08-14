@@ -1,6 +1,7 @@
 #ifndef STATUS_HPP
 #define STATUS_HPP
 
+#include <cstdlib>
 #include <fstream>
 #include <iostream>
 #include <map>
