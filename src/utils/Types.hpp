@@ -3,7 +3,8 @@
 
 #include <vector>
 #include <string>
+#include <iterator>
 
-typedef std::vector<std::string>::iterator VectorIter;
+typedef std::vector<Line>::iterator LineIter;
 
 #endif  // TYPES_HPP_

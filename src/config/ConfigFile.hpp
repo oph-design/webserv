@@ -10,10 +10,13 @@
 #include <list>
 #include <string>
 #include <vector>
+#include <sstream>
 
 #include "Line.hpp"
 #include "colors.hpp"
 #include "Config.hpp"
+#include "Types.hpp"
+#include "Location.hpp"
 
 class ConfigFile {
  public:
