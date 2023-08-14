@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include <cstring>
+#include <exception>
 #include <fstream>
 #include <iostream>
 #include <iterator>
@@ -14,7 +15,7 @@
 
 #include "Request.hpp"
 #include "Status.hpp"
-#include "ToString.hpp"
+#include "Utils.hpp"
 
 #define CHUNKSIZE 1024
 
@@ -41,9 +42,9 @@ class Response {
   static std::string buildChunk_(std::string line);
   std::string readBody_(std::string dir);
   std::string findType_(std::string url);
-  void handleGetRequest(const Request& request);
-  void handlePostRequest(const Request& request);
-  void handleDeleteRequest(const Request& request);
+  void handleGetRequest_(const Request& request);
+  void handlePostRequest_(const Request& request);
+  void handleDeleteRequest_(const Request& request);
 
   static contentMap fileTypes_;
   contentMap header_;

@@ -1,9 +1,5 @@
 #include "Response.hpp"
 
-#include <exception>
-
-#include "SwapColumns.hpp"
-
 contentMap Response::fileTypes_ = Response::createTypeMap();
 
 /*            constructors                  */
@@ -18,13 +14,13 @@ Response::Response(const Request &request) {
   t_methodTypes method = request.getRequestMethodType();
   switch (method) {
     case 0:
-      handleGetRequest(request);
+      handleGetRequest_(request);
       break;
     case 1:
-      handlePostRequest(request);
+      handlePostRequest_(request);
       break;
     case 3:
-      handleDeleteRequest(request);
+      handleDeleteRequest_(request);
       break;
     default:
       this->status_.setCode(405);
@@ -91,7 +87,7 @@ const std::list<std::string> Response::getBodyChunked() const {
 
 /*            private functions                  */
 
-void Response::handleGetRequest(const Request &request) {
+void Response::handleGetRequest_(const Request &request) {
   this->body_ = readBody_(request.getPath());
   std::string type = findType_(request.getPath());
   if (this->status_.getCode() > 399) this->body_ = status_.getErrorBody();
@@ -102,13 +98,13 @@ void Response::handleGetRequest(const Request &request) {
   this->header_.insert(contentField("Content-Length", length));
 }
 
-void Response::handlePostRequest(const Request &request) {
+void Response::handlePostRequest_(const Request &request) {
   (void)request;
   this->status_.setCode(405);
   this->body_ = this->status_.getErrorBody();
 }
 
-void Response::handleDeleteRequest(const Request &request) {
+void Response::handleDeleteRequest_(const Request &request) {
   (void)request;
   this->status_.setCode(405);
   this->body_ = this->status_.getErrorBody();
