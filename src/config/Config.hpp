@@ -14,8 +14,13 @@ class Config {
   Config(const Config & obj);
   Config& operator=(const Config& obj);
 
+  int listen;
+  int client_max_body_size;
+  std::string server_name;
+  std::string index;
+  std::string root;
   std::vector<Location> locations;
-  std::map<std::string, std::string> params;
+  std::map<int, std::string> error_page;
  private:
 };
 
