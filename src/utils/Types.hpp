@@ -1,9 +1,9 @@
 #ifndef TYPES_HPP_
 #define TYPES_HPP_
 
-#include <vector>
-#include <string>
 #include <iterator>
+#include <string>
+#include <vector>
 
 typedef std::vector<Line>::iterator LineIter;
 
