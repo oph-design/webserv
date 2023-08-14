@@ -103,21 +103,9 @@ void Response::handleGetRequest(const Request &request) {
 }
 
 void Response::handlePostRequest(const Request &request) {
-  std::string type;
-  std::string name;
-  try {
-    type = request["Content-Type"];
-    type = swapColumns(fileTypes_).find(type)->second;
-    name = request["Content-Disposition"];
-    name = name.substr(name.find("name"), name.length());
-    name = name.substr(0, name.find("\""));
-    std::ofstream file("./html/" + name + "." + type);
-    file << request.getRequestBody();
-    this->status_.setCode(201);
-  } catch (std::exception &) {
-    this->status_.setCode(415);
-  }
-  this->header_.insert(contentField("Connection", "keep-alive"));
+  (void)request;
+  this->status_.setCode(405);
+  this->body_ = this->status_.getErrorBody();
 }
 
 void Response::handleDeleteRequest(const Request &request) {
