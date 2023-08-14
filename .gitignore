@@ -1,11 +1,12 @@
 # Other unwanted files 
 webserv.dSYM
 obj
+**Large.mp4
 .vscode
 .clang-format
-**Large.mp4
 .idea
 .DS_Store
+.clangd
 
 # Prerequisites
 *.d

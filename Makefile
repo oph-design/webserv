@@ -2,7 +2,7 @@ NAME							=	webserv
 
 CC								=	c++
 LCFLAGS						=	-fsanitize=address
-HEADERFLAGS				=	-I src/core -I include -I src/utils -I src/config
+HEADERFLAGS				=	-I src/core -I include -I src/utils -I src/http -I src/config
 CFLAGS						=	$(LCFLAGS) $(HEADERFLAGS) \
 											-std=c++98 -Wall -Wextra -Werror -g -pedantic
 LFLAGS						=	$(LCFLAGS)
@@ -16,7 +16,11 @@ SRC_FILES					=	main.cpp
 
 CORE							=	$(addprefix $(CORE_DIR), $(CORE_FILES))
 CORE_DIR					=	src/core/
-CORE_FILES				=	Request.cpp Response.cpp Socket.cpp TcpServer.cpp
+CORE_FILES				=	Socket.cpp TcpServer.cpp
+
+HTTP							=	$(addprefix $(HTTP_DIR), $(HTTP_FILES))
+HTTP_DIR					=	src/http/
+HTTP_FILES				=	Request.cpp Response.cpp Status.cpp
 
 CONFIG						=	$(addprefix $(CONFIG_DIR), $(CONFIG_FILES))
 CONFIG_DIR				=	src/config/
@@ -26,7 +30,7 @@ UTILS							=	$(addprefix $(UTILS_DIR), $(UTILS_FILES))
 UTILS_DIR					=	src/utils/
 UTILS_FILES				=
 
-ALL_SRC						=	$(SRC) $(CORE) $(UTILS) $(CONFIG)
+ALL_SRC						=	$(SRC) $(CORE) $(UTILS) $(HTTP) $(CONFIG)
 
 ################################################################################
 ################################################################################
@@ -46,7 +50,7 @@ $(OBJ_DIR)%.o: $(SRC_DIR)%.cpp
 
 $(NAME): $(ALL_OBJ_DIR) $(ALL_OBJ)
 	@$(CC) $(ALL_OBJ) -o $(NAME) $(LFLAGS) $(LCFLAGS)
-	@echo $(GREEN)" linked "$@$(DEFAULT)
+	@echo $(GREEN)"linked "$@$(DEFAULT)
 
 clean:
 	@echo $(RED)"cleaning:"

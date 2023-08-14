@@ -2,6 +2,8 @@
 #include <iostream>
 
 #include "ConfigFile.hpp"
+#include "Response.hpp"
+#include "Status.hpp"
 #include "TcpServer.hpp"
 
 int main(int argc, char *argv[]) {
