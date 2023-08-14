@@ -24,8 +24,7 @@ Location& Location::operator=(const Location& obj) {
   return *this;
 }
 
-std::ostream &operator<<(std::ostream &stream, const Location &location)
-{
+std::ostream& operator<<(std::ostream& stream, const Location& location) {
   stream << "\nPath: " << location.path << "\n";
   stream << "autoindex: " << location.autoindex << "\n";
   stream << "client_max_body_size: " << location.client_max_body_size << "\n";

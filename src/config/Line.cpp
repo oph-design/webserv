@@ -59,16 +59,20 @@ void Line::addError(std::string errorMessage) {
   this->errorMessage_.append(errorMessage + "\n");
 }
 
-const std::string & Line::getLine() const
-{
-return this->content_;
-}
+const std::string& Line::getLine() const { return this->content_; }
 
 const char& Line::last() const {
   if (this->content_.size() > 0)
     return *(this->content_.end() - 1);
   else
     return *(this->content_.end());
+}
+
+std::string Line::firstWord() const {
+  std::stringstream ss(this->content_);
+  std::string buffer;
+  std::getline(ss, buffer, ' ');
+  return buffer;
 }
 
 const int& Line::getLineNumber() const { return this->lineNumber_; }

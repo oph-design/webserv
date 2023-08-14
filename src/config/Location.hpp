@@ -1,10 +1,10 @@
 #ifndef LOCATION_HPP_
 #define LOCATION_HPP_
 
+#include <iostream>
 #include <map>
 #include <string>
 #include <vector>
-#include <iostream>
 
 #include "StreamOperators.hpp"
 class Location {

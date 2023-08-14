@@ -23,9 +23,7 @@ Config& Config::operator=(const Config& obj) {
   return *this;
 }
 
-
-std::ostream &operator<<(std::ostream &stream, const Config &config)
-{
+std::ostream& operator<<(std::ostream& stream, const Config& config) {
   stream << "listen: " << config.listen << "\n";
   stream << "client_max_body_size: " << config.client_max_body_size << "\n";
   stream << "server_name" << config.server_name << "\n";

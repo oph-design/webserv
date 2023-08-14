@@ -20,10 +20,11 @@ class Line {
   bool isEmpty() const;
   bool isValid() const;
   void addError(std::string errorMessage);
-  const std::string &getLine() const;
+  const std::string& getLine() const;
 
   const int& getLineNumber() const;
   const char& last() const;
+  std::string firstWord() const;
 
  private:
   std::string content_;

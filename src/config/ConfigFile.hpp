@@ -8,15 +8,15 @@
 #include <fstream>
 #include <iostream>
 #include <list>
+#include <sstream>
 #include <string>
 #include <vector>
-#include <sstream>
 
-#include "Line.hpp"
-#include "colors.hpp"
 #include "Config.hpp"
-#include "Types.hpp"
+#include "Line.hpp"
 #include "Location.hpp"
+#include "Types.hpp"
+#include "colors.hpp"
 
 class ConfigFile {
  public:
@@ -40,9 +40,9 @@ class ConfigFile {
   void checkSeparator();
   void checkConfigBlocks();
 
-  Config parseServer_(std::vector<Line>::iterator &iter);
-  Location parseLocation_(std::vector<Line>::iterator &iter);
-  std::vector<std::string> parseLimitExcept_(std::vector<Line>::iterator &iter);
+  Config parseServer_(std::vector<Line>::iterator& iter);
+  Location parseLocation_(std::vector<Line>::iterator& iter);
+  std::vector<std::string> parseLimitExcept_(std::vector<Line>::iterator& iter);
 
   std::vector<Line> content_;
 };

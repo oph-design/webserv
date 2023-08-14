@@ -92,57 +92,62 @@ void ConfigFile::checkConfigBlocks() {
   }
 }
 
-std::vector<Config> ConfigFile::createConfig()
-{
+std::vector<Config> ConfigFile::createConfig() {
   std::vector<Config> configVector;
-  for (LineIter iter = this->content_.begin(); iter != this->content_.end(); ++iter) {
-    if ((*iter).getLine() == "server {")
+  for (LineIter iter = this->content_.begin(); iter != this->content_.end();
+       ++iter) {
+    if ((*iter).getLine() == "server {") {
       configVector.push_back(parseServer_(iter));
+    }
   }
   return configVector;
 }
 
-Config ConfigFile::parseServer_(std::vector<Line>::iterator &iter)
-{
+Config ConfigFile::parseServer_(std::vector<Line>::iterator& iter) {
   Config config;
   for (; iter != this->content_.end(); ++iter) {
-    if ((*iter).getLine().compare(0, 8, "location ") == 0 && (*iter).last() == '{')
+    if ((*iter).firstWord() == "location" && (*iter).last() == '{') {
+      std::cout << "i am here" << std::endl;
+
       config.locations.push_back(parseLocation_(iter));
-    else if ((*iter).getLine() == "}")
+    } else if ((*iter).getLine() == "}") {
+      // ++iter;
       break;
+    }
   }
   return config;
 }
 
-Location ConfigFile::parseLocation_(std::vector<Line>::iterator &iter)
-{
+Location ConfigFile::parseLocation_(std::vector<Line>::iterator& iter) {
   Location location;
   for (; iter != this->content_.end(); ++iter) {
-    if ((*iter).getLine().compare(0, 13, "limit_except ") == 0 && (*iter).last() == '{')
+    if ((*iter).firstWord() == "limit_except" && (*iter).last() == '{')
       location.limit_except = parseLimitExcept_(iter);
-    else if ((*iter).getLine() == "}")
+    else if ((*iter).getLine() == "}") {
+      // ++iter;
       break;
+    }
   }
   return location;
 }
 
-std::vector<std::string> ConfigFile::parseLimitExcept_(std::vector<Line>::iterator &iter)
-{
+std::vector<std::string> ConfigFile::parseLimitExcept_(
+    std::vector<Line>::iterator& iter) {
   std::vector<std::string> LimitExcept;
   std::stringstream ss(iter->getLine());
   std::string buffer;
   std::getline(ss, buffer, ' ');
-  if (!(buffer == "limit_except")){
-    std::cout << "something weird happened in parsing limit except" << std::endl;
+  if (!(buffer == "limit_except")) {
+    std::cout << "something weird happened in parsing limit except"
+              << std::endl;
     exit(1);  // remove me
-    }
+  }
   while (std::getline(ss, buffer, ' ')) {
     if (buffer == "}")
       break;
     else if (buffer == "GET" || buffer == "POST" || buffer == "DELETE")
       LimitExcept.push_back(buffer);
-    else
-    {
+    else {
       std::cout << "wrong method in parse Limit Except" << std::endl;
       exit(1);  // remove me
     }

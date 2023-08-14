@@ -1,11 +1,11 @@
 #include <fstream>
 #include <iostream>
 
+#include "Config.hpp"
 #include "ConfigFile.hpp"
 #include "Response.hpp"
 #include "Status.hpp"
 #include "TcpServer.hpp"
-#include "Config.hpp"
 
 int main(int argc, char *argv[]) {
   ConfigFile configFile;
