@@ -40,9 +40,9 @@ class ConfigFile {
   void checkSeparator();
   void checkConfigBlocks();
 
-  Config parseServer_(std::vector<Line>::iterator &begin);
-  Location parseLocation_(std::vector<Line>::iterator &begin);
-  std::vector<std::string> parseLimitExcept_(std::vector<Line>::iterator &begin);
+  Config parseServer_(std::vector<Line>::iterator &iter);
+  Location parseLocation_(std::vector<Line>::iterator &iter);
+  std::vector<std::string> parseLimitExcept_(std::vector<Line>::iterator &iter);
 
   std::vector<Line> content_;
 };

@@ -102,10 +102,10 @@ std::vector<Config> ConfigFile::createConfig()
   return configVector;
 }
 
-Config ConfigFile::parseServer_(std::vector<Line>::iterator &begin)
+Config ConfigFile::parseServer_(std::vector<Line>::iterator &iter)
 {
   Config config;
-  for (LineIter iter = begin; iter != this->content_.end(); ++iter) {
+  for (; iter != this->content_.end(); ++iter) {
     if ((*iter).getLine().compare(0, 8, "location ") && (*iter).last() == '{')
       config.locations.push_back(parseLocation_(iter));
     else if ((*iter).getLine() == "}")
@@ -114,10 +114,10 @@ Config ConfigFile::parseServer_(std::vector<Line>::iterator &begin)
   return config;
 }
 
-Location ConfigFile::parseLocation_(std::vector<Line>::iterator &begin)
+Location ConfigFile::parseLocation_(std::vector<Line>::iterator &iter)
 {
   Location location;
-  for (LineIter iter = begin; iter != this->content_.end(); ++iter) {
+  for (; iter != this->content_.end(); ++iter) {
     if ((*iter).getLine().compare(0, 8, "location ") && (*iter).last() == '{')
       location.limit_except = parseLimitExcept_(iter);
     else if ((*iter).getLine() == "}")
@@ -126,10 +126,10 @@ Location ConfigFile::parseLocation_(std::vector<Line>::iterator &begin)
   return location;
 }
 
-std::vector<std::string> ConfigFile::parseLimitExcept_(std::vector<Line>::iterator &begin)
+std::vector<std::string> ConfigFile::parseLimitExcept_(std::vector<Line>::iterator &iter)
 {
   std::vector<std::string> LimitExcept;
-  std::stringstream ss(begin->getLine());
+  std::stringstream ss(iter->getLine());
   std::string buffer;
   std::getline(ss, buffer, ' ');
   if (!(buffer == "location")){
