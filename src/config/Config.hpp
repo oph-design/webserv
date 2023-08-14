@@ -1,9 +1,9 @@
 #ifndef CONFIG_HPP_
 #define CONFIG_HPP_
 
-#include <vector>
-#include <string>
 #include <map>
+#include <string>
+#include <vector>
 
 #include "Location.hpp"
 
@@ -11,7 +11,7 @@ class Config {
  public:
   Config();
   ~Config();
-  Config(const Config & obj);
+  Config(const Config& obj);
   Config& operator=(const Config& obj);
 
   int listen;
@@ -21,6 +21,7 @@ class Config {
   std::string root;
   std::vector<Location> locations;
   std::map<int, std::string> error_page;
+
  private:
 };
 

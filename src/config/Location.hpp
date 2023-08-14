@@ -20,6 +20,7 @@ class Location {
   std::vector<std::string> limit_except;
   std::map<std::string, std::string> fastcgi_pass;
   std::map<int, std::string> error_page;
+
  private:
 };
 
