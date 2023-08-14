@@ -1,13 +1,15 @@
 #ifndef LOCATION_HPP_
 #define LOCATION_HPP_
 
+#include <stdlib.h>
+
 #include <iostream>
 #include <map>
 #include <string>
 #include <vector>
-#include <stdlib.h>
 
 #include "StreamOperators.hpp"
+
 class Location {
  public:
   Location();
