@@ -54,6 +54,16 @@ void ConfigFile::vaildateConfigFile() {
   this->checkConfigBlocks();
 }
 
+std::vector<Config> ConfigFile::createConfig()
+{
+  std::vector<Config> configVector;
+  // int openCurlyBrackets = 0;
+  for (std::vector<Line>::iterator iter = this->content_.begin(); iter != this->content_.end(); ++iter) {
+
+  }
+  return configVector;
+}
+
 bool ConfigFile::isValid() const {
   for (std::vector<Line>::const_iterator iter = this->content_.begin();
        iter != this->content_.end(); ++iter) {
@@ -90,6 +100,27 @@ void ConfigFile::checkConfigBlocks() {
       (*iter)->addError("Missing block closing");
     }
   }
+}
+
+Config ConfigFile::parseServer_(std::vector<Line>::iterator &begin)
+{
+  Config config;
+  (void)begin;
+  return config;
+}
+
+Location ConfigFile::parseLocation_(std::vector<Line>::iterator &begin)
+{
+  Location location;
+  (void)begin;
+  return location;
+}
+
+std::vector<std::string> ConfigFile::parseLimitExcept_(std::vector<Line>::iterator &begin)
+{
+  std::vector<std::string> LimitExcept;
+  (void)begin;
+  return LimitExcept;
 }
 
 std::ostream& operator<<(std::ostream& stream, const ConfigFile& config) {

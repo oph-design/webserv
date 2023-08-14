@@ -26,7 +26,7 @@ class ConfigFile {
   void cleanContent();
   void vaildateConfigFile();
 
-  std::vector<Config> createConfig() const;
+  std::vector<Config> createConfig();
 
   bool isValid() const;
 
@@ -36,6 +36,10 @@ class ConfigFile {
  private:
   void checkSeparator();
   void checkConfigBlocks();
+
+  Config parseServer_(std::vector<Line>::iterator &begin);
+  Location parseLocation_(std::vector<Line>::iterator &begin);
+  std::vector<std::string> parseLimitExcept_(std::vector<Line>::iterator &begin);
 
   std::vector<Line> content_;
 };
