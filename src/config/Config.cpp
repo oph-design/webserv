@@ -1,6 +1,12 @@
 #include "Config.hpp"
 
-Config::Config() {}
+Config::Config() {
+  this->listen = 1234;
+  this->client_max_body_size = 10000;
+  this->server_name = "localhost";
+  this->index = "index.html";
+  this->root = "html/";
+}
 
 Config::~Config() {}
 
@@ -16,11 +22,3 @@ Config& Config::operator=(const Config& obj) {
   this->error_page = obj.error_page;
   return *this;
 }
-
-  int listen;
-  int client_max_body_size;
-  std::string server_name;
-  std::string index;
-  std::string root;
-  std::vector<Location> locations;
-  std::map<int, std::string> error_page;

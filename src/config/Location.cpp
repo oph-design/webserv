@@ -1,6 +1,12 @@
 #include "Location.hpp"
 
-Location::Location() {}
+Location::Location() {
+  this->autoindex = false;
+  this->client_max_body_size = 10000;
+  this->index = "index.html";
+  this->root = "./";
+  this->limit_except.push_back("GET");
+}
 
 Location::~Location() {}
 
