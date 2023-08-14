@@ -15,6 +15,7 @@ class Location {
   bool autoindex;
   int client_max_body_size;
   std::string index;
+  std::string path;
   std::string root;
   std::vector<std::string> limit_except;
   std::map<std::string, std::string> fastcgi_pass;
