@@ -1,6 +1,7 @@
-listen
-server_name
-default_server
-error_page
-client_max_body_size
-location
+listen,1
+server_name,N
+index,1
+root,1
+error_page,2
+client_max_body_size,1
+location,block
