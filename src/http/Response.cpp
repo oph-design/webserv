@@ -1,6 +1,12 @@
 #include "Response.hpp"
 
-contentMap Response::fileTypes_;
+#include <exception>
+
+#include "SwapColumns.hpp"
+
+contentMap Response::fileTypes_ = Response::createTypeMap();
+
+/*            constructors                  */
 
 Response::Response() : body_("Server is online") {
   this->header_.insert(contentField("Content-Type", "text/plain"));
@@ -8,15 +14,22 @@ Response::Response() : body_("Server is online") {
   this->header_.insert(contentField("Content-Length", "16"));
 }
 
-Response::Response(Request request) {
-  this->body_ = readBody_(request.getPath());
-  std::string type = findType_(request.getPath());
-  if (this->status_.getCode() > 399) this->body_ = status_.getErrorBody();
-  std::string length = toString<std::size_t>(this->body_.length());
-
-  this->header_.insert(contentField("Content-Type", type));
-  this->header_.insert(contentField("Connection", "keep-alive"));
-  this->header_.insert(contentField("Content-Length", length));
+Response::Response(const Request &request) {
+  t_methodTypes method = request.getRequestMethodType();
+  switch (method) {
+    case 0:
+      handleGetRequest(request);
+      break;
+    case 1:
+      handlePostRequest(request);
+      break;
+    case 3:
+      handleDeleteRequest(request);
+      break;
+    default:
+      this->status_.setCode(405);
+      this->body_ = this->status_.getErrorBody();
+  }
 }
 
 Response::Response(const Response &rhs) { *this = rhs; }
@@ -29,6 +42,8 @@ Response &Response::operator=(const Response &rhs) {
 }
 
 Response::~Response() { this->header_.clear(); }
+
+/*            operators                  */
 
 const std::string &Response::operator[](const std::string &key) {
   return (this->header_[key]);
@@ -43,13 +58,15 @@ std::ostream &operator<<(std::ostream &stream, const Response &resp) {
   return (stream);
 }
 
+/*            Public Functions           */
+
 const std::string Response::getHeader() const {
   std::stringstream header;
 
   header << "HTTP/1.1 " << this->status_ << "\r\n";
   for (contentMap::const_iterator it = this->header_.begin();
        it != this->header_.end(); ++it)
-    header << it->first << " : " << it->second << "\r\n";
+    header << it->first << ": " << it->second << "\r\n";
   header << "\r\n";
   return (header.str());
 }
@@ -73,6 +90,29 @@ const std::list<std::string> Response::getBodyChunked() const {
 }
 
 /*            private functions                  */
+
+void Response::handleGetRequest(const Request &request) {
+  this->body_ = readBody_(request.getPath());
+  std::string type = findType_(request.getPath());
+  if (this->status_.getCode() > 399) this->body_ = status_.getErrorBody();
+  std::string length = toString<std::size_t>(this->body_.length());
+
+  this->header_.insert(contentField("Content-Type", type));
+  this->header_.insert(contentField("Connection", "keep-alive"));
+  this->header_.insert(contentField("Content-Length", length));
+}
+
+void Response::handlePostRequest(const Request &request) {
+  (void)request;
+  this->status_.setCode(405);
+  this->body_ = this->status_.getErrorBody();
+}
+
+void Response::handleDeleteRequest(const Request &request) {
+  (void)request;
+  this->status_.setCode(405);
+  this->body_ = this->status_.getErrorBody();
+}
 
 std::string Response::buildChunk_(std::string line) {
   std::stringstream bytes;
@@ -117,20 +157,23 @@ std::string Response::findType_(std::string url) {
   return (type);
 }
 
-void Response::fillFileTypes() {
-  Response::fileTypes_.insert(contentField("txt", "text/plain"));
-  Response::fileTypes_.insert(contentField("html", "text/html"));
-  Response::fileTypes_.insert(contentField("htm", "text/html"));
-  Response::fileTypes_.insert(contentField("css", "text/css"));
-  Response::fileTypes_.insert(contentField("js", "text/javascript"));
-  Response::fileTypes_.insert(contentField("json", "apllication/json"));
-  Response::fileTypes_.insert(contentField("xml", "apllication/xml"));
-  Response::fileTypes_.insert(contentField("pdf", "apllication/pdf"));
-  Response::fileTypes_.insert(contentField("zip", "apllication/zip"));
-  Response::fileTypes_.insert(contentField("jpg", "image/jpeg"));
-  Response::fileTypes_.insert(contentField("jpeg", "image/jpeg"));
-  Response::fileTypes_.insert(contentField("png", "image/png"));
-  Response::fileTypes_.insert(contentField("ico", "image/x-ico"));
-  Response::fileTypes_.insert(contentField("mp3", "audio/mpeg"));
-  Response::fileTypes_.insert(contentField("mp4", "video/mp4"));
+/*            global funnctions                  */
+
+contentMap Response::createTypeMap() {
+  std::ifstream data("./resources/filetypes.csv");
+  std::string field;
+  std::string key;
+  std::string value;
+  contentMap fileTypes;
+
+  while (data.is_open() && std::getline(data, field)) {
+    try {
+      key = field.substr(0, field.find(","));
+      value = field.substr(field.find(",") + 1);
+    } catch (std::exception &) {
+      continue;
+    }
+    fileTypes.insert(contentField(key, value));
+  }
+  return (fileTypes);
 }

@@ -24,7 +24,7 @@ typedef std::map<std::string, std::string> contentMap;
 class Response {
  public:
   Response();
-  Response(Request request);
+  Response(const Request& request);
   Response(const Response& rhs);
   Response& operator=(const Response& rhs);
   ~Response();
@@ -35,12 +35,15 @@ class Response {
   const std::list<std::string> getBodyChunked() const;
   const std::string& getBody() const;
   const std::string getHeader() const;
-  static void fillFileTypes();
+  static contentMap createTypeMap();
 
  private:
   static std::string buildChunk_(std::string line);
   std::string readBody_(std::string dir);
   std::string findType_(std::string url);
+  void handleGetRequest(const Request& request);
+  void handlePostRequest(const Request& request);
+  void handleDeleteRequest(const Request& request);
 
   static contentMap fileTypes_;
   contentMap header_;
