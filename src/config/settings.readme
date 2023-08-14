@@ -1,0 +1,12 @@
+Port
+Host
+Server_name
+default error pages
+client body size
+routes
+  http methods
+  http redirection
+  root
+  directory listing/default file
+  cgi
+  

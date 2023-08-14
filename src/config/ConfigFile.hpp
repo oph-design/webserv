@@ -13,6 +13,7 @@
 
 #include "Line.hpp"
 #include "colors.hpp"
+#include "Config.hpp"
 
 class ConfigFile {
  public:
@@ -24,6 +25,8 @@ class ConfigFile {
   bool openFile(int argc, char* argv[]);
   void cleanContent();
   void vaildateConfigFile();
+
+  std::vector<Config> createConfig() const;
 
   bool isValid() const;
 
