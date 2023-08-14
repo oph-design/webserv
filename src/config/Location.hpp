@@ -5,6 +5,7 @@
 #include <map>
 #include <string>
 #include <vector>
+#include <stdlib.h>
 
 #include "StreamOperators.hpp"
 class Location {
