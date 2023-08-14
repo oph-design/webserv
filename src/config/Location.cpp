@@ -23,3 +23,17 @@ Location& Location::operator=(const Location& obj) {
   this->error_page = obj.error_page;
   return *this;
 }
+
+std::ostream &operator<<(std::ostream &stream, const Location &location)
+{
+  stream << "\nPath: " << location.path << "\n";
+  stream << "autoindex: " << location.autoindex << "\n";
+  stream << "client_max_body_size: " << location.client_max_body_size << "\n";
+  stream << "index: " << location.index << "\n";
+  stream << "root: " << location.root << "\n";
+  stream << "limit_except:\n" << location.limit_except;
+  stream << "fastcgi_pass:\n" << location.fastcgi_pass;
+  stream << "error_page:\n" << location.error_page;
+  stream << std::flush;
+  return stream;
+}

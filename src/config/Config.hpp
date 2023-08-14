@@ -22,6 +22,9 @@ class Config {
   std::vector<Location> locations;
   std::map<int, std::string> error_page;
 
+  friend std::ostream& operator<<(std::ostream& stream,
+                                  const Config& config);
+
  private:
 };
 

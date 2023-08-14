@@ -4,7 +4,9 @@
 #include <map>
 #include <string>
 #include <vector>
+#include <iostream>
 
+#include "StreamOperators.hpp"
 class Location {
  public:
   Location();
@@ -20,6 +22,9 @@ class Location {
   std::vector<std::string> limit_except;
   std::map<std::string, std::string> fastcgi_pass;
   std::map<int, std::string> error_page;
+
+  friend std::ostream& operator<<(std::ostream& stream,
+                                  const Location& location);
 
  private:
 };
