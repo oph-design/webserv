@@ -1,0 +1,11 @@
+limit_except
+return
+try_files
+alias
+autoindex
+index
+fastcgi_pass
+if
+proxy_pass
+upload_pass
+client_body_temp_path

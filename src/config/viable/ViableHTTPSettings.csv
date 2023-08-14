@@ -1,0 +1,8 @@
+include
+types
+default_type
+log_format
+access_log
+error_log
+server_tokens
+server

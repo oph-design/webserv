@@ -1,0 +1,6 @@
+listen
+server_name
+default_server
+error_page
+client_max_body_size
+location
