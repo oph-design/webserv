@@ -61,14 +61,17 @@ std::string parseRoot(Line &line) {
   return line[1];
 }
 
-Location parseLocation(Line &line) {
-  (void)line;
-  return Location();
-}
-
 std::pair<int, std::string> parseErrorPage(Line &line) {
-  (void)line;
-  return std::make_pair(0, "");
+  std::string parameter = "error_page";
+  if (line.words() != 3) {
+    line.addError(parameter + " unexpected arguments");
+    return std::make_pair(0, "");
+  }
+  if (!isNumber(line[1])) {
+    line.addError(parameter + " unexpected port");
+    return std::make_pair(0, "");
+  }
+  return std::make_pair(std::atoi(line[1].c_str()), line[2]);
 }
 
 bool parseAutoindex(Line &line) {
