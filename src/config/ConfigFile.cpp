@@ -115,19 +115,20 @@ Config ConfigFile::parseServer_(LineIter& iter) {
   ++iter;
   for (; iter != this->content_.end(); ++iter) {
     if (iter->firstWord() == "location" && iter->last() == '{')
-      config.locations.push_back(parseLocation_(iter));
+      config.locations.push_back(parseLocation_(iter));  // add to class later
     else if (iter->firstWord() == "listen")
-      config.listen.insert(parseListen(*iter));
+      config.listen.insert(ConfigParsing::parseListen(*iter));
     else if (iter->firstWord() == "client_max_body_size")
-      config.client_max_body_size = parseCientMaxBodySize(*iter, duplicates);
+      config.client_max_body_size =
+          ConfigParsing::parseCientMaxBodySize(*iter, duplicates);
     else if (iter->firstWord() == "server_name")
-      config.server_name = parseServerName(*iter);
+      config.server_name = ConfigParsing::parseServerName(*iter);
     else if (iter->firstWord() == "index")
-      config.index = parseIndex(*iter, duplicates);
+      config.index = ConfigParsing::parseIndex(*iter, duplicates);
     else if (iter->firstWord() == "root")
-      config.root = parseRoot(*iter, duplicates);
+      config.root = ConfigParsing::parseRoot(*iter, duplicates);
     else if (iter->firstWord() == "error_page")
-      config.error_page.insert(parseErrorPage(*iter));
+      config.error_page.insert(ConfigParsing::parseErrorPage(*iter));
     else if (iter->getLine() == "}")
       break;
     else
@@ -139,23 +140,24 @@ Config ConfigFile::parseServer_(LineIter& iter) {
 Location ConfigFile::parseLocation_(LineIter& iter) {
   Location location;
   t_duplicates duplicates;
-  location.path = parsePath(*iter);
+  location.path = ConfigParsing::parsePath(*iter);
   ++iter;
   for (; iter != this->content_.end(); ++iter) {
     if (iter->firstWord() == "limit_except" && iter->last() == '{')
-      location.limit_except = parseLimitExcept_(iter);
+      location.limit_except = parseLimitExcept_(iter);  // add to class later
     else if (iter->firstWord() == "autoindex")
-      location.autoindex = parseAutoindex(*iter);
+      location.autoindex = ConfigParsing::parseAutoindex(*iter);
     else if (iter->firstWord() == "client_max_body_size")
-      location.client_max_body_size = parseCientMaxBodySize(*iter, duplicates);
+      location.client_max_body_size =
+          ConfigParsing::parseCientMaxBodySize(*iter, duplicates);
     else if (iter->firstWord() == "index")
-      location.index = parseIndex(*iter, duplicates);
+      location.index = ConfigParsing::parseIndex(*iter, duplicates);
     else if (iter->firstWord() == "root")
-      location.root = parseRoot(*iter, duplicates);
+      location.root = ConfigParsing::parseRoot(*iter, duplicates);
     else if (iter->firstWord() == "fastcgi_pass")
-      location.fastcgi_pass.insert(parseFastcgiPass(*iter));
+      location.fastcgi_pass.insert(ConfigParsing::parseFastcgiPass(*iter));
     else if (iter->firstWord() == "error_page")
-      location.error_page.insert(parseErrorPage(*iter));
+      location.error_page.insert(ConfigParsing::parseErrorPage(*iter));
     else if (iter->getLine() == "}")
       break;
     else

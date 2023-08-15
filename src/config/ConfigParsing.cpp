@@ -1,13 +1,15 @@
+#include "ConfigParsing.hpp"
+
 #include <cstdlib>
 #include <string>
 #include <utility>
 
+#include "Config.hpp"
 #include "Line.hpp"
 #include "Location.hpp"
 #include "Utils.hpp"
-#include "Config.hpp"
 
-int parseListen(Line &line) {
+int ConfigParsing::parseListen(Line &line) {
   std::string parameter = "listen";
   if (line.words() != 2) {
     line.addError(parameter + " unexpected arguments");
@@ -20,7 +22,7 @@ int parseListen(Line &line) {
   return std::atoi(line[1].c_str());
 }
 
-int parseCientMaxBodySize(Line &line, t_duplicates &duplicates) {
+int ConfigParsing::parseCientMaxBodySize(Line &line, t_duplicates &duplicates) {
   std::string parameter = "client_max_body_size";
   if (line.words() != 2) {
     line.addError(parameter + " unexpected arguments");
@@ -34,7 +36,7 @@ int parseCientMaxBodySize(Line &line, t_duplicates &duplicates) {
   return std::atoi(line[1].c_str());
 }
 
-std::string parseServerName(Line &line) {
+std::string ConfigParsing::parseServerName(Line &line) {
   std::string parameter = "server_name";
   if (line.words() != 2) {
     line.addError(parameter + " unexpected arguments");
@@ -43,7 +45,7 @@ std::string parseServerName(Line &line) {
   return line[1];
 }
 
-std::string parseIndex(Line &line, t_duplicates &duplicates) {
+std::string ConfigParsing::parseIndex(Line &line, t_duplicates &duplicates) {
   std::string parameter = "index";
   if (line.words() != 2) {
     line.addError(parameter + " unexpected arguments");
@@ -53,7 +55,7 @@ std::string parseIndex(Line &line, t_duplicates &duplicates) {
   return line[1];
 }
 
-std::string parseRoot(Line &line, t_duplicates &duplicates) {
+std::string ConfigParsing::parseRoot(Line &line, t_duplicates &duplicates) {
   std::string parameter = "root";
   if (line.words() != 2) {
     line.addError(parameter + " unexpected arguments");
@@ -63,7 +65,7 @@ std::string parseRoot(Line &line, t_duplicates &duplicates) {
   return line[1];
 }
 
-std::pair<int, std::string> parseErrorPage(Line &line) {
+std::pair<int, std::string> ConfigParsing::parseErrorPage(Line &line) {
   std::string parameter = "error_page";
   if (line.words() != 3) {
     line.addError(parameter + " unexpected arguments");
@@ -76,7 +78,7 @@ std::pair<int, std::string> parseErrorPage(Line &line) {
   return std::make_pair(std::atoi(line[1].c_str()), line[2]);
 }
 
-bool parseAutoindex(Line &line) {
+bool ConfigParsing::parseAutoindex(Line &line) {
   std::string parameter = "autoindex";
   if (line.words() != 2) {
     line.addError(parameter + " unexpected arguments");
@@ -92,7 +94,7 @@ bool parseAutoindex(Line &line) {
   return false;
 }
 
-std::string parsePath(Line &line) {
+std::string ConfigParsing::parsePath(Line &line) {
   std::string parameter = "location path";
   if (line.words() != 3) {
     line.addError(parameter + " unexpected arguments");
@@ -101,7 +103,8 @@ std::string parsePath(Line &line) {
   return line[1];
 }
 
-std::pair<std::string, std::string> parseFastcgiPass(Line &line) {
+std::pair<std::string, std::string> ConfigParsing::parseFastcgiPass(
+    Line &line) {
   std::string parameter = "error_page";
   if (line.words() != 3) {
     line.addError(parameter + " unexpected arguments");

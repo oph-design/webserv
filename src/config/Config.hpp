@@ -33,7 +33,8 @@ class Config {
 
   static std::vector<Config>& handleDuplicates(std::vector<Config>& configs);
 
-
+  friend class ConfigFile;
+  friend class Location;
 
  private:
   void fillLocations_();

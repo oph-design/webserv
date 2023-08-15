@@ -37,6 +37,9 @@ class Location {
   void setDuplicates(const t_duplicates& duplicates);
   const t_duplicates& getDuplicates() const;
 
+  friend class Config;
+  friend class ConfigFile;
+
  private:
   t_duplicates duplicates_;
 };

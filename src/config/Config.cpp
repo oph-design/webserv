@@ -45,9 +45,9 @@ void Config::fillLocations_() {
   }
 }
 
-void Config::fillAllLocations(std::vector<Config> &configs)
-{
-  for (std::vector<Config>::iterator iter = configs.begin(); iter != configs.end(); ++iter) {
+void Config::fillAllLocations(std::vector<Config>& configs) {
+  for (std::vector<Config>::iterator iter = configs.begin();
+       iter != configs.end(); ++iter) {
     iter->fillLocations_();
   }
 }

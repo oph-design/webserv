@@ -8,20 +8,27 @@
 #include "Line.hpp"
 #include "Location.hpp"
 
-// in Location and Server
-int parseCientMaxBodySize(Line &line, t_duplicates &duplicates);
-std::string parseIndex(Line &line, t_duplicates &duplicates);
-std::string parseRoot(Line &line, t_duplicates &duplicates);
-std::pair<int, std::string> parseErrorPage(Line &line);
+class ConfigParsing {
+ public:
+  // in Location and Server
+  static int parseCientMaxBodySize(Line &line, t_duplicates &duplicates);
+  static std::string parseIndex(Line &line, t_duplicates &duplicates);
+  static std::string parseRoot(Line &line, t_duplicates &duplicates);
+  static std::pair<int, std::string> parseErrorPage(Line &line);
 
-// in Server
-int parseListen(Line &line);
-std::string parseServerName(Line &line);
-Location parseLocation(Line &line);
+  // in Server
+  static int parseListen(Line &line);
+  static std::string parseServerName(Line &line);
+  static Location parseLocation(Line &line);
 
-// in Location
-std::string parsePath(Line &line);
-bool parseAutoindex(Line &line);
-std::pair<std::string, std::string> parseFastcgiPass(Line &line);
+  // in Location
+  static std::string parsePath(Line &line);
+  static bool parseAutoindex(Line &line);
+  static std::pair<std::string, std::string> parseFastcgiPass(Line &line);
+
+ private:
+  ConfigParsing();
+  ~ConfigParsing();
+};
 
 #endif  // CONFIGPARSING_HPP_
