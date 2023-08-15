@@ -7,12 +7,6 @@
 
 #include "Location.hpp"
 
-typedef struct s_duplicates {
-  bool index;
-  bool root;
-  bool clientMaxBodySize;
-} t_duplicates;
-
 class Config {
  public:
   Config();
@@ -32,10 +26,8 @@ class Config {
 
   static std::vector<Config>& handleDuplicates(std::vector<Config>& configs);
 
-  void setDuplicates(const t_duplicates &duplicates);
  private:
   void fillLocations_();
-  t_duplicates duplicates_;
 };
 
 #endif  // CONFIG_HPP_

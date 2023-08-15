@@ -10,6 +10,12 @@
 
 #include "StreamOperators.hpp"
 
+typedef struct s_duplicates {
+  bool index;
+  bool root;
+  bool clientMaxBodySize;
+} t_duplicates;
+
 class Location {
  public:
   Location();
@@ -28,8 +34,12 @@ class Location {
 
   friend std::ostream& operator<<(std::ostream& stream,
                                   const Location& location);
+  void setDuplicates(const t_duplicates &duplicates);
+  const t_duplicates& getDuplicates() const;
 
  private:
+  t_duplicates duplicates_;
+
 };
 
 #endif  // LOCATION_HPP_

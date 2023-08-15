@@ -6,9 +6,6 @@ Config::Config() {
   this->server_name = "localhost";
   this->index = "index.html";
   this->root = "html/";
-  this->duplicates_.clientMaxBodySize = false;
-  this->duplicates_.index = false;
-  this->duplicates_.root = false;
 }
 
 Config::~Config() {}
@@ -23,7 +20,6 @@ Config& Config::operator=(const Config& obj) {
   this->root = obj.root;
   this->locations = obj.locations;
   this->error_page = obj.error_page;
-  this->duplicates_ = obj.duplicates_;
   return *this;
 }
 
@@ -39,15 +35,22 @@ std::vector<Config>& Config::handleDuplicates(std::vector<Config>& configs) {
           iterInner->server_name == iterOuter->server_name)
         duplicate = true;
     }
+    iterOuter->fillLocations_();
     if (duplicate == false) newVector.push_back(*iterOuter);
   }
   configs = newVector;
   return configs;
 }
 
-void Config::setDuplicates(const t_duplicates &duplicates)
-{
-  this->duplicates_ = duplicates;
+void Config::fillLocations_() {
+  for (std::vector<Location>::iterator iter = this->locations.begin(); iter != this->locations.end(); ++iter) {
+    if (iter->getDuplicates().clientMaxBodySize == false)
+      iter->client_max_body_size = this->client_max_body_size;
+    if (iter->getDuplicates().index == false)
+      iter->index = this->index;
+    if (iter->getDuplicates().root == false)
+      iter->root = this->root;
+  }
 }
 
 std::ostream& operator<<(std::ostream& stream, const Config& config) {

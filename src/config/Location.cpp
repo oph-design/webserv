@@ -6,6 +6,9 @@ Location::Location() {
   this->index = "index.html";
   this->root = "./";
   this->limit_except.push_back("GET");
+    this->duplicates_.clientMaxBodySize = false;
+  this->duplicates_.index = false;
+  this->duplicates_.root = false;
 }
 
 Location::~Location() {}
@@ -21,6 +24,8 @@ Location& Location::operator=(const Location& obj) {
   this->limit_except = obj.limit_except;
   this->fastcgi_pass = obj.fastcgi_pass;
   this->error_page = obj.error_page;
+  this->duplicates_ = obj.duplicates_;
+
   return *this;
 }
 
@@ -35,4 +40,14 @@ std::ostream& operator<<(std::ostream& stream, const Location& location) {
   stream << "error_page:\n" << location.error_page;
   stream << std::flush;
   return stream;
+}
+
+void Location::setDuplicates(const t_duplicates &duplicates)
+{
+  this->duplicates_ = duplicates;
+}
+
+const t_duplicates &Location::getDuplicates() const
+{
+  return this->duplicates_;
 }

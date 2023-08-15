@@ -133,7 +133,6 @@ Config ConfigFile::parseServer_(LineIter& iter) {
     else
       iter->addError("unknown option" + iter->firstWord());
   }
-  config.setDuplicates(duplicates);
   return config;
 }
 
@@ -162,6 +161,7 @@ Location ConfigFile::parseLocation_(LineIter& iter) {
     else
       iter->addError("unknown option: " + iter->firstWord());
   }
+  location.setDuplicates(duplicates);
   return location;
 }
 
