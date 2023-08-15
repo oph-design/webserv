@@ -117,7 +117,7 @@ Config ConfigFile::parseServer_(LineIter& iter) {
     if (iter->firstWord() == "location" && iter->last() == '{')
       config.locations.push_back(parseLocation_(iter));
     else if (iter->firstWord() == "listen")
-      config.listen = parseListen(*iter);
+      config.listen.insert(parseListen(*iter));
     else if (iter->firstWord() == "client_max_body_size")
       config.client_max_body_size = parseCientMaxBodySize(*iter, duplicates);
     else if (iter->firstWord() == "server_name")
