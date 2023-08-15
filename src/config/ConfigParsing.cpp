@@ -5,6 +5,7 @@
 #include "Line.hpp"
 #include "Location.hpp"
 #include "Utils.hpp"
+#include "Config.hpp"
 
 int parseListen(Line &line) {
   std::string parameter = "listen";
@@ -16,11 +17,10 @@ int parseListen(Line &line) {
     line.addError(parameter + " unexpected port");
     return 0;
   }
-  int value = std::atoi(line[1].c_str());
-  return value;
+  return std::atoi(line[1].c_str());
 }
 
-int parseCientMaxBodySize(Line &line) {
+int parseCientMaxBodySize(Line &line, t_duplicates &duplicates) {
   std::string parameter = "client_max_body_size";
   if (line.words() != 2) {
     line.addError(parameter + " unexpected arguments");
@@ -30,8 +30,8 @@ int parseCientMaxBodySize(Line &line) {
     line.addError(parameter + " unexpected number");
     return 0;
   }
-  int value = std::atoi(line[1].c_str());
-  return value;
+  duplicates.clientMaxBodySize = true;
+  return std::atoi(line[1].c_str());
 }
 
 std::string parseServerName(Line &line) {
@@ -43,21 +43,23 @@ std::string parseServerName(Line &line) {
   return line[1];
 }
 
-std::string parseIndex(Line &line) {
+std::string parseIndex(Line &line, t_duplicates &duplicates) {
   std::string parameter = "index";
   if (line.words() != 2) {
     line.addError(parameter + " unexpected arguments");
     return 0;
   }
+  duplicates.index = true;
   return line[1];
 }
 
-std::string parseRoot(Line &line) {
+std::string parseRoot(Line &line, t_duplicates &duplicates) {
   std::string parameter = "root";
   if (line.words() != 2) {
     line.addError(parameter + " unexpected arguments");
     return 0;
   }
+  duplicates.root = true;
   return line[1];
 }
 

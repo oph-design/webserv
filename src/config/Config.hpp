@@ -32,6 +32,7 @@ class Config {
 
   static std::vector<Config>& handleDuplicates(std::vector<Config>& configs);
 
+  void setDuplicates(const t_duplicates &duplicates);
  private:
   void fillLocations_();
   t_duplicates duplicates_;

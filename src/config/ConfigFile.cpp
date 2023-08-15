@@ -111,6 +111,7 @@ std::vector<Config> ConfigFile::createConfig() {
 
 Config ConfigFile::parseServer_(LineIter& iter) {
   Config config;
+  t_duplicates duplicates;
   ++iter;
   for (; iter != this->content_.end(); ++iter) {
     if (iter->firstWord() == "location" && iter->last() == '{')
@@ -118,13 +119,13 @@ Config ConfigFile::parseServer_(LineIter& iter) {
     else if (iter->firstWord() == "listen")
       config.listen = parseListen(*iter);
     else if (iter->firstWord() == "client_max_body_size")
-      config.client_max_body_size = parseCientMaxBodySize(*iter);
+      config.client_max_body_size = parseCientMaxBodySize(*iter, duplicates);
     else if (iter->firstWord() == "server_name")
       config.server_name = parseServerName(*iter);
     else if (iter->firstWord() == "index")
-      config.index = parseIndex(*iter);
+      config.index = parseIndex(*iter, duplicates);
     else if (iter->firstWord() == "root")
-      config.root = parseRoot(*iter);
+      config.root = parseRoot(*iter, duplicates);
     else if (iter->firstWord() == "error_page")
       config.error_page.insert(parseErrorPage(*iter));
     else if (iter->getLine() == "}")
@@ -132,11 +133,13 @@ Config ConfigFile::parseServer_(LineIter& iter) {
     else
       iter->addError("unknown option" + iter->firstWord());
   }
+  config.setDuplicates(duplicates);
   return config;
 }
 
 Location ConfigFile::parseLocation_(LineIter& iter) {
   Location location;
+  t_duplicates duplicates;
   location.path = parsePath(*iter);
   ++iter;
   for (; iter != this->content_.end(); ++iter) {
@@ -145,11 +148,11 @@ Location ConfigFile::parseLocation_(LineIter& iter) {
     else if (iter->firstWord() == "autoindex")
       location.autoindex = parseAutoindex(*iter);
     else if (iter->firstWord() == "client_max_body_size")
-      location.client_max_body_size = parseCientMaxBodySize(*iter);
+      location.client_max_body_size = parseCientMaxBodySize(*iter, duplicates);
     else if (iter->firstWord() == "index")
-      location.index = parseIndex(*iter);
+      location.index = parseIndex(*iter, duplicates);
     else if (iter->firstWord() == "root")
-      location.root = parseRoot(*iter);
+      location.root = parseRoot(*iter, duplicates);
     else if (iter->firstWord() == "fastcgi_pass")
       location.fastcgi_pass.insert(parseFastcgiPass(*iter));
     else if (iter->firstWord() == "error_page")

@@ -45,6 +45,11 @@ std::vector<Config>& Config::handleDuplicates(std::vector<Config>& configs) {
   return configs;
 }
 
+void Config::setDuplicates(const t_duplicates &duplicates)
+{
+  this->duplicates_ = duplicates;
+}
+
 std::ostream& operator<<(std::ostream& stream, const Config& config) {
   stream << "listen: " << config.listen << "\n";
   stream << "client_max_body_size: " << config.client_max_body_size << "\n";
