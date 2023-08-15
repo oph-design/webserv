@@ -44,8 +44,12 @@ std::string parseServerName(Line &line) {
 }
 
 std::string parseIndex(Line &line) {
-  (void)line;
-  return "";
+  std::string parameter = "index";
+  if (line.words() != 2) {
+    line.addError(parameter + " unexpected arguments");
+    return 0;
+  }
+  return line[1];
 }
 
 std::string parseRoot(Line &line) {
