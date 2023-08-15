@@ -34,12 +34,11 @@ class Location {
 
   friend std::ostream& operator<<(std::ostream& stream,
                                   const Location& location);
-  void setDuplicates(const t_duplicates &duplicates);
+  void setDuplicates(const t_duplicates& duplicates);
   const t_duplicates& getDuplicates() const;
 
  private:
   t_duplicates duplicates_;
-
 };
 
 #endif  // LOCATION_HPP_

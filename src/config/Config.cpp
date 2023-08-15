@@ -43,17 +43,19 @@ std::vector<Config>& Config::handleDuplicates(std::vector<Config>& configs) {
 }
 
 void Config::fillLocations_() {
-  for (std::vector<Location>::iterator iter = this->locations.begin(); iter != this->locations.end(); ++iter) {
+  for (std::vector<Location>::iterator iter = this->locations.begin();
+       iter != this->locations.end(); ++iter) {
     if (iter->getDuplicates().clientMaxBodySize == false)
       iter->client_max_body_size = this->client_max_body_size;
-    if (iter->getDuplicates().index == false)
-      iter->index = this->index;
-    if (iter->getDuplicates().root == false)
-      iter->root = this->root;
+    if (iter->getDuplicates().index == false) iter->index = this->index;
+    if (iter->getDuplicates().root == false) iter->root = this->root;
+    std::map<int, std::string> newErrorPage = this->error_page;
+    newErrorPage.insert(iter->error_page.begin(), iter->error_page.end());
+    iter->error_page = newErrorPage;
   }
 }
 
-std::ostream& operator<<(std::ostream& stream, const Config& config) {
+std::ostream& operator<<(std::ostream& stfream, const Config& config) {
   stream << "listen: " << config.listen << "\n";
   stream << "client_max_body_size: " << config.client_max_body_size << "\n";
   stream << "server_name: " << config.server_name << "\n";

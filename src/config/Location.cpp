@@ -6,7 +6,7 @@ Location::Location() {
   this->index = "index.html";
   this->root = "./";
   this->limit_except.push_back("GET");
-    this->duplicates_.clientMaxBodySize = false;
+  this->duplicates_.clientMaxBodySize = false;
   this->duplicates_.index = false;
   this->duplicates_.root = false;
 }
@@ -42,12 +42,10 @@ std::ostream& operator<<(std::ostream& stream, const Location& location) {
   return stream;
 }
 
-void Location::setDuplicates(const t_duplicates &duplicates)
-{
+void Location::setDuplicates(const t_duplicates& duplicates) {
   this->duplicates_ = duplicates;
 }
 
-const t_duplicates &Location::getDuplicates() const
-{
+const t_duplicates& Location::getDuplicates() const {
   return this->duplicates_;
 }
