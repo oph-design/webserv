@@ -26,7 +26,7 @@ Config& Config::operator=(const Config& obj) {
 std::ostream& operator<<(std::ostream& stream, const Config& config) {
   stream << "listen: " << config.listen << "\n";
   stream << "client_max_body_size: " << config.client_max_body_size << "\n";
-  stream << "server_name" << config.server_name << "\n";
+  stream << "server_name: " << config.server_name << "\n";
   stream << "index: " << config.index << "\n";
   stream << "root: " << config.root << "\n";
   stream << "locations: " << config.locations << "\n";

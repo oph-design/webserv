@@ -116,6 +116,16 @@ Config ConfigFile::parseServer_(LineIter& iter) {
       config.locations.push_back(parseLocation_(iter));
     else if (iter->firstWord() == "listen")
       config.listen = parseListen(*iter);
+    else if (iter->firstWord() == "client_max_body_size")
+      config.client_max_body_size = parseCientMaxBodySize(*iter);
+    else if (iter->firstWord() == "server_name")
+      config.server_name = parseServerName(*iter);
+    else if (iter->firstWord() == "index")
+      config.index = parseIndex(*iter);
+    else if (iter->firstWord() == "root")
+      config.root = parseRoot(*iter);
+    else if (iter->firstWord() == "error_page")
+      config.error_page.insert(parseErrorPage(*iter));
     else if (iter->getLine() == "}")
       break;
   }
