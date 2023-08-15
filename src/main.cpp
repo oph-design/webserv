@@ -12,6 +12,7 @@ int main(int argc, char *argv[]) {
   if (!configFile.openFile(argc, argv)) return 1;
   configFile.cleanContent();
   configFile.vaildateConfigFile();
+  configFile.removeSemiColon();
   std::cout << configFile;
   std::vector<Config> configs = configFile.createConfig();
   std::cout << configs << std::endl;

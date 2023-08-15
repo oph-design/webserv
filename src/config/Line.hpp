@@ -32,6 +32,8 @@ class Line {
   std::string lastWord() const;
   int words() const;
 
+  void removeSemiColon();
+
  private:
   std::string content_;
   std::string errorMessage_;

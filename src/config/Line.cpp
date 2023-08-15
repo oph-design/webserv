@@ -23,7 +23,7 @@ const std::string Line::operator[](const int& key) const {
   int count = 0;
   std::stringstream ss(this->content_);
   std::string buffer;
-  while (std::getline(ss, buffer) && count <= key) ++count;
+  while (std::getline(ss, buffer, ' ') && count <= key) ++count;
   return buffer;
 }
 
@@ -56,8 +56,7 @@ bool Line::isEmpty() const {
 bool Line::isValid() const { return !this->error_; }
 
 std::ostream& operator<<(std::ostream& stream, const Line& line) {
-  stream << line.lastWord() << " " << line.lineNumber_ << ":\t" << line.error_
-         << ":\t" << line.content_;
+  stream << line.lineNumber_ << ":\t" << line.error_ << ":\t" << line.content_;
   if (line.error_ == true) {
     stream << "\n" << line.errorMessage_;
   }
@@ -92,6 +91,11 @@ int Line::words() const {
   std::string buffer;
   while (std::getline(ss, buffer, ' ')) ++wordCount;
   return wordCount;
+}
+
+void Line::removeSemiColon() {
+  if (this->content_.size() > 0 && this->last() == ';')
+    this->content_ = this->content_.substr(0, this->content_.size() - 1);
 }
 
 std::string Line::lastWord() const {

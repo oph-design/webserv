@@ -6,7 +6,6 @@ Config::Config() {
   this->server_name = "localhost";
   this->index = "index.html";
   this->root = "html/";
-  this->alreadyParsedListen_ = false;
 }
 
 Config::~Config() {}

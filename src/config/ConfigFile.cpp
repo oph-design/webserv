@@ -91,6 +91,13 @@ void ConfigFile::checkConfigBlocks() {
   }
 }
 
+void ConfigFile::removeSemiColon() {
+  for (LineIter iter = this->content_.begin(); iter != this->content_.end();
+       ++iter) {
+    if (iter->last() == ';') iter->removeSemiColon();
+  }
+}
+
 std::vector<Config> ConfigFile::createConfig() {
   std::vector<Config> configVector;
   for (LineIter iter = this->content_.begin(); iter != this->content_.end();
@@ -105,12 +112,12 @@ std::vector<Config> ConfigFile::createConfig() {
 Config ConfigFile::parseServer_(LineIter& iter) {
   Config config;
   for (; iter != this->content_.end(); ++iter) {
-    if (iter->firstWord() == "location" && iter->last() == '{') {
+    if (iter->firstWord() == "location" && iter->last() == '{')
       config.locations.push_back(parseLocation_(iter));
-    } else if (iter->getLine() == "}") {
-      // ++iter;
+    else if (iter->firstWord() == "listen")
+      config.listen = parseListen(*iter);
+    else if (iter->getLine() == "}")
       break;
-    }
   }
   return config;
 }

@@ -28,7 +28,7 @@ CONFIG_FILES			=	ConfigFile.cpp Line.cpp Location.cpp Config.cpp ConfigParsing.c
 
 UTILS							=	$(addprefix $(UTILS_DIR), $(UTILS_FILES))
 UTILS_DIR					=	src/utils/
-UTILS_FILES				=
+UTILS_FILES				= IsNumber.cpp
 
 ALL_SRC						=	$(SRC) $(CORE) $(UTILS) $(HTTP) $(CONFIG)
 

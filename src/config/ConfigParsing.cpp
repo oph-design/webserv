@@ -1,13 +1,22 @@
-#include <utility>
+#include <cstdlib>
 #include <string>
+#include <utility>
 
 #include "Line.hpp"
 #include "Location.hpp"
+#include "Utils.hpp"
 
-int parseListen(Line &line, bool &alreadyParsedListen) {
-  (void)line;
-  (void)alreadyParsedListen;
-  return 0;
+int parseListen(Line &line) {
+  if (line.words() != 2) {
+    line.addError("listen unexpected arguments");
+    return 0;
+  }
+  if (!isNumber(line[1])) {
+    line.addError("listen unexpected port");
+    return 0;
+  }
+  int port = std::atoi(line[1].c_str());
+  return port;
 }
 
 int parseCientMaxBodySize(Line &line) {

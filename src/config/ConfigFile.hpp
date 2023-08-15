@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "Config.hpp"
+#include "ConfigParsing.hpp"
 #include "Line.hpp"
 #include "Location.hpp"
 #include "Types.hpp"
@@ -35,6 +36,8 @@ class ConfigFile {
 
   friend std::ostream& operator<<(std::ostream& stream,
                                   const ConfigFile& config);
+
+  void removeSemiColon();
 
  private:
   void checkSeparator();
