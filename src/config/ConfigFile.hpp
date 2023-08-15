@@ -31,7 +31,7 @@ class ConfigFile {
 
   std::vector<Config> createConfig();
 
-  bool isValid() const;
+  bool isValid();
 
   friend std::ostream& operator<<(std::ostream& stream,
                                   const ConfigFile& config);
@@ -40,9 +40,9 @@ class ConfigFile {
   void checkSeparator();
   void checkConfigBlocks();
 
-  Config parseServer_(std::vector<Line>::iterator& iter);
-  Location parseLocation_(std::vector<Line>::iterator& iter);
-  std::vector<std::string> parseLimitExcept_(std::vector<Line>::iterator& iter);
+  Config parseServer_(LineIter& iter);
+  Location parseLocation_(LineIter& iter);
+  std::vector<std::string> parseLimitExcept_(LineIter& iter);
 
   std::vector<Line> content_;
 };

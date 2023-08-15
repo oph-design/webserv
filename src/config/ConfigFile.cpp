@@ -40,11 +40,11 @@ bool ConfigFile::openFile(int argc, char* argv[]) {
 
 void ConfigFile::cleanContent() {
   std::vector<Line> newContent;
-  for (std::vector<Line>::iterator iter = this->content_.begin();
-       iter != this->content_.end(); ++iter) {
+  for (LineIter iter = this->content_.begin(); iter != this->content_.end();
+       ++iter) {
     iter->trimWhitespace();
     iter->removeComment();
-    if (!(*iter).isEmpty()) newContent.push_back(*iter);
+    if (!iter->isEmpty()) newContent.push_back(*iter);
   }
   this->content_ = newContent;
 }
@@ -54,26 +54,26 @@ void ConfigFile::vaildateConfigFile() {
   this->checkConfigBlocks();
 }
 
-bool ConfigFile::isValid() const {
-  for (std::vector<Line>::const_iterator iter = this->content_.begin();
-       iter != this->content_.end(); ++iter) {
+bool ConfigFile::isValid() {
+  for (LineIter iter = this->content_.begin(); iter != this->content_.end();
+       ++iter) {
     if (!iter->isValid()) return false;
   }
   return true;
 }
 
 void ConfigFile::checkSeparator() {
-  for (std::vector<Line>::iterator iter = this->content_.begin();
-       iter != this->content_.end(); ++iter) {
+  for (LineIter iter = this->content_.begin(); iter != this->content_.end();
+       ++iter) {
     if (iter->last() != ';' && iter->last() != '{' && iter->last() != '}')
       iter->addError("missing Separator");
   }
 }
 
 void ConfigFile::checkConfigBlocks() {
-  std::list<std::vector<Line>::iterator> openings;
-  for (std::vector<Line>::iterator iter = this->content_.begin();
-       iter != this->content_.end(); ++iter) {
+  std::list<LineIter> openings;
+  for (LineIter iter = this->content_.begin(); iter != this->content_.end();
+       ++iter) {
     if (iter->last() == '{') {
       openings.push_back(iter);
     } else if (iter->last() == '}') {
@@ -84,8 +84,7 @@ void ConfigFile::checkConfigBlocks() {
     }
   }
   if (openings.size() != 0) {
-    for (std::list<std::vector<Line>::iterator>::iterator iter =
-             openings.begin();
+    for (std::list<LineIter>::iterator iter = openings.begin();
          iter != openings.end(); ++iter) {
       (*iter)->addError("Missing block closing");
     }
@@ -96,21 +95,19 @@ std::vector<Config> ConfigFile::createConfig() {
   std::vector<Config> configVector;
   for (LineIter iter = this->content_.begin(); iter != this->content_.end();
        ++iter) {
-    if ((*iter).getLine() == "server {") {
+    if (iter->getLine() == "server {") {
       configVector.push_back(parseServer_(iter));
     }
   }
   return configVector;
 }
 
-Config ConfigFile::parseServer_(std::vector<Line>::iterator& iter) {
+Config ConfigFile::parseServer_(LineIter& iter) {
   Config config;
   for (; iter != this->content_.end(); ++iter) {
-    if ((*iter).firstWord() == "location" && (*iter).last() == '{') {
-      std::cout << "i am here" << std::endl;
-
+    if (iter->firstWord() == "location" && iter->last() == '{') {
       config.locations.push_back(parseLocation_(iter));
-    } else if ((*iter).getLine() == "}") {
+    } else if (iter->getLine() == "}") {
       // ++iter;
       break;
     }
@@ -118,12 +115,12 @@ Config ConfigFile::parseServer_(std::vector<Line>::iterator& iter) {
   return config;
 }
 
-Location ConfigFile::parseLocation_(std::vector<Line>::iterator& iter) {
+Location ConfigFile::parseLocation_(LineIter& iter) {
   Location location;
   for (; iter != this->content_.end(); ++iter) {
-    if ((*iter).firstWord() == "limit_except" && (*iter).last() == '{')
+    if (iter->firstWord() == "limit_except" && iter->last() == '{')
       location.limit_except = parseLimitExcept_(iter);
-    else if ((*iter).getLine() == "}") {
+    else if (iter->getLine() == "}") {
       // ++iter;
       break;
     }
@@ -131,8 +128,7 @@ Location ConfigFile::parseLocation_(std::vector<Line>::iterator& iter) {
   return location;
 }
 
-std::vector<std::string> ConfigFile::parseLimitExcept_(
-    std::vector<Line>::iterator& iter) {
+std::vector<std::string> ConfigFile::parseLimitExcept_(LineIter& iter) {
   std::vector<std::string> LimitExcept;
   std::stringstream ss(iter->getLine());
   std::string buffer;
@@ -162,10 +158,6 @@ std::ostream& operator<<(std::ostream& stream, const ConfigFile& config) {
        iter != config.content_.end(); ++iter) {
     stream << *iter << "\n";
   }
-  if (config.isValid())
-    stream << GREEN << "config is valid\n" << WHITE;
-  else
-    stream << RED << "config is invalid\n" << WHITE;
   stream << std::flush;
   return stream;
 }

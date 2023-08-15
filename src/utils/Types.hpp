@@ -7,4 +7,6 @@
 
 typedef std::vector<Line>::iterator LineIter;
 
+typedef std::vector<std::string>::iterator StringIter;
+
 #endif  // TYPES_HPP_
