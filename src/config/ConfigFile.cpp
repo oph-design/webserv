@@ -137,6 +137,18 @@ Location ConfigFile::parseLocation_(LineIter& iter) {
   for (; iter != this->content_.end(); ++iter) {
     if (iter->firstWord() == "limit_except" && iter->last() == '{')
       location.limit_except = parseLimitExcept_(iter);
+    else if (iter->firstWord() == "autoindex")
+      location.autoindex = parseAutoindex(*iter);
+    else if (iter->firstWord() == "client_max_body_size")
+      location.client_max_body_size = parseCientMaxBodySize(*iter);
+    else if (iter->firstWord() == "index")
+      location.index = parseIndex(*iter);
+    else if (iter->firstWord() == "root")
+      location.root = parseRoot(*iter);
+    else if (iter->firstWord() == "fastcgi_pass")
+      location.fastcgi_pass.insert(parseFastcgiPass(*iter));
+    else if (iter->firstWord() == "error_page")
+      location.error_page.insert(parseErrorPage(*iter));
     else if (iter->getLine() == "}") {
       // ++iter;
       break;
