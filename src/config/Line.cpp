@@ -17,6 +17,16 @@ Line& Line::operator=(const Line& obj) {
   return *this;
 }
 
+const std::string Line::operator[](const int& key) const {
+  if (key >= this->words())
+    throw std::out_of_range("Line " + toString(this->lineNumber_));
+  int count = 0;
+  std::stringstream ss(this->content_);
+  std::string buffer;
+  while (std::getline(ss, buffer) && count <= key) ++count;
+  return buffer;
+}
+
 void Line::trimWhitespace() {
   std::istringstream iss(this->content_);
   std::ostringstream oss;
@@ -46,7 +56,8 @@ bool Line::isEmpty() const {
 bool Line::isValid() const { return !this->error_; }
 
 std::ostream& operator<<(std::ostream& stream, const Line& line) {
-  stream << line.lineNumber_ << ":\t" << line.error_ << ":\t" << line.content_;
+  stream << line.lastWord() << " " << line.lineNumber_ << ":\t" << line.error_
+         << ":\t" << line.content_;
   if (line.error_ == true) {
     stream << "\n" << line.errorMessage_;
   }
@@ -72,6 +83,26 @@ std::string Line::firstWord() const {
   std::stringstream ss(this->content_);
   std::string buffer;
   std::getline(ss, buffer, ' ');
+  return buffer;
+}
+
+int Line::words() const {
+  int wordCount = 0;
+  std::stringstream ss(this->content_);
+  std::string buffer;
+  while (std::getline(ss, buffer, ' ')) ++wordCount;
+  return wordCount;
+}
+
+std::string Line::lastWord() const {
+  if (this->words() == 1) return this->firstWord();
+  std::stringstream ss(this->content_);
+  std::string buffer;
+  std::string prior;
+  while (std::getline(ss, buffer, ' ')) {
+    if (buffer.size() == 0) break;
+    prior = buffer;
+  }
   return buffer;
 }
 

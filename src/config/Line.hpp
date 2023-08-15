@@ -3,7 +3,10 @@
 
 #include <iostream>
 #include <sstream>
+#include <stdexcept>
 #include <string>
+
+#include "ToString.hpp"
 
 class Line {
  public:
@@ -14,6 +17,7 @@ class Line {
   Line& operator=(const Line& obj);
 
   friend std::ostream& operator<<(std::ostream& stream, const Line& line);
+  const std::string operator[](const int& key) const;
 
   void trimWhitespace();
   void removeComment();
@@ -25,6 +29,8 @@ class Line {
   const int& getLineNumber() const;
   const char& last() const;
   std::string firstWord() const;
+  std::string lastWord() const;
+  int words() const;
 
  private:
   std::string content_;
