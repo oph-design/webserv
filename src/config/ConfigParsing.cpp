@@ -80,9 +80,11 @@ bool parseAutoindex(Line &line) {
     line.addError(parameter + " unexpected arguments");
     return 0;
   }
-  if (line[1] == "on"){ return true;}
-  else if (line[1] == "off"){ return false;}
-  else{
+  if (line[1] == "on") {
+    return true;
+  } else if (line[1] == "off") {
+    return false;
+  } else {
     line.addError(parameter + " unexpected option");
   }
   return false;
@@ -99,6 +101,6 @@ std::pair<std::string, std::string> parseFastcgiPass(Line &line) {
     line.addError(parameter + " unexpected arguments");
     return std::make_pair("", "");
   }
-  std::cout << "fastcgi "<< line[1] << " : " << line[2] << std::endl;
+  std::cout << "fastcgi " << line[1] << " : " << line[2] << std::endl;
   return std::make_pair(line[1], line[2]);
 }
