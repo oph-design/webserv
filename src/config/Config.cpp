@@ -6,6 +6,9 @@ Config::Config() {
   this->server_name = "localhost";
   this->index = "index.html";
   this->root = "html/";
+  this->duplicates_.clientMaxBodySize = false;
+  this->duplicates_.index = false;
+  this->duplicates_.root = false;
 }
 
 Config::~Config() {}
@@ -20,7 +23,26 @@ Config& Config::operator=(const Config& obj) {
   this->root = obj.root;
   this->locations = obj.locations;
   this->error_page = obj.error_page;
+  this->duplicates_ = obj.duplicates_;
   return *this;
+}
+
+std::vector<Config>& Config::handleDuplicates(std::vector<Config>& configs) {
+  std::vector<Config> newVector;
+  for (std::vector<Config>::iterator iterOuter = configs.begin();
+       iterOuter != configs.end(); ++iterOuter) {
+    bool duplicate = false;
+    for (std::vector<Config>::iterator iterInner = iterOuter;
+         iterInner != configs.end(); ++iterInner) {
+      if (iterInner == iterOuter) continue;
+      if (iterInner->listen == iterOuter->listen &&
+          iterInner->server_name == iterOuter->server_name)
+        duplicate = true;
+    }
+    if (duplicate == false) newVector.push_back(*iterOuter);
+  }
+  configs = newVector;
+  return configs;
 }
 
 std::ostream& operator<<(std::ostream& stream, const Config& config) {

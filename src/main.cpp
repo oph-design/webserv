@@ -15,6 +15,7 @@ int main(int argc, char *argv[]) {
   configFile.removeSemiColon();
   std::cout << configFile;
   std::vector<Config> configs = configFile.createConfig();
+  configs = Config::handleDuplicates(configs);
   std::cout << configs << std::endl;
   std::cout << configFile;
   TcpServer Server("localhost", 1234);
