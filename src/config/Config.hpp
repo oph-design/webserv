@@ -25,6 +25,7 @@ class Config {
   friend std::ostream& operator<<(std::ostream& stream, const Config& config);
 
  private:
+  bool alreadyParsedListen_;
 };
 
 #endif  // CONFIG_HPP_
