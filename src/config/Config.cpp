@@ -28,6 +28,7 @@ std::vector<Config>& Config::handleDuplicates(std::vector<Config>& configs) {
   getPortsFromHostPort_(configs);
   deleteEmptyServer_(configs);
 
+  fillAllLocations(configs);
   return configs;
 }
 
@@ -41,6 +42,13 @@ void Config::fillLocations_() {
     std::map<int, std::string> newErrorPage = this->error_page;
     newErrorPage.insert(iter->error_page.begin(), iter->error_page.end());
     iter->error_page = newErrorPage;
+  }
+}
+
+void Config::fillAllLocations(std::vector<Config> &configs)
+{
+  for (std::vector<Config>::iterator iter = configs.begin(); iter != configs.end(); ++iter) {
+    iter->fillLocations_();
   }
 }
 

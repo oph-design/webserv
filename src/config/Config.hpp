@@ -33,8 +33,11 @@ class Config {
 
   static std::vector<Config>& handleDuplicates(std::vector<Config>& configs);
 
+
+
  private:
   void fillLocations_();
+  static void fillAllLocations(std::vector<Config>& configs);
 
   static void fillHostPort_(std::vector<Config>& configs);
   static void makeHostPortUnique_(std::vector<Config>& configs);
