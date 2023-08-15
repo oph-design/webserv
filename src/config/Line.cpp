@@ -23,7 +23,10 @@ const std::string Line::operator[](const int& key) const {
   int count = 0;
   std::stringstream ss(this->content_);
   std::string buffer;
-  while (std::getline(ss, buffer, ' ') && count <= key) ++count;
+  while (count <= key){
+    std::getline(ss, buffer, ' ');
+    ++count;
+  }
   return buffer;
 }
 
