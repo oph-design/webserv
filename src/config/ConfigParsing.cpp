@@ -27,7 +27,7 @@ int parseCientMaxBodySize(Line &line) {
     return 0;
   }
   if (!isNumber(line[1])) {
-    line.addError(parameter + " unexpected port");
+    line.addError(parameter + " unexpected number");
     return 0;
   }
   int value = std::atoi(line[1].c_str());
@@ -68,15 +68,24 @@ std::pair<int, std::string> parseErrorPage(Line &line) {
     return std::make_pair(0, "");
   }
   if (!isNumber(line[1])) {
-    line.addError(parameter + " unexpected port");
+    line.addError(parameter + " unexpected number");
     return std::make_pair(0, "");
   }
   return std::make_pair(std::atoi(line[1].c_str()), line[2]);
 }
 
 bool parseAutoindex(Line &line) {
-  (void)line;
-  return true;
+  std::string parameter = "root";
+  if (line.words() != 2) {
+    line.addError(parameter + " unexpected arguments");
+    return 0;
+  }
+  if (line[1] == "on"){ return true;}
+  else if (line[1] == "off"){ return false;}
+  else{
+    line.addError(parameter + " unexpected option");
+  }
+  return false;
 }
 
 std::string parsePath(Line &line) {
