@@ -45,6 +45,7 @@ class Request {
   std::string getPath() const;
   t_methodTypes getRequestMethodType() const;
   std::string getRequestMethodString() const;
+  std::string getQueryString() const;
   std::string getHTTPVersion() const;
   bool getRequestBodyExists() const;
   std::string getRequestBody() const;

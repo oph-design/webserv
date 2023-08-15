@@ -75,6 +75,8 @@ t_methodTypes Request::getRequestMethodType() const {
   return this->requestMethodType_;
 }
 
+std::string Request::getQueryString() const { return this->queryString_; }
+
 std::string Request::getRequestBody() const { return this->requestBody_; }
 
 std::string Request::getRequestMethodString() const {
