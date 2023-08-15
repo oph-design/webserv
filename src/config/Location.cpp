@@ -5,7 +5,7 @@ Location::Location() {
   this->clientMaxBodySize_ = 10000;
   this->index_ = "index.html";
   this->root_ = "./";
-  this->limitExcept.push_back("GET");
+  this->limitExcept.insert("GET");
   this->duplicates_.clientMaxBodySize = false;
   this->duplicates_.index = false;
   this->duplicates_.root = false;

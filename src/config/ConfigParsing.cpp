@@ -9,6 +9,86 @@
 #include "Location.hpp"
 #include "Utils.hpp"
 
+Config ConfigParsing::parseServer_(LineIter &iter, const LineIter &end) {
+  Config config;
+  t_duplicates duplicates;
+  ++iter;
+  for (; iter != end; ++iter) {
+    if (iter->firstWord() == "location" && iter->last() == '{')
+      config.locations_.push_back(
+          parseLocation_(iter, end));  // add to class later
+    else if (iter->firstWord() == "listen")
+      config.listen_.insert(ConfigParsing::parseListen(*iter));
+    else if (iter->firstWord() == "client_max_body_size")
+      config.clientMaxBodySize_ =
+          ConfigParsing::parseCientMaxBodySize(*iter, duplicates);
+    else if (iter->firstWord() == "server_name")
+      config.serverName_ = ConfigParsing::parseServerName(*iter);
+    else if (iter->firstWord() == "index")
+      config.index_ = ConfigParsing::parseIndex(*iter, duplicates);
+    else if (iter->firstWord() == "root")
+      config.root_ = ConfigParsing::parseRoot(*iter, duplicates);
+    else if (iter->firstWord() == "error_page")
+      config.errorPage_.insert(ConfigParsing::parseErrorPage(*iter));
+    else if (iter->getLine() == "}")
+      break;
+    else
+      iter->addError("unknown option" + iter->firstWord());
+  }
+  return config;
+}
+
+Location ConfigParsing::parseLocation_(LineIter &iter, const LineIter &end) {
+  Location location;
+  t_duplicates duplicates;
+  location.path_ = ConfigParsing::parsePath(*iter);
+  ++iter;
+  for (; iter != end; ++iter) {
+    if (iter->firstWord() == "limit_except" && iter->last() == '{')
+      location.limitExcept =
+          parseLimitExcept_(iter, end);  // add to class later
+    else if (iter->firstWord() == "autoindex")
+      location.autoindex_ = ConfigParsing::parseAutoindex(*iter);
+    else if (iter->firstWord() == "client_max_body_size")
+      location.clientMaxBodySize_ =
+          ConfigParsing::parseCientMaxBodySize(*iter, duplicates);
+    else if (iter->firstWord() == "index")
+      location.index_ = ConfigParsing::parseIndex(*iter, duplicates);
+    else if (iter->firstWord() == "root")
+      location.root_ = ConfigParsing::parseRoot(*iter, duplicates);
+    else if (iter->firstWord() == "fastcgi_pass")
+      location.fastcgiPass.insert(ConfigParsing::parseFastcgiPass(*iter));
+    else if (iter->firstWord() == "error_page")
+      location.errorPage.insert(ConfigParsing::parseErrorPage(*iter));
+    else if (iter->getLine() == "}")
+      break;
+    else
+      iter->addError("unknown option: " + iter->firstWord());
+  }
+  location.setDuplicates(duplicates);
+  return location;
+}
+
+std::set<std::string> ConfigParsing::parseLimitExcept_(LineIter &iter,
+                                                       const LineIter &end) {
+  std::set<std::string> LimitExcept;
+  for (int lineIter = 1; lineIter < iter->words() - 1; ++lineIter) {
+    if ((*iter)[lineIter] == "GET" || (*iter)[lineIter] == "POST" ||
+        (*iter)[lineIter] == "DELETE")
+      LimitExcept.insert((*iter)[lineIter]);
+  }
+  ++iter;
+  for (; iter != end; ++iter) {
+    if (iter->getLine() == "}")
+      break;
+    else if (iter->getLine() == "deny all")
+      continue;
+    else
+      iter->addError("line_except unknown token");
+  }
+  return LimitExcept;
+}
+
 int ConfigParsing::parseListen(Line &line) {
   std::string parameter = "listen";
   if (line.words() != 2) {

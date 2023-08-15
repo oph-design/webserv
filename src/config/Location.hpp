@@ -38,7 +38,7 @@ class Location {
   std::string index_;
   std::string path_;
   std::string root_;
-  std::vector<std::string> limitExcept;
+  std::set<std::string> limitExcept;
   std::map<std::string, std::string> fastcgiPass;
   std::map<int, std::string> errorPage;
 

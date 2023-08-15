@@ -5,11 +5,19 @@
 #include <string>
 #include <utility>
 
+#include "Config.hpp"
 #include "Line.hpp"
 #include "Location.hpp"
+#include "Types.hpp"
 
 class ConfigParsing {
  public:
+  // Blocks
+  static std::set<std::string> parseLimitExcept_(LineIter &iter,
+                                                 const LineIter &end);
+  static Location parseLocation_(LineIter &iter, const LineIter &end);
+  static Config parseServer_(LineIter &iter, const LineIter &end);
+
   // in Location and Server
   static int parseCientMaxBodySize(Line &line, t_duplicates &duplicates);
   static std::string parseIndex(Line &line, t_duplicates &duplicates);

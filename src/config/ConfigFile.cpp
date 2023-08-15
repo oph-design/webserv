@@ -102,92 +102,13 @@ std::vector<Config> ConfigFile::createConfig() {
   std::vector<Config> configVector;
   for (LineIter iter = this->content_.begin(); iter != this->content_.end();
        ++iter) {
-    if (iter->getLine() == "server {") {
-      configVector.push_back(parseServer_(iter));
-    }
+    if (iter->getLine() == "server {")
+      configVector.push_back(
+          ConfigParsing::parseServer_(iter, this->content_.end()));
+    else
+      iter->addError("server: unknow argument");
   }
   return configVector;
-}
-
-Config ConfigFile::parseServer_(LineIter& iter) {
-  Config config;
-  t_duplicates duplicates;
-  ++iter;
-  for (; iter != this->content_.end(); ++iter) {
-    if (iter->firstWord() == "location" && iter->last() == '{')
-      config.locations_.push_back(parseLocation_(iter));  // add to class later
-    else if (iter->firstWord() == "listen")
-      config.listen_.insert(ConfigParsing::parseListen(*iter));
-    else if (iter->firstWord() == "client_max_body_size")
-      config.clientMaxBodySize_ =
-          ConfigParsing::parseCientMaxBodySize(*iter, duplicates);
-    else if (iter->firstWord() == "server_name")
-      config.serverName_ = ConfigParsing::parseServerName(*iter);
-    else if (iter->firstWord() == "index")
-      config.index_ = ConfigParsing::parseIndex(*iter, duplicates);
-    else if (iter->firstWord() == "root")
-      config.root_ = ConfigParsing::parseRoot(*iter, duplicates);
-    else if (iter->firstWord() == "error_page")
-      config.errorPage_.insert(ConfigParsing::parseErrorPage(*iter));
-    else if (iter->getLine() == "}")
-      break;
-    else
-      iter->addError("unknown option" + iter->firstWord());
-  }
-  return config;
-}
-
-Location ConfigFile::parseLocation_(LineIter& iter) {
-  Location location;
-  t_duplicates duplicates;
-  location.path_ = ConfigParsing::parsePath(*iter);
-  ++iter;
-  for (; iter != this->content_.end(); ++iter) {
-    if (iter->firstWord() == "limit_except" && iter->last() == '{')
-      location.limitExcept = parseLimitExcept_(iter);  // add to class later
-    else if (iter->firstWord() == "autoindex")
-      location.autoindex_ = ConfigParsing::parseAutoindex(*iter);
-    else if (iter->firstWord() == "client_max_body_size")
-      location.clientMaxBodySize_ =
-          ConfigParsing::parseCientMaxBodySize(*iter, duplicates);
-    else if (iter->firstWord() == "index")
-      location.index_ = ConfigParsing::parseIndex(*iter, duplicates);
-    else if (iter->firstWord() == "root")
-      location.root_ = ConfigParsing::parseRoot(*iter, duplicates);
-    else if (iter->firstWord() == "fastcgi_pass")
-      location.fastcgiPass.insert(ConfigParsing::parseFastcgiPass(*iter));
-    else if (iter->firstWord() == "error_page")
-      location.errorPage.insert(ConfigParsing::parseErrorPage(*iter));
-    else if (iter->getLine() == "}")
-      break;
-    else
-      iter->addError("unknown option: " + iter->firstWord());
-  }
-  location.setDuplicates(duplicates);
-  return location;
-}
-
-std::vector<std::string> ConfigFile::parseLimitExcept_(LineIter& iter) {
-  std::vector<std::string> LimitExcept;
-  std::stringstream ss(iter->getLine());
-  std::string buffer;
-  std::getline(ss, buffer, ' ');
-  if (!(buffer == "limit_except")) {
-    std::cout << "something weird happened in parsing limit except"
-              << std::endl;
-    exit(1);  // remove me
-  }
-  while (std::getline(ss, buffer, ' ')) {
-    if (buffer == "}")
-      break;
-    else if (buffer == "GET" || buffer == "POST" || buffer == "DELETE")
-      LimitExcept.push_back(buffer);
-    else {
-      std::cout << "wrong method in parse Limit Except" << std::endl;
-      exit(1);  // remove me
-    }
-  }
-  return LimitExcept;
 }
 
 std::ostream& operator<<(std::ostream& stream, const ConfigFile& config) {

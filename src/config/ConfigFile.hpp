@@ -43,9 +43,9 @@ class ConfigFile {
   void checkSeparator();
   void checkConfigBlocks();
 
-  Config parseServer_(LineIter& iter);
-  Location parseLocation_(LineIter& iter);
-  std::vector<std::string> parseLimitExcept_(LineIter& iter);
+  Config parseServer_(LineIter& iter, const LineIter& end);
+  Location parseLocation_(LineIter& iter, const LineIter& end);
+  std::set<std::string> parseLimitExcept_(LineIter& iter, const LineIter& end);
 
   std::vector<Line> content_;
 };
