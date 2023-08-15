@@ -16,6 +16,7 @@ int main(int argc, char *argv[]) {
   std::cout << configFile;
   std::vector<Config> configs = configFile.createConfig();
   std::cout << configs << std::endl;
+  std::cout << configFile;
   TcpServer Server("localhost", 1234);
   Server.boot();
   return 0;

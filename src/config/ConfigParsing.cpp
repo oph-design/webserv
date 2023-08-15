@@ -91,8 +91,12 @@ bool parseAutoindex(Line &line) {
 }
 
 std::string parsePath(Line &line) {
-  (void)line;
-  return "";
+  std::string parameter = "location path";
+  if (line.words() != 3) {
+    line.addError(parameter + " unexpected arguments");
+    return 0;
+  }
+  return line[1];
 }
 
 std::pair<std::string, std::string> parseFastcgiPass(Line &line) {

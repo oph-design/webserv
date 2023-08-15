@@ -111,6 +111,7 @@ std::vector<Config> ConfigFile::createConfig() {
 
 Config ConfigFile::parseServer_(LineIter& iter) {
   Config config;
+  ++iter;
   for (; iter != this->content_.end(); ++iter) {
     if (iter->firstWord() == "location" && iter->last() == '{')
       config.locations.push_back(parseLocation_(iter));
@@ -128,12 +129,16 @@ Config ConfigFile::parseServer_(LineIter& iter) {
       config.error_page.insert(parseErrorPage(*iter));
     else if (iter->getLine() == "}")
       break;
+    else
+      iter->addError("unknown option" + iter->firstWord());
   }
   return config;
 }
 
 Location ConfigFile::parseLocation_(LineIter& iter) {
   Location location;
+  location.path = parsePath(*iter);
+  ++iter;
   for (; iter != this->content_.end(); ++iter) {
     if (iter->firstWord() == "limit_except" && iter->last() == '{')
       location.limit_except = parseLimitExcept_(iter);
@@ -149,10 +154,10 @@ Location ConfigFile::parseLocation_(LineIter& iter) {
       location.fastcgi_pass.insert(parseFastcgiPass(*iter));
     else if (iter->firstWord() == "error_page")
       location.error_page.insert(parseErrorPage(*iter));
-    else if (iter->getLine() == "}") {
-      // ++iter;
+    else if (iter->getLine() == "}")
       break;
-    }
+    else
+      iter->addError("unknown option: " + iter->firstWord());
   }
   return location;
 }
