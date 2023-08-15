@@ -53,8 +53,12 @@ std::string parseIndex(Line &line) {
 }
 
 std::string parseRoot(Line &line) {
-  (void)line;
-  return "";
+  std::string parameter = "root";
+  if (line.words() != 2) {
+    line.addError(parameter + " unexpected arguments");
+    return 0;
+  }
+  return line[1];
 }
 
 Location parseLocation(Line &line) {
