@@ -35,8 +35,12 @@ int parseCientMaxBodySize(Line &line) {
 }
 
 std::string parseServerName(Line &line) {
-  (void)line;
-  return "";
+  std::string parameter = "server_name";
+  if (line.words() != 2) {
+    line.addError(parameter + " unexpected arguments");
+    return 0;
+  }
+  return line[1];
 }
 
 std::string parseIndex(Line &line) {
