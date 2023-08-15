@@ -23,15 +23,6 @@ class Location {
   Location(const Location& obj);
   Location& operator=(const Location& obj);
 
-  bool autoindex;
-  int client_max_body_size;
-  std::string index;
-  std::string path;
-  std::string root;
-  std::vector<std::string> limit_except;
-  std::map<std::string, std::string> fastcgi_pass;
-  std::map<int, std::string> error_page;
-
   friend std::ostream& operator<<(std::ostream& stream,
                                   const Location& location);
   void setDuplicates(const t_duplicates& duplicates);
@@ -39,8 +30,18 @@ class Location {
 
   friend class Config;
   friend class ConfigFile;
+  friend class ConfigParsing;
 
  private:
+  bool autoindex_;
+  int clientMaxBodySize_;
+  std::string index_;
+  std::string path_;
+  std::string root_;
+  std::vector<std::string> limitExcept;
+  std::map<std::string, std::string> fastcgiPass;
+  std::map<int, std::string> errorPage;
+
   t_duplicates duplicates_;
 };
 

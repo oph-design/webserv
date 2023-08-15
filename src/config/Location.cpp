@@ -1,11 +1,11 @@
 #include "Location.hpp"
 
 Location::Location() {
-  this->autoindex = false;
-  this->client_max_body_size = 10000;
-  this->index = "index.html";
-  this->root = "./";
-  this->limit_except.push_back("GET");
+  this->autoindex_ = false;
+  this->clientMaxBodySize_ = 10000;
+  this->index_ = "index.html";
+  this->root_ = "./";
+  this->limitExcept.push_back("GET");
   this->duplicates_.clientMaxBodySize = false;
   this->duplicates_.index = false;
   this->duplicates_.root = false;
@@ -16,28 +16,28 @@ Location::~Location() {}
 Location::Location(const Location& obj) { *this = obj; }
 
 Location& Location::operator=(const Location& obj) {
-  this->autoindex = obj.autoindex;
-  this->client_max_body_size = obj.client_max_body_size;
-  this->index = obj.index;
-  this->path = obj.path;
-  this->root = obj.root;
-  this->limit_except = obj.limit_except;
-  this->fastcgi_pass = obj.fastcgi_pass;
-  this->error_page = obj.error_page;
+  this->autoindex_ = obj.autoindex_;
+  this->clientMaxBodySize_ = obj.clientMaxBodySize_;
+  this->index_ = obj.index_;
+  this->path_ = obj.path_;
+  this->root_ = obj.root_;
+  this->limitExcept = obj.limitExcept;
+  this->fastcgiPass = obj.fastcgiPass;
+  this->errorPage = obj.errorPage;
   this->duplicates_ = obj.duplicates_;
 
   return *this;
 }
 
 std::ostream& operator<<(std::ostream& stream, const Location& location) {
-  stream << "\nPath: " << location.path << "\n";
-  stream << "autoindex: " << location.autoindex << "\n";
-  stream << "client_max_body_size: " << location.client_max_body_size << "\n";
-  stream << "index: " << location.index << "\n";
-  stream << "root: " << location.root << "\n";
-  stream << "limit_except:\n" << location.limit_except;
-  stream << "fastcgi_pass:\n" << location.fastcgi_pass;
-  stream << "error_page:\n" << location.error_page;
+  stream << "\nPath: " << location.path_ << "\n";
+  stream << "autoindex: " << location.autoindex_ << "\n";
+  stream << "client_max_body_size: " << location.clientMaxBodySize_ << "\n";
+  stream << "index: " << location.index_ << "\n";
+  stream << "root: " << location.root_ << "\n";
+  stream << "limit_except:\n" << location.limitExcept;
+  stream << "fastcgi_pass:\n" << location.fastcgiPass;
+  stream << "error_page:\n" << location.errorPage;
   stream << std::flush;
   return stream;
 }

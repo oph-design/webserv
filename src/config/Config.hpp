@@ -21,20 +21,13 @@ class Config {
   Config(const Config& obj);
   Config& operator=(const Config& obj);
 
-  std::set<int> listen;
-  int client_max_body_size;
-  std::string server_name;
-  std::string index;
-  std::string root;
-  std::vector<Location> locations;
-  std::map<int, std::string> error_page;
-
   friend std::ostream& operator<<(std::ostream& stream, const Config& config);
 
   static std::vector<Config>& handleDuplicates(std::vector<Config>& configs);
 
   friend class ConfigFile;
   friend class Location;
+  friend class ConfigParsing;
 
  private:
   void fillLocations_();
@@ -44,6 +37,14 @@ class Config {
   static void makeHostPortUnique_(std::vector<Config>& configs);
   static void getPortsFromHostPort_(std::vector<Config>& configs);
   static void deleteEmptyServer_(std::vector<Config>& configs);
+
+  std::set<int> listen_;
+  int clientMaxBodySize_;
+  std::string serverName_;
+  std::string index_;
+  std::string root_;
+  std::vector<Location> locations_;
+  std::map<int, std::string> errorPage_;
 
   std::set<std::string> hostPort_;
 };

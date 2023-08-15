@@ -115,20 +115,20 @@ Config ConfigFile::parseServer_(LineIter& iter) {
   ++iter;
   for (; iter != this->content_.end(); ++iter) {
     if (iter->firstWord() == "location" && iter->last() == '{')
-      config.locations.push_back(parseLocation_(iter));  // add to class later
+      config.locations_.push_back(parseLocation_(iter));  // add to class later
     else if (iter->firstWord() == "listen")
-      config.listen.insert(ConfigParsing::parseListen(*iter));
+      config.listen_.insert(ConfigParsing::parseListen(*iter));
     else if (iter->firstWord() == "client_max_body_size")
-      config.client_max_body_size =
+      config.clientMaxBodySize_ =
           ConfigParsing::parseCientMaxBodySize(*iter, duplicates);
     else if (iter->firstWord() == "server_name")
-      config.server_name = ConfigParsing::parseServerName(*iter);
+      config.serverName_ = ConfigParsing::parseServerName(*iter);
     else if (iter->firstWord() == "index")
-      config.index = ConfigParsing::parseIndex(*iter, duplicates);
+      config.index_ = ConfigParsing::parseIndex(*iter, duplicates);
     else if (iter->firstWord() == "root")
-      config.root = ConfigParsing::parseRoot(*iter, duplicates);
+      config.root_ = ConfigParsing::parseRoot(*iter, duplicates);
     else if (iter->firstWord() == "error_page")
-      config.error_page.insert(ConfigParsing::parseErrorPage(*iter));
+      config.errorPage_.insert(ConfigParsing::parseErrorPage(*iter));
     else if (iter->getLine() == "}")
       break;
     else
@@ -140,24 +140,24 @@ Config ConfigFile::parseServer_(LineIter& iter) {
 Location ConfigFile::parseLocation_(LineIter& iter) {
   Location location;
   t_duplicates duplicates;
-  location.path = ConfigParsing::parsePath(*iter);
+  location.path_ = ConfigParsing::parsePath(*iter);
   ++iter;
   for (; iter != this->content_.end(); ++iter) {
     if (iter->firstWord() == "limit_except" && iter->last() == '{')
-      location.limit_except = parseLimitExcept_(iter);  // add to class later
+      location.limitExcept = parseLimitExcept_(iter);  // add to class later
     else if (iter->firstWord() == "autoindex")
-      location.autoindex = ConfigParsing::parseAutoindex(*iter);
+      location.autoindex_ = ConfigParsing::parseAutoindex(*iter);
     else if (iter->firstWord() == "client_max_body_size")
-      location.client_max_body_size =
+      location.clientMaxBodySize_ =
           ConfigParsing::parseCientMaxBodySize(*iter, duplicates);
     else if (iter->firstWord() == "index")
-      location.index = ConfigParsing::parseIndex(*iter, duplicates);
+      location.index_ = ConfigParsing::parseIndex(*iter, duplicates);
     else if (iter->firstWord() == "root")
-      location.root = ConfigParsing::parseRoot(*iter, duplicates);
+      location.root_ = ConfigParsing::parseRoot(*iter, duplicates);
     else if (iter->firstWord() == "fastcgi_pass")
-      location.fastcgi_pass.insert(ConfigParsing::parseFastcgiPass(*iter));
+      location.fastcgiPass.insert(ConfigParsing::parseFastcgiPass(*iter));
     else if (iter->firstWord() == "error_page")
-      location.error_page.insert(ConfigParsing::parseErrorPage(*iter));
+      location.errorPage.insert(ConfigParsing::parseErrorPage(*iter));
     else if (iter->getLine() == "}")
       break;
     else
