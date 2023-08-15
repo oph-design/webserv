@@ -75,7 +75,7 @@ std::pair<int, std::string> parseErrorPage(Line &line) {
 }
 
 bool parseAutoindex(Line &line) {
-  std::string parameter = "root";
+  std::string parameter = "autoindex";
   if (line.words() != 2) {
     line.addError(parameter + " unexpected arguments");
     return 0;
@@ -94,6 +94,10 @@ std::string parsePath(Line &line) {
 }
 
 std::pair<std::string, std::string> parseFastcgiPass(Line &line) {
-  (void)line;
-  return std::make_pair("", "");
+  std::string parameter = "error_page";
+  if (line.words() != 3) {
+    line.addError(parameter + " unexpected arguments");
+    return std::make_pair("", "");
+  }
+  return std::make_pair(line[1], line[2]);
 }
