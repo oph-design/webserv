@@ -7,21 +7,31 @@
 #include "Utils.hpp"
 
 int parseListen(Line &line) {
+  std::string parameter = "listen";
   if (line.words() != 2) {
-    line.addError("listen unexpected arguments");
+    line.addError(parameter + " unexpected arguments");
     return 0;
   }
   if (!isNumber(line[1])) {
-    line.addError("listen unexpected port");
+    line.addError(parameter + " unexpected port");
     return 0;
   }
-  int port = std::atoi(line[1].c_str());
-  return port;
+  int value = std::atoi(line[1].c_str());
+  return value;
 }
 
 int parseCientMaxBodySize(Line &line) {
-  (void)line;
-  return 0;
+  std::string parameter = "client_max_body_size";
+  if (line.words() != 2) {
+    line.addError(parameter + " unexpected arguments");
+    return 0;
+  }
+  if (!isNumber(line[1])) {
+    line.addError(parameter + " unexpected port");
+    return 0;
+  }
+  int value = std::atoi(line[1].c_str());
+  return value;
 }
 
 std::string parseServerName(Line &line) {
