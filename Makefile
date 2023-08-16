@@ -2,7 +2,7 @@ NAME							=	webserv
 
 CC								=	c++
 LCFLAGS						=	-fsanitize=address
-HEADERFLAGS				=	-I src/core -I include -I src/utils -I src/http 
+HEADERFLAGS				=	-I src/core -I include -I src/utils -I src/http -I src/config
 CFLAGS						=	$(LCFLAGS) $(HEADERFLAGS) \
 											-std=c++98 -Wall -Wextra -Werror -g -pedantic
 LFLAGS						=	$(LCFLAGS)
@@ -22,11 +22,16 @@ HTTP							=	$(addprefix $(HTTP_DIR), $(HTTP_FILES))
 HTTP_DIR					=	src/http/
 HTTP_FILES				=	Request.cpp Response.cpp Status.cpp
 
+CONFIG						=	$(addprefix $(CONFIG_DIR), $(CONFIG_FILES))
+CONFIG_DIR				=	src/config/
+CONFIG_FILES			=	ConfigFile.cpp Line.cpp Location.cpp Config.cpp \
+										ConfigParsing.cpp LocationGet.cpp ConfigGet.cpp
+
 UTILS							=	$(addprefix $(UTILS_DIR), $(UTILS_FILES))
 UTILS_DIR					=	src/utils/
-UTILS_FILES				=
+UTILS_FILES				= IsNumber.cpp
 
-ALL_SRC						=	$(SRC) $(CORE) $(UTILS) $(HTTP) 
+ALL_SRC						=	$(SRC) $(CORE) $(UTILS) $(HTTP) $(CONFIG)
 
 ################################################################################
 ################################################################################
@@ -88,7 +93,7 @@ $(ALL_OBJ_DIR):
 	mkdir -p $(ALL_OBJ_DIR)
 
 norm:
-	cpplint $(ALL_SRC)
+	-cpplint $(ALL_SRC)
 
 ################################################################################
 ################################################################################

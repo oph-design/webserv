@@ -6,4 +6,6 @@ RUN apt install vim \
                 build-essential \
                 -y
 
+EXPOSE 1234
+
 WORKDIR /host/
