@@ -95,9 +95,9 @@ void CgiConnector::executeScript_(std::string path, InOutHandler& io) {
   char** env = this->envToString_();
   if (this->env_["REQUEST_METHOD"] == "POST") std::cout << this->reqBody_;
   execve(path.c_str(), NULL, env);
-  size_t i = 0;
-  while (env[i] != NULL) delete[] env[i];
-  delete[] env;
+  // size_t i = 0;
+  // while (env[i] != NULL) delete[] env[i];
+  // delete[] env;
   std::exit(1);
 }
 
@@ -111,7 +111,6 @@ void CgiConnector::readOutput_() {
 std::string pathHelper(std::string name) {
   char* root = getenv("PWD");
   std::string res = std::string(root) + "/cgi-bin/" + name;
-  delete root;
   return (res);
 }
 

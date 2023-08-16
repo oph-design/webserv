@@ -94,7 +94,10 @@ const std::list<std::string> Response::getBodyChunked() const {
 
 void Response::handleGetRequest_(const Request &request) {
   CgiConnector cgi(request);
-  if (cgi.isCgi) serveCgi_(cgi);
+  if (cgi.isCgi) {
+    serveCgi_(cgi);
+    return;
+  }
   this->body_ = readBody_(request.getPath());
   std::string type = findType_(request.getPath());
   if (this->status_.getCode() > 399) this->body_ = status_.getErrorBody();
