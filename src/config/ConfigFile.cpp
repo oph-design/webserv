@@ -127,7 +127,9 @@ ConfigVector ConfigFile::createConfig() {
   this->cleanContent_();
   this->vaildateConfigFile_();
   this->removeSemiColon_();
+  if (this->isValid() == false) return ConfigVector();
   ConfigVector configVector = ConfigFile::createConfigVector_();
+  if (this->isValid() == false) return ConfigVector();
   configVector = Config::handleDuplicates_(configVector);
   return configVector;
 }
@@ -139,6 +141,8 @@ ConfigVector ConfigFile::createConfigVector_() {
     if (iter->getLine() == "server {")
       configVector.push_back(
           ConfigParsing::parseServer_(iter, this->content_.end()));
+    else if (iter->getLine() == "}")
+      break;
     else
       iter->addError("server: unknown argument");
   }
