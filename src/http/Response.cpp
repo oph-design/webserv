@@ -28,8 +28,8 @@ Response::Response(const Request &request) {
       handleDeleteRequest_(request);
       break;
     default:
-      this->status_.setCode(405);
-      this->body_ = this->status_.getErrorBody();
+      this->status_ = 405;
+      this->status_ >> this->body_;
   }
 }
 
@@ -100,7 +100,7 @@ void Response::handleGetRequest_(const Request &request) {
   }
   this->body_ = readBody_(request.getPath());
   std::string type = findType_(request.getPath());
-  if (this->status_.getCode() > 399) this->body_ = status_.getErrorBody();
+  if (this->status_ > 399) this->status_ >> this->body_;
   std::string length = toString<std::size_t>(this->body_.length());
 
   this->header_.insert(contentField("Content-Type", type));
@@ -110,14 +110,14 @@ void Response::handleGetRequest_(const Request &request) {
 
 void Response::handlePostRequest_(const Request &request) {
   (void)request;
-  this->status_.setCode(405);
-  this->body_ = this->status_.getErrorBody();
+  this->status_ = 405;
+  this->status_ >> this->body_;
 }
 
 void Response::handleDeleteRequest_(const Request &request) {
   (void)request;
-  this->status_.setCode(405);
-  this->body_ = this->status_.getErrorBody();
+  this->status_ = 405;
+  this->status_ >> this->body_;
 }
 
 void Response::serveCgi_(CgiConnector &cgi) {
@@ -151,7 +151,7 @@ std::string Response::readBody_(std::string dir) {
     std::cout << "File opened successfully." << std::endl;
   } else {
     std::cerr << "Failed to open file." << std::endl;
-    this->status_.setCode(404);
+    this->status_ = 404;
   }
   std::stringstream content;
   content << file.rdbuf();
@@ -170,7 +170,7 @@ std::string Response::findType_(std::string url) {
   if (search != Response::fileTypes_.end()) {
     type = Response::fileTypes_[extention];
   } else {
-    this->status_.setCode(415);
+    this->status_ = 415;
     type = "text/html";
   }
   type.append("; charset=UTF-8");

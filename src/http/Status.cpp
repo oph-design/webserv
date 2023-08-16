@@ -15,6 +15,11 @@ Status& Status::operator=(const Status& rhs) {
   return (*this);
 }
 
+Status& Status::operator=(int newCode) {
+  this->code_ = newCode;
+  return (*this);
+}
+
 Status::~Status() {}
 
 std::ostream& operator<<(std::ostream& stream, const Status& status) {
@@ -22,11 +27,17 @@ std::ostream& operator<<(std::ostream& stream, const Status& status) {
   return (stream);
 }
 
-const int& Status::getCode() const { return (code_); }
+bool Status::operator==(int rhs) const { return (this->code_ == rhs); }
 
-void Status::setCode(const int& newCode) { this->code_ = newCode; }
+bool Status::operator<=(int rhs) const { return (this->code_ <= rhs); }
 
-std::string Status::getErrorBody() const {
+bool Status::operator>=(int rhs) const { return (this->code_ >= rhs); }
+
+bool Status::operator>(int rhs) const { return (this->code_ > rhs); }
+
+bool Status::operator<(int rhs) const { return (this->code_ < rhs); }
+
+std::string& Status::operator>>(std::string& str) {
   std::stringstream body;
   body << "<!DOCTYPE html>\n";
   body << "<html lang=\"en\">\n";
@@ -46,7 +57,8 @@ std::string Status::getErrorBody() const {
   body << "\t</div>\n";
   body << "</body>";
   body << "</html>";
-  return (body.str());
+  str = body.str();
+  return (str);
 }
 
 statusMap Status::createStatusMap() {

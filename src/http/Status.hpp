@@ -18,13 +18,17 @@ class Status {
   Status();
   Status(const Status& rhs);
   Status& operator=(const Status& rhs);
+  Status& operator=(int newCode);
   ~Status();
 
   static statusMap createStatusMap();
-  const int& getCode() const;
-  void setCode(const int& newCode);
+  bool operator==(int rhs) const;
+  bool operator<=(int rhs) const;
+  bool operator>=(int rhs) const;
+  bool operator>(int rhs) const;
+  bool operator<(int rhs) const;
+  std::string& operator>>(std::string& str);
   friend std::ostream& operator<<(std::ostream& stream, const Status& status);
-  std::string getErrorBody() const;
 
  private:
   int code_;
