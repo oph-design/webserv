@@ -7,6 +7,7 @@
 #include <string>
 
 #include "ToString.hpp"
+#include "colors.hpp"
 
 class Line {
  public:
@@ -33,6 +34,8 @@ class Line {
   int words() const;
 
   void removeSemiColon();
+
+  void copyAllButContent(const Line& line);
 
  private:
   std::string content_;

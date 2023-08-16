@@ -59,9 +59,10 @@ bool Line::isEmpty() const {
 bool Line::isValid() const { return !this->error_; }
 
 std::ostream& operator<<(std::ostream& stream, const Line& line) {
-  stream << line.lineNumber_ << ":\t" << line.error_ << ":\t" << line.content_;
+  stream << line.lineNumber_ + 1 << ":\t" << line.error_ << ":\t"
+         << line.content_;
   if (line.error_ == true) {
-    stream << "\n" << line.errorMessage_;
+    stream << RED << "\n" << line.errorMessage_ << WHITE;
   }
   stream << std::flush;
   return stream;
@@ -99,6 +100,12 @@ int Line::words() const {
 void Line::removeSemiColon() {
   if (this->content_.size() > 0 && this->last() == ';')
     this->content_ = this->content_.substr(0, this->content_.size() - 1);
+}
+
+void Line::copyAllButContent(const Line& obj) {
+  this->errorMessage_ = obj.errorMessage_;
+  this->lineNumber_ = obj.lineNumber_;
+  this->error_ = obj.error_;
 }
 
 std::string Line::lastWord() const {

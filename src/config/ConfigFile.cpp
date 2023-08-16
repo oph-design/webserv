@@ -93,27 +93,11 @@ void ConfigFile::checkConfigBlocks_() {
   }
 }
 
-bool lineExistsInLineVector(LineVector lineVector, std::size_t lineNbr) {
-  for (LineIter iter = lineVector.begin(); iter != lineVector.end(); ++iter) {
-    if (iter->getLineNumber() == lineNbr) return true;
-  }
-  return false;
-}
-
 void ConfigFile::updateBackup() {
-  LineVector newBackup = this->content_;
-  for (LineIter iter = this->backup_.begin(); iter != this->backup_.end();
+  for (LineIter iter = this->content_.begin(); iter != this->content_.end();
        ++iter) {
-    if (lineExistsInLineVector(this->content_, iter->getLineNumber()))
-      continue;
-    else {
-      if (newBackup.size() > iter->getLineNumber())
-        newBackup.insert(newBackup.begin() + iter->getLineNumber(), *iter);
-      else
-        newBackup.push_back(*iter);
-    }
+    this->backup_[iter->getLineNumber()].copyAllButContent(*iter);
   }
-  this->backup_ = newBackup;
 }
 
 void ConfigFile::removeSemiColon_() {
