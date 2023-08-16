@@ -102,10 +102,11 @@ bool lineExistsInLineVector(LineVector lineVector, std::size_t lineNbr) {
 
 void ConfigFile::updateBackup() {
   LineVector newBackup = this->content_;
-  for (LineIter iter = this->backup_.begin(); iter != this->backup_.end(); ++iter) {
-    if (lineExistsInLineVector(this->content_, iter->getLineNumber() ))
+  for (LineIter iter = this->backup_.begin(); iter != this->backup_.end();
+       ++iter) {
+    if (lineExistsInLineVector(this->content_, iter->getLineNumber()))
       continue;
-    else{
+    else {
       if (newBackup.size() > iter->getLineNumber())
         newBackup.insert(newBackup.begin() + iter->getLineNumber(), *iter);
       else
@@ -114,8 +115,6 @@ void ConfigFile::updateBackup() {
   }
   this->backup_ = newBackup;
 }
-
-
 
 void ConfigFile::removeSemiColon_() {
   for (LineIter iter = this->content_.begin(); iter != this->content_.end();

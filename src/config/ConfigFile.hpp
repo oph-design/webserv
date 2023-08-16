@@ -32,8 +32,7 @@ class ConfigFile {
 
   bool isValid();
 
-  friend std::ostream& operator<<(std::ostream& stream,
-                                  ConfigFile& config);
+  friend std::ostream& operator<<(std::ostream& stream, ConfigFile& config);
 
  private:
   void cleanContent_();

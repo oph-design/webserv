@@ -13,7 +13,7 @@ Line& Line::operator=(const Line& obj) {
   this->lineNumber_ = obj.lineNumber_;
   this->content_ = obj.content_;
   this->error_ = obj.error_;
-  this->errorMessage_ = obj.error_;
+  this->errorMessage_ = obj.errorMessage_;
   return *this;
 }
 
