@@ -13,6 +13,7 @@
 #include <stdexcept>
 #include <string>
 
+#include "CgiConnector.hpp"
 #include "Request.hpp"
 #include "Status.hpp"
 #include "Utils.hpp"
@@ -45,6 +46,7 @@ class Response {
   void handleGetRequest_(const Request& request);
   void handlePostRequest_(const Request& request);
   void handleDeleteRequest_(const Request& request);
+  void serveCgi_(CgiConnector& cgi);
 
   static contentMap fileTypes_;
   contentMap header_;

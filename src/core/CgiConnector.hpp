@@ -8,13 +8,14 @@
 #include <unistd.h>
 
 #include <exception>
+#include <fstream>
 #include <iostream>
 #include <list>
 #include <map>
 #include <sstream>
 #include <string>
 
-#include "Response.hpp"
+#include "Request.hpp"
 #include "Status.hpp"
 
 typedef std::pair<std::string, std::string> envVar;
@@ -29,8 +30,8 @@ class CgiConnector {
   ~CgiConnector();
 
   void makeConnection(Status& status);
-  std::string getHeader_() const;
-  std::string getBody_() const;
+  std::map<std::string, std::string> getHeader() const;
+  std::string getBody() const;
 
   bool isCgi;
 
@@ -62,17 +63,3 @@ class CgiConnector {
 };
 
 #endif  // !CGICONNECTOR_HPP
-
-// REQUEST_METHOD:
-//
-// CONTENT_TYPE:
-//
-// CONTENT_LENGTH:
-//
-// QUERY_STRING:
-//
-// REQUEST_URI:
-//
-// SCRIPT_NAME:
-//
-// SERVER_PROTOCOL:

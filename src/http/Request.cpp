@@ -85,6 +85,8 @@ std::string Request::getRequestMethodString() const {
 
 std::string Request::getHTTPVersion() const { return this->httpVersion_; }
 
+bool Request::getRequestBodyExists() const { return this->requestBodyExists_; }
+
 void Request::parseRequestLine_(std::string &requestLine) {
   std::stringstream ss(requestLine);
   std::getline(ss, this->requestMethodString_, ' ');

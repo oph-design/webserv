@@ -1,5 +1,10 @@
 #include "Response.hpp"
 
+#include <sstream>
+
+#include "CgiConnector.hpp"
+#include "ToString.hpp"
+
 contentMap Response::fileTypes_ = Response::createTypeMap();
 
 /*            constructors                  */
@@ -88,6 +93,8 @@ const std::list<std::string> Response::getBodyChunked() const {
 /*            private functions                  */
 
 void Response::handleGetRequest_(const Request &request) {
+  CgiConnector cgi(request);
+  if (cgi.isCgi) serveCgi_(cgi);
   this->body_ = readBody_(request.getPath());
   std::string type = findType_(request.getPath());
   if (this->status_.getCode() > 399) this->body_ = status_.getErrorBody();
@@ -108,6 +115,20 @@ void Response::handleDeleteRequest_(const Request &request) {
   (void)request;
   this->status_.setCode(405);
   this->body_ = this->status_.getErrorBody();
+}
+
+void Response::serveCgi_(CgiConnector &cgi) {
+  cgi.makeConnection(this->status_);
+  if (status_.getCode() > 399) {
+    this->body_ = this->status_.getErrorBody();
+    this->header_.insert(contentField("Content-Type", "text/html"));
+    this->header_.insert(contentField("Connection", "keep-alive"));
+    this->header_.insert(
+        contentField("Content-Length", toString(this->body_.length())));
+    return;
+  }
+  this->header_ = cgi.getHeader();
+  this->body_ = cgi.getBody();
 }
 
 std::string Response::buildChunk_(std::string line) {
