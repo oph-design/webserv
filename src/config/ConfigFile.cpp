@@ -99,6 +99,15 @@ void ConfigFile::removeSemiColon() {
 }
 
 std::vector<Config> ConfigFile::createConfig() {
+  this->cleanContent();
+  this->vaildateConfigFile();
+  this->removeSemiColon();
+  std::vector<Config> configVector = ConfigFile::createConfigVector();
+  configVector = Config::handleDuplicates(configVector);
+  return configVector;
+}
+
+std::vector<Config> ConfigFile::createConfigVector() {
   std::vector<Config> configVector;
   for (LineIter iter = this->content_.begin(); iter != this->content_.end();
        ++iter) {
@@ -106,7 +115,7 @@ std::vector<Config> ConfigFile::createConfig() {
       configVector.push_back(
           ConfigParsing::parseServer_(iter, this->content_.end()));
     else
-      iter->addError("server: unknow argument");
+      iter->addError("server: unknown argument");
   }
   return configVector;
 }

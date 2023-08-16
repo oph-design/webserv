@@ -10,15 +10,13 @@
 int main(int argc, char *argv[]) {
   ConfigFile configFile;
   if (!configFile.openFile(argc, argv)) return 1;
-  configFile.cleanContent();
-  configFile.vaildateConfigFile();
-  configFile.removeSemiColon();
-  std::cout << configFile;
   std::vector<Config> configs = configFile.createConfig();
-  configs = Config::handleDuplicates(configs);
-  std::cout << configs << std::endl;
-  std::cout << configFile;
-  TcpServer Server("localhost", 1234);
-  Server.boot();
+  if (configFile.isValid() == false) {
+    std::cout << configFile << std::endl;
+    return 1;
+  } else {
+    TcpServer Server("localhost", 1234);
+    Server.boot();
+  }
   return 0;
 }

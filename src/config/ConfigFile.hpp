@@ -32,6 +32,8 @@ class ConfigFile {
 
   std::vector<Config> createConfig();
 
+  std::vector<Config> createConfigVector();
+
   bool isValid();
 
   friend std::ostream& operator<<(std::ostream& stream,
