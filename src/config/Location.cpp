@@ -5,7 +5,7 @@ Location::Location() {
   this->clientMaxBodySize_ = 10000;
   this->index_ = "index.html";
   this->root_ = "./";
-  this->limitExcept.insert("GET");
+  this->limitExcept_.insert("GET");
   this->duplicates_.clientMaxBodySize = false;
   this->duplicates_.index = false;
   this->duplicates_.root = false;
@@ -21,9 +21,9 @@ Location& Location::operator=(const Location& obj) {
   this->index_ = obj.index_;
   this->path_ = obj.path_;
   this->root_ = obj.root_;
-  this->limitExcept = obj.limitExcept;
-  this->fastcgiPass = obj.fastcgiPass;
-  this->errorPage = obj.errorPage;
+  this->limitExcept_ = obj.limitExcept_;
+  this->fastcgiPass_ = obj.fastcgiPass_;
+  this->errorPage_ = obj.errorPage_;
   this->duplicates_ = obj.duplicates_;
   return *this;
 }
@@ -34,9 +34,9 @@ std::ostream& operator<<(std::ostream& stream, const Location& location) {
   stream << "client_max_body_size: " << location.clientMaxBodySize_ << "\n";
   stream << "index: " << location.index_ << "\n";
   stream << "root: " << location.root_ << "\n";
-  stream << "limit_except:\n" << location.limitExcept;
-  stream << "fastcgi_pass:\n" << location.fastcgiPass;
-  stream << "error_page:\n" << location.errorPage;
+  stream << "limit_except:\n" << location.limitExcept_;
+  stream << "fastcgi_pass:\n" << location.fastcgiPass_;
+  stream << "error_page:\n" << location.errorPage_;
   stream << std::flush;
   return stream;
 }

@@ -28,12 +28,10 @@ class Config {
 
   friend std::ostream& operator<<(std::ostream& stream, const Config& config);
 
-
-
  private:
-  static ConfigVector& handleDuplicates(ConfigVector& configs);
+  static ConfigVector& handleDuplicates_(ConfigVector& configs);
   void fillLocations_();
-  static void fillAllLocations(ConfigVector& configs);
+  static void fillAllLocations_(ConfigVector& configs);
 
   static void fillHostPort_(ConfigVector& configs);
   static void makeHostPortUnique_(ConfigVector& configs);

@@ -22,13 +22,13 @@ Config& Config::operator=(const Config& obj) {
   return *this;
 }
 
-ConfigVector& Config::handleDuplicates(ConfigVector& configs) {
+ConfigVector& Config::handleDuplicates_(ConfigVector& configs) {
   fillHostPort_(configs);
   makeHostPortUnique_(configs);
   getPortsFromHostPort_(configs);
   deleteEmptyServer_(configs);
 
-  fillAllLocations(configs);
+  fillAllLocations_(configs);
   return configs;
 }
 
@@ -40,14 +40,14 @@ void Config::fillLocations_() {
     if (iter->duplicates_.index == false) iter->index_ = this->index_;
     if (iter->duplicates_.root == false) iter->root_ = this->root_;
     ErrorMap newErrorPage = this->errorPage_;
-    newErrorPage.insert(iter->errorPage.begin(), iter->errorPage.end());
-    iter->errorPage = newErrorPage;
+    newErrorPage.insert(iter->errorPage_.begin(), iter->errorPage_.end());
+    iter->errorPage_ = newErrorPage;
   }
 }
 
-void Config::fillAllLocations(ConfigVector& configs) {
-  for (ConfigVector::iterator iter = configs.begin();
-       iter != configs.end(); ++iter) {
+void Config::fillAllLocations_(ConfigVector& configs) {
+  for (ConfigVector::iterator iter = configs.begin(); iter != configs.end();
+       ++iter) {
     iter->fillLocations_();
   }
 }
@@ -71,8 +71,7 @@ void Config::makeHostPortUnique_(ConfigVector& configs) {
   for (ConfigVector::iterator configIter = configs.begin();
        configIter != configs.end(); ++configIter) {
     StringSet newSet;
-    for (StringSet::iterator listenIter =
-             configIter->hostPort_.begin();
+    for (StringSet::iterator listenIter = configIter->hostPort_.begin();
          listenIter != configIter->hostPort_.end(); ++listenIter) {
       if (portsInUse.find(*listenIter) == portsInUse.end())
         newSet.insert(*listenIter);
@@ -87,8 +86,7 @@ void Config::getPortsFromHostPort_(ConfigVector& configs) {
   for (ConfigVector::iterator configIter = configs.begin();
        configIter != configs.end(); ++configIter) {
     configIter->listen_.clear();
-    for (StringSet::iterator listenIter =
-             configIter->hostPort_.begin();
+    for (StringSet::iterator listenIter = configIter->hostPort_.begin();
          listenIter != configIter->hostPort_.end(); ++listenIter) {
       configIter->listen_.insert(std::atoi(
           listenIter->substr(listenIter->find_last_of(':') + 1).c_str()));

@@ -38,7 +38,7 @@ bool ConfigFile::openFile(int argc, char* argv[]) {
   return true;
 }
 
-void ConfigFile::cleanContent() {
+void ConfigFile::cleanContent_() {
   LineVector newContent;
   for (LineIter iter = this->content_.begin(); iter != this->content_.end();
        ++iter) {
@@ -49,9 +49,9 @@ void ConfigFile::cleanContent() {
   this->content_ = newContent;
 }
 
-void ConfigFile::vaildateConfigFile() {
-  this->checkSeparator();
-  this->checkConfigBlocks();
+void ConfigFile::vaildateConfigFile_() {
+  this->checkSeparator_();
+  this->checkConfigBlocks_();
 }
 
 bool ConfigFile::isValid() {
@@ -62,7 +62,7 @@ bool ConfigFile::isValid() {
   return true;
 }
 
-void ConfigFile::checkSeparator() {
+void ConfigFile::checkSeparator_() {
   for (LineIter iter = this->content_.begin(); iter != this->content_.end();
        ++iter) {
     if (iter->last() != ';' && iter->last() != '{' && iter->last() != '}')
@@ -70,7 +70,7 @@ void ConfigFile::checkSeparator() {
   }
 }
 
-void ConfigFile::checkConfigBlocks() {
+void ConfigFile::checkConfigBlocks_() {
   std::list<LineIter> openings;
   for (LineIter iter = this->content_.begin(); iter != this->content_.end();
        ++iter) {
@@ -91,7 +91,7 @@ void ConfigFile::checkConfigBlocks() {
   }
 }
 
-void ConfigFile::removeSemiColon() {
+void ConfigFile::removeSemiColon_() {
   for (LineIter iter = this->content_.begin(); iter != this->content_.end();
        ++iter) {
     if (iter->last() == ';') iter->removeSemiColon();
@@ -99,15 +99,15 @@ void ConfigFile::removeSemiColon() {
 }
 
 ConfigVector ConfigFile::createConfig() {
-  this->cleanContent();
-  this->vaildateConfigFile();
-  this->removeSemiColon();
-  ConfigVector configVector = ConfigFile::createConfigVector();
-  configVector = Config::handleDuplicates(configVector);
+  this->cleanContent_();
+  this->vaildateConfigFile_();
+  this->removeSemiColon_();
+  ConfigVector configVector = ConfigFile::createConfigVector_();
+  configVector = Config::handleDuplicates_(configVector);
   return configVector;
 }
 
-ConfigVector ConfigFile::createConfigVector() {
+ConfigVector ConfigFile::createConfigVector_() {
   ConfigVector configVector;
   for (LineIter iter = this->content_.begin(); iter != this->content_.end();
        ++iter) {

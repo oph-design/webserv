@@ -45,8 +45,7 @@ Location ConfigParsing::parseLocation_(LineIter &iter, const LineIter &end) {
   ++iter;
   for (; iter != end; ++iter) {
     if (iter->firstWord() == "limit_except" && iter->last() == '{')
-      location.limitExcept =
-          ConfigParsing::parseLimitExcept_(iter, end);
+      location.limitExcept_ = ConfigParsing::parseLimitExcept_(iter, end);
     else if (iter->firstWord() == "autoindex")
       location.autoindex_ = ConfigParsing::parseAutoindex(*iter);
     else if (iter->firstWord() == "client_max_body_size")
@@ -57,9 +56,9 @@ Location ConfigParsing::parseLocation_(LineIter &iter, const LineIter &end) {
     else if (iter->firstWord() == "root")
       location.root_ = ConfigParsing::parseRoot(*iter, duplicates);
     else if (iter->firstWord() == "fastcgi_pass")
-      location.fastcgiPass.insert(ConfigParsing::parseFastcgiPass(*iter));
+      location.fastcgiPass_.insert(ConfigParsing::parseFastcgiPass(*iter));
     else if (iter->firstWord() == "error_page")
-      location.errorPage.insert(ConfigParsing::parseErrorPage(*iter));
+      location.errorPage_.insert(ConfigParsing::parseErrorPage(*iter));
     else if (iter->getLine() == "}")
       break;
     else
@@ -70,7 +69,7 @@ Location ConfigParsing::parseLocation_(LineIter &iter, const LineIter &end) {
 }
 
 StringSet ConfigParsing::parseLimitExcept_(LineIter &iter,
-                                                       const LineIter &end) {
+                                           const LineIter &end) {
   StringSet LimitExcept;
   for (int lineIter = 1; lineIter < iter->words() - 1; ++lineIter) {
     if ((*iter)[lineIter] == "GET" || (*iter)[lineIter] == "POST" ||

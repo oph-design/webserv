@@ -8,10 +8,8 @@
 #include <string>
 #include <vector>
 
-#include "Types.hpp"
 #include "StreamOperators.hpp"
-
-
+#include "Types.hpp"
 
 class Location {
   friend class Config;
@@ -33,9 +31,9 @@ class Location {
   std::string index_;
   std::string path_;
   std::string root_;
-  StringSet limitExcept;
-  std::map<std::string, std::string> fastcgiPass;
-  ErrorMap errorPage;
+  StringSet limitExcept_;
+  std::map<std::string, std::string> fastcgiPass_;
+  ErrorMap errorPage_;
 
   Duplicates duplicates_;
 };

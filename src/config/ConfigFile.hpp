@@ -27,23 +27,21 @@ class ConfigFile {
   ConfigFile& operator=(const ConfigFile& obj);
 
   bool openFile(int argc, char* argv[]);
-  void cleanContent();
-  void vaildateConfigFile();
 
   ConfigVector createConfig();
-
-  ConfigVector createConfigVector();
 
   bool isValid();
 
   friend std::ostream& operator<<(std::ostream& stream,
                                   const ConfigFile& config);
 
-  void removeSemiColon();
-
  private:
-  void checkSeparator();
-  void checkConfigBlocks();
+  void cleanContent_();
+  void vaildateConfigFile_();
+  ConfigVector createConfigVector_();
+  void removeSemiColon_();
+  void checkSeparator_();
+  void checkConfigBlocks_();
 
   Config parseServer_(LineIter& iter, const LineIter& end);
   Location parseLocation_(LineIter& iter, const LineIter& end);
