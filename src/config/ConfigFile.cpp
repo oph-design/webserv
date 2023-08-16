@@ -39,7 +39,7 @@ bool ConfigFile::openFile(int argc, char* argv[]) {
 }
 
 void ConfigFile::cleanContent() {
-  std::vector<Line> newContent;
+  LineVector newContent;
   for (LineIter iter = this->content_.begin(); iter != this->content_.end();
        ++iter) {
     iter->trimWhitespace();
@@ -98,17 +98,17 @@ void ConfigFile::removeSemiColon() {
   }
 }
 
-std::vector<Config> ConfigFile::createConfig() {
+ConfigVector ConfigFile::createConfig() {
   this->cleanContent();
   this->vaildateConfigFile();
   this->removeSemiColon();
-  std::vector<Config> configVector = ConfigFile::createConfigVector();
+  ConfigVector configVector = ConfigFile::createConfigVector();
   configVector = Config::handleDuplicates(configVector);
   return configVector;
 }
 
-std::vector<Config> ConfigFile::createConfigVector() {
-  std::vector<Config> configVector;
+ConfigVector ConfigFile::createConfigVector() {
+  ConfigVector configVector;
   for (LineIter iter = this->content_.begin(); iter != this->content_.end();
        ++iter) {
     if (iter->getLine() == "server {")
@@ -123,7 +123,7 @@ std::vector<Config> ConfigFile::createConfigVector() {
 std::ostream& operator<<(std::ostream& stream, const ConfigFile& config) {
   stream << "Line\tError\tContent\n";
   stream << std::boolalpha;
-  for (std::vector<Line>::const_iterator iter = config.content_.begin();
+  for (LineVector::const_iterator iter = config.content_.begin();
        iter != config.content_.end(); ++iter) {
     stream << *iter << "\n";
   }

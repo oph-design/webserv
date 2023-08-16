@@ -12,6 +12,8 @@ class Location;
 
 typedef std::vector<Line>::iterator LineIter;
 
+typedef std::vector<Line> LineVector;
+
 typedef std::vector<std::string>::iterator StringIter;
 
 typedef std::vector<Config> ConfigVector;

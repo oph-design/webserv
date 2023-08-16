@@ -30,9 +30,9 @@ class ConfigFile {
   void cleanContent();
   void vaildateConfigFile();
 
-  std::vector<Config> createConfig();
+  ConfigVector createConfig();
 
-  std::vector<Config> createConfigVector();
+  ConfigVector createConfigVector();
 
   bool isValid();
 
@@ -47,9 +47,9 @@ class ConfigFile {
 
   Config parseServer_(LineIter& iter, const LineIter& end);
   Location parseLocation_(LineIter& iter, const LineIter& end);
-  std::set<std::string> parseLimitExcept_(LineIter& iter, const LineIter& end);
+  StringSet parseLimitExcept_(LineIter& iter, const LineIter& end);
 
-  std::vector<Line> content_;
+  LineVector content_;
 };
 
 #endif  // CONFIGFILE_HPP_
