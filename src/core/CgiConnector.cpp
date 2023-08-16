@@ -98,7 +98,7 @@ void CgiConnector::executeScript_(std::string path, InOutHandler& io) {
   if (this->env_["REQUEST_METHOD"] == "POST") std::cout << this->reqBody_;
   execve(path.c_str(), NULL, env);
   size_t i = 0;
-  while (env[i] != NULL) delete[] env[i];
+  while (env[i] != NULL) delete env[i++];
   delete[] env;
   std::cerr << RED << path << COLOR_RESET << std::endl;
   std::exit(1);
