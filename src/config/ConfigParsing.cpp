@@ -46,7 +46,7 @@ Location ConfigParsing::parseLocation_(LineIter &iter, const LineIter &end) {
   for (; iter != end; ++iter) {
     if (iter->firstWord() == "limit_except" && iter->last() == '{')
       location.limitExcept =
-          parseLimitExcept_(iter, end);  // add to class later
+          ConfigParsing::parseLimitExcept_(iter, end);
     else if (iter->firstWord() == "autoindex")
       location.autoindex_ = ConfigParsing::parseAutoindex(*iter);
     else if (iter->firstWord() == "client_max_body_size")
@@ -69,9 +69,9 @@ Location ConfigParsing::parseLocation_(LineIter &iter, const LineIter &end) {
   return location;
 }
 
-std::set<std::string> ConfigParsing::parseLimitExcept_(LineIter &iter,
+StringSet ConfigParsing::parseLimitExcept_(LineIter &iter,
                                                        const LineIter &end) {
-  std::set<std::string> LimitExcept;
+  StringSet LimitExcept;
   for (int lineIter = 1; lineIter < iter->words() - 1; ++lineIter) {
     if ((*iter)[lineIter] == "GET" || (*iter)[lineIter] == "POST" ||
         (*iter)[lineIter] == "DELETE")
@@ -145,7 +145,7 @@ std::string ConfigParsing::parseRoot(Line &line, t_duplicates &duplicates) {
   return line[1];
 }
 
-std::pair<int, std::string> ConfigParsing::parseErrorPage(Line &line) {
+ErrorPage ConfigParsing::parseErrorPage(Line &line) {
   std::string parameter = "error_page";
   if (line.words() != 3) {
     line.addError(parameter + " unexpected arguments");

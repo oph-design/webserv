@@ -2,9 +2,10 @@
 #define TYPES_HPP_
 
 #include <iterator>
-#include <string>
-#include <vector>
 #include <map>
+#include <string>
+#include <utility>
+#include <vector>
 
 class Config;
 class Line;
@@ -22,6 +23,8 @@ typedef std::vector<Location> LocationVector;
 
 typedef std::set<std::string> StringSet;
 
-typedef std::map<int, std::string> ErrorPage;
+typedef std::pair<int, std::string> ErrorPage;
+
+typedef std::map<int, std::string> ErrorMap;
 
 #endif  // TYPES_HPP_

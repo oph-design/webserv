@@ -22,7 +22,7 @@ class ConfigParsing {
   static int parseCientMaxBodySize(Line &line, t_duplicates &duplicates);
   static std::string parseIndex(Line &line, t_duplicates &duplicates);
   static std::string parseRoot(Line &line, t_duplicates &duplicates);
-  static std::pair<int, std::string> parseErrorPage(Line &line);
+  static ErrorPage parseErrorPage(Line &line);
 
   // in Server
   static int parseListen(Line &line);

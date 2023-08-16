@@ -45,7 +45,7 @@ class Config {
   std::string index_;
   std::string root_;
   LocationVector locations_;
-  ErrorPage errorPage_;
+  ErrorMap errorPage_;
 
   StringSet hostPort_;
 };
