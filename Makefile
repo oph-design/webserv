@@ -24,7 +24,8 @@ HTTP_FILES				=	Request.cpp Response.cpp Status.cpp
 
 CONFIG						=	$(addprefix $(CONFIG_DIR), $(CONFIG_FILES))
 CONFIG_DIR				=	src/config/
-CONFIG_FILES			=	ConfigFile.cpp Line.cpp Location.cpp Config.cpp ConfigParsing.cpp LocationGet.cpp
+CONFIG_FILES			=	ConfigFile.cpp Line.cpp Location.cpp Config.cpp \
+										ConfigParsing.cpp LocationGet.cpp ConfigGet.cpp
 
 UTILS							=	$(addprefix $(UTILS_DIR), $(UTILS_FILES))
 UTILS_DIR					=	src/utils/
