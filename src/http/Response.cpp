@@ -94,7 +94,7 @@ const std::list<std::string> Response::getBodyChunked() const {
 void Response::handleGetRequest(const Request &request) {
   this->body_ = readBody_(request.getPath());
   std::string type = findType_(request.getPath());
-  if (this->status_ > 399) this->body_ = status_.getErrorBody();
+  if (this->status_ > 399) this->status_ >> this->body_;
   std::string length = toString<std::size_t>(this->body_.length());
 
   this->header_.insert(contentField("Content-Type", type));
@@ -105,13 +105,13 @@ void Response::handleGetRequest(const Request &request) {
 void Response::handlePostRequest(const Request &request) {
   (void)request;
   this->status_ = 405;
-  this->body_ = this->status_.getErrorBody();
+  this->status_ >> this->body_;
 }
 
 void Response::handleDeleteRequest(const Request &request) {
   (void)request;
   this->status_ = 405;
-  this->body_ = this->status_.getErrorBody();
+  this->status_ >> this->body_;
 }
 
 std::string Response::buildChunk_(std::string line) {
