@@ -14,6 +14,10 @@
 
 
 class Location {
+  friend class Config;
+  friend class ConfigFile;
+  friend class ConfigParsing;
+
  public:
   Location();
   ~Location();
@@ -22,11 +26,6 @@ class Location {
 
   friend std::ostream& operator<<(std::ostream& stream,
                                   const Location& location);
-  void setDuplicates(const Duplicates& duplicates);
-
-  friend class Config;
-  friend class ConfigFile;
-  friend class ConfigParsing;
 
  private:
   bool autoindex_;

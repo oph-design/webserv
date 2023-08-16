@@ -65,7 +65,7 @@ Location ConfigParsing::parseLocation_(LineIter &iter, const LineIter &end) {
     else
       iter->addError("unknown option: " + iter->firstWord());
   }
-  location.setDuplicates(duplicates);
+  location.duplicates_ = duplicates;
   return location;
 }
 

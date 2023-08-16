@@ -40,7 +40,3 @@ std::ostream& operator<<(std::ostream& stream, const Location& location) {
   stream << std::flush;
   return stream;
 }
-
-void Location::setDuplicates(const Duplicates& duplicates) {
-  this->duplicates_ = duplicates;
-}

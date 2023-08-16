@@ -16,6 +16,10 @@
 #include "Types.hpp"
 
 class Config {
+  friend class ConfigFile;
+  friend class Location;
+  friend class ConfigParsing;
+
  public:
   Config();
   ~Config();
@@ -24,13 +28,10 @@ class Config {
 
   friend std::ostream& operator<<(std::ostream& stream, const Config& config);
 
-  static ConfigVector& handleDuplicates(ConfigVector& configs);
 
-  friend class ConfigFile;
-  friend class Location;
-  friend class ConfigParsing;
 
  private:
+  static ConfigVector& handleDuplicates(ConfigVector& configs);
   void fillLocations_();
   static void fillAllLocations(ConfigVector& configs);
 
