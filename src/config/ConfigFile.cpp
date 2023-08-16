@@ -8,6 +8,7 @@ ConfigFile::ConfigFile(const ConfigFile& obj) { *this = obj; }
 
 ConfigFile& ConfigFile::operator=(const ConfigFile& obj) {
   this->content_ = obj.content_;
+  this->backup_ = obj.backup_;
   return *this;
 }
 
@@ -35,6 +36,7 @@ bool ConfigFile::openFile(int argc, char* argv[]) {
     lineCount++;
     buffer.clear();
   }
+  this->backup_ = this->content_;
   return true;
 }
 
@@ -91,6 +93,30 @@ void ConfigFile::checkConfigBlocks_() {
   }
 }
 
+bool lineExistsInLineVector(LineVector lineVector, std::size_t lineNbr) {
+  for (LineIter iter = lineVector.begin(); iter != lineVector.end(); ++iter) {
+    if (iter->getLineNumber() == lineNbr) return true;
+  }
+  return false;
+}
+
+void ConfigFile::updateBackup() {
+  LineVector newBackup = this->content_;
+  for (LineIter iter = this->backup_.begin(); iter != this->backup_.end(); ++iter) {
+    if (lineExistsInLineVector(this->content_, iter->getLineNumber() ))
+      continue;
+    else{
+      if (newBackup.size() > iter->getLineNumber())
+        newBackup.insert(newBackup.begin() + iter->getLineNumber(), *iter);
+      else
+        newBackup.push_back(*iter);
+    }
+  }
+  this->backup_ = newBackup;
+}
+
+
+
 void ConfigFile::removeSemiColon_() {
   for (LineIter iter = this->content_.begin(); iter != this->content_.end();
        ++iter) {
@@ -120,11 +146,12 @@ ConfigVector ConfigFile::createConfigVector_() {
   return configVector;
 }
 
-std::ostream& operator<<(std::ostream& stream, const ConfigFile& config) {
+std::ostream& operator<<(std::ostream& stream, ConfigFile& config) {
+  config.updateBackup();
   stream << "Line\tError\tContent\n";
   stream << std::boolalpha;
-  for (LineVector::const_iterator iter = config.content_.begin();
-       iter != config.content_.end(); ++iter) {
+  for (LineVector::iterator iter = config.backup_.begin();
+       iter != config.backup_.end(); ++iter) {
     stream << *iter << "\n";
   }
   stream << std::flush;

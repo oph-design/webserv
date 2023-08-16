@@ -113,4 +113,4 @@ std::string Line::lastWord() const {
   return buffer;
 }
 
-const int& Line::getLineNumber() const { return this->lineNumber_; }
+const std::size_t& Line::getLineNumber() const { return this->lineNumber_; }

@@ -26,7 +26,7 @@ class Line {
   void addError(std::string errorMessage);
   const std::string& getLine() const;
 
-  const int& getLineNumber() const;
+  const std::size_t& getLineNumber() const;
   const char& last() const;
   std::string firstWord() const;
   std::string lastWord() const;
@@ -37,7 +37,7 @@ class Line {
  private:
   std::string content_;
   std::string errorMessage_;
-  int lineNumber_;
+  std::size_t lineNumber_;
   bool error_;
 };
 

@@ -33,7 +33,7 @@ class ConfigFile {
   bool isValid();
 
   friend std::ostream& operator<<(std::ostream& stream,
-                                  const ConfigFile& config);
+                                  ConfigFile& config);
 
  private:
   void cleanContent_();
@@ -43,11 +43,14 @@ class ConfigFile {
   void checkSeparator_();
   void checkConfigBlocks_();
 
+  void updateBackup();
+
   Config parseServer_(LineIter& iter, const LineIter& end);
   Location parseLocation_(LineIter& iter, const LineIter& end);
   StringSet parseLimitExcept_(LineIter& iter, const LineIter& end);
 
   LineVector content_;
+  LineVector backup_;
 };
 
 #endif  // CONFIGFILE_HPP_
