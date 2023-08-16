@@ -61,29 +61,6 @@ std::string& Status::operator>>(std::string& str) {
   return (str);
 }
 
-std::string Status::getErrorBody() const {
-  std::stringstream body;
-  body << "<!DOCTYPE html>\n";
-  body << "<html lang=\"en\">\n";
-  body << "<head>\n";
-  body << "\t<meta charset=\"UTF-8\">\n";
-  body << "\t<meta name=\"viewport\" content=\"width=device-width, "
-          "initial-scale=1.0\">\n";
-  body << "\t<title>" << *this << "</title>\n";
-  body << "<link rel=\"stylesheet\" href=\"error.css\">\n";
-  body << "</head>\n";
-  body << "<body>\n";
-  body << "\t<div class=\"container\">\n";
-  body << "\t\t<h1>Error " << code_ << "</h1>\n";
-  body << "\t\t<p>Oops! Looks like your grind wasn't hard enough!</p>\n";
-  body << "\t\t<p>Please check the URL or go back to the <a "
-          "href=\"/\">homepage</a>.</p>\n";
-  body << "\t</div>\n";
-  body << "</body>";
-  body << "</html>";
-  return (body.str());
-}
-
 statusMap Status::createStatusMap() {
   std::ifstream data("./resources/statuscodes.csv");
   std::string field;

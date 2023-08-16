@@ -29,7 +29,6 @@ class Status {
   bool operator<(int rhs) const;
   std::string& operator>>(std::string& str);
   friend std::ostream& operator<<(std::ostream& stream, const Status& status);
-  std::string getErrorBody() const;
 
  private:
   int code_;
