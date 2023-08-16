@@ -6,6 +6,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <set>
 
 class Config;
 class Line;
@@ -26,5 +27,11 @@ typedef std::set<std::string> StringSet;
 typedef std::pair<int, std::string> ErrorPage;
 
 typedef std::map<int, std::string> ErrorMap;
+
+typedef struct s_duplicates {
+  bool index;
+  bool root;
+  bool clientMaxBodySize;
+} Duplicates;
 
 #endif  // TYPES_HPP_

@@ -11,7 +11,7 @@
 
 Config ConfigParsing::parseServer_(LineIter &iter, const LineIter &end) {
   Config config;
-  t_duplicates duplicates;
+  Duplicates duplicates;
   ++iter;
   for (; iter != end; ++iter) {
     if (iter->firstWord() == "location" && iter->last() == '{')
@@ -40,7 +40,7 @@ Config ConfigParsing::parseServer_(LineIter &iter, const LineIter &end) {
 
 Location ConfigParsing::parseLocation_(LineIter &iter, const LineIter &end) {
   Location location;
-  t_duplicates duplicates;
+  Duplicates duplicates;
   location.path_ = ConfigParsing::parsePath(*iter);
   ++iter;
   for (; iter != end; ++iter) {
@@ -102,7 +102,7 @@ int ConfigParsing::parseListen(Line &line) {
   return std::atoi(line[1].c_str());
 }
 
-int ConfigParsing::parseCientMaxBodySize(Line &line, t_duplicates &duplicates) {
+int ConfigParsing::parseCientMaxBodySize(Line &line, Duplicates &duplicates) {
   std::string parameter = "client_max_body_size";
   if (line.words() != 2) {
     line.addError(parameter + " unexpected arguments");
@@ -125,7 +125,7 @@ std::string ConfigParsing::parseServerName(Line &line) {
   return line[1];
 }
 
-std::string ConfigParsing::parseIndex(Line &line, t_duplicates &duplicates) {
+std::string ConfigParsing::parseIndex(Line &line, Duplicates &duplicates) {
   std::string parameter = "index";
   if (line.words() != 2) {
     line.addError(parameter + " unexpected arguments");
@@ -135,7 +135,7 @@ std::string ConfigParsing::parseIndex(Line &line, t_duplicates &duplicates) {
   return line[1];
 }
 
-std::string ConfigParsing::parseRoot(Line &line, t_duplicates &duplicates) {
+std::string ConfigParsing::parseRoot(Line &line, Duplicates &duplicates) {
   std::string parameter = "root";
   if (line.words() != 2) {
     line.addError(parameter + " unexpected arguments");

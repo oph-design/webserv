@@ -19,9 +19,9 @@ class ConfigParsing {
   static Config parseServer_(LineIter &iter, const LineIter &end);
 
   // in Location and Server
-  static int parseCientMaxBodySize(Line &line, t_duplicates &duplicates);
-  static std::string parseIndex(Line &line, t_duplicates &duplicates);
-  static std::string parseRoot(Line &line, t_duplicates &duplicates);
+  static int parseCientMaxBodySize(Line &line, Duplicates &duplicates);
+  static std::string parseIndex(Line &line, Duplicates &duplicates);
+  static std::string parseRoot(Line &line, Duplicates &duplicates);
   static ErrorPage parseErrorPage(Line &line);
 
   // in Server

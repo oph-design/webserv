@@ -8,13 +8,10 @@
 #include <string>
 #include <vector>
 
+#include "Types.hpp"
 #include "StreamOperators.hpp"
 
-typedef struct s_duplicates {
-  bool index;
-  bool root;
-  bool clientMaxBodySize;
-} t_duplicates;
+
 
 class Location {
  public:
@@ -25,8 +22,7 @@ class Location {
 
   friend std::ostream& operator<<(std::ostream& stream,
                                   const Location& location);
-  void setDuplicates(const t_duplicates& duplicates);
-  const t_duplicates& getDuplicates() const;
+  void setDuplicates(const Duplicates& duplicates);
 
   friend class Config;
   friend class ConfigFile;
@@ -38,11 +34,11 @@ class Location {
   std::string index_;
   std::string path_;
   std::string root_;
-  std::set<std::string> limitExcept;
+  StringSet limitExcept;
   std::map<std::string, std::string> fastcgiPass;
-  std::map<int, std::string> errorPage;
+  ErrorMap errorPage;
 
-  t_duplicates duplicates_;
+  Duplicates duplicates_;
 };
 
 #endif  // LOCATION_HPP_

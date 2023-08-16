@@ -25,7 +25,6 @@ Location& Location::operator=(const Location& obj) {
   this->fastcgiPass = obj.fastcgiPass;
   this->errorPage = obj.errorPage;
   this->duplicates_ = obj.duplicates_;
-
   return *this;
 }
 
@@ -42,10 +41,6 @@ std::ostream& operator<<(std::ostream& stream, const Location& location) {
   return stream;
 }
 
-void Location::setDuplicates(const t_duplicates& duplicates) {
+void Location::setDuplicates(const Duplicates& duplicates) {
   this->duplicates_ = duplicates;
-}
-
-const t_duplicates& Location::getDuplicates() const {
-  return this->duplicates_;
 }
