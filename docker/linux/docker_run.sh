@@ -30,6 +30,7 @@ run_minilinux()
   echo "Creating container..."
   docker run -it \
               -v $PWD:/host/ \
+              -p 1234:1234 \
               --name $IMG_NAME \
               -e DOCKER_CONTAINER_NAME=$IMG_NAME $IMG_NAME \
               $CMD
