@@ -9,6 +9,7 @@
 #include "Line.hpp"
 #include "Location.hpp"
 #include "Types.hpp"
+#include "Utils.hpp"
 
 class ConfigParsing {
  public:

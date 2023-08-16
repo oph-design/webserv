@@ -1,14 +1,5 @@
 #include "ConfigParsing.hpp"
 
-#include <cstdlib>
-#include <string>
-#include <utility>
-
-#include "Config.hpp"
-#include "Line.hpp"
-#include "Location.hpp"
-#include "Utils.hpp"
-
 Config ConfigParsing::parseServer_(LineIter &iter, const LineIter &end) {
   Config config;
   Duplicates duplicates;

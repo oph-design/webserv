@@ -8,7 +8,7 @@
 #define FALLBACK_INDEX "index.html"
 #define FALLBACK_ROOT "html/"
 #define FALLBACK_CLIENTMAXBODYSIZE 10000
-#endif
+#endif  // FALLBACK_VALUES
 
 #include <algorithm>
 #include <map>
