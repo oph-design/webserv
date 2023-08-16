@@ -25,6 +25,15 @@ class Location {
   friend std::ostream& operator<<(std::ostream& stream,
                                   const Location& location);
 
+  const bool& getAutoindex() const;
+  const int& getClientMaxBodySize() const;
+  const std::string& getIndex() const;
+  const std::string& getPath() const;
+  const std::string& getRoot() const;
+  const StringSet& getMethods() const;
+  const std::map<std::string, std::string>& getFastcgiPass() const;
+  const ErrorMap& getErrorPage() const;
+
  private:
   bool autoindex_;
   int clientMaxBodySize_;
