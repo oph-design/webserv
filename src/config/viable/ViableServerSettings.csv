@@ -1,7 +1,0 @@
-listen,1
-server_name,N
-index,1
-root,1
-error_page,N,2
-client_max_body_size,1
-location,block

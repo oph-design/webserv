@@ -1,8 +1,13 @@
 #ifndef CONFIG_HPP_
 #define CONFIG_HPP_
 
-#ifndef STANDARD_PORT
-#define STANDARD_PORT 1234
+#ifndef FALLBACK_VALUES
+#define FALLBACK_VALUES
+#define FALLBACK_PORT 1234
+#define FALLBACK_SERVERNAME "localhost"
+#define FALLBACK_INDEX "index.html"
+#define FALLBACK_ROOT "html/"
+#define FALLBACK_CLIENTMAXBODYSIZE 10000
 #endif
 
 #include <algorithm>

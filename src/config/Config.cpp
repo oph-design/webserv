@@ -1,10 +1,10 @@
 #include "Config.hpp"
 
 Config::Config() {
-  this->clientMaxBodySize_ = 10000;
-  this->serverName_ = "localhost";
-  this->index_ = "index.html";
-  this->root_ = "html/";
+  this->clientMaxBodySize_ = FALLBACK_CLIENTMAXBODYSIZE;
+  this->serverName_ = FALLBACK_SERVERNAME;
+  this->index_ = FALLBACK_INDEX;
+  this->root_ = FALLBACK_ROOT;
 }
 
 Config::~Config() {}
@@ -62,7 +62,7 @@ void Config::fillHostPort_(ConfigVector& configs) {
     }
     if (configIter->hostPort_.size() == 0)
       configIter->hostPort_.insert(configIter->serverName_ + ":" +
-                                   toString(STANDARD_PORT));
+                                   toString(FALLBACK_PORT));
   }
 }
 
@@ -93,7 +93,7 @@ void Config::getPortsFromHostPort_(ConfigVector& configs) {
     }
     if (configIter->hostPort_.size() == 0)
       configIter->hostPort_.insert(configIter->serverName_ + ":" +
-                                   toString(STANDARD_PORT));
+                                   toString(FALLBACK_PORT));
   }
 }
 
