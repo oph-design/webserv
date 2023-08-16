@@ -13,6 +13,7 @@
 
 #include "Location.hpp"
 #include "ToString.hpp"
+#include "Types.hpp"
 
 class Config {
  public:
@@ -23,7 +24,7 @@ class Config {
 
   friend std::ostream& operator<<(std::ostream& stream, const Config& config);
 
-  static std::vector<Config>& handleDuplicates(std::vector<Config>& configs);
+  static ConfigVector& handleDuplicates(ConfigVector& configs);
 
   friend class ConfigFile;
   friend class Location;
@@ -31,22 +32,22 @@ class Config {
 
  private:
   void fillLocations_();
-  static void fillAllLocations(std::vector<Config>& configs);
+  static void fillAllLocations(ConfigVector& configs);
 
-  static void fillHostPort_(std::vector<Config>& configs);
-  static void makeHostPortUnique_(std::vector<Config>& configs);
-  static void getPortsFromHostPort_(std::vector<Config>& configs);
-  static void deleteEmptyServer_(std::vector<Config>& configs);
+  static void fillHostPort_(ConfigVector& configs);
+  static void makeHostPortUnique_(ConfigVector& configs);
+  static void getPortsFromHostPort_(ConfigVector& configs);
+  static void deleteEmptyServer_(ConfigVector& configs);
 
   std::set<int> listen_;
   int clientMaxBodySize_;
   std::string serverName_;
   std::string index_;
   std::string root_;
-  std::vector<Location> locations_;
-  std::map<int, std::string> errorPage_;
+  LocationVector locations_;
+  ErrorPage errorPage_;
 
-  std::set<std::string> hostPort_;
+  StringSet hostPort_;
 };
 
 #endif  // CONFIG_HPP_

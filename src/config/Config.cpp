@@ -22,7 +22,7 @@ Config& Config::operator=(const Config& obj) {
   return *this;
 }
 
-std::vector<Config>& Config::handleDuplicates(std::vector<Config>& configs) {
+ConfigVector& Config::handleDuplicates(ConfigVector& configs) {
   fillHostPort_(configs);
   makeHostPortUnique_(configs);
   getPortsFromHostPort_(configs);
@@ -33,27 +33,27 @@ std::vector<Config>& Config::handleDuplicates(std::vector<Config>& configs) {
 }
 
 void Config::fillLocations_() {
-  for (std::vector<Location>::iterator iter = this->locations_.begin();
+  for (LocationVector::iterator iter = this->locations_.begin();
        iter != this->locations_.end(); ++iter) {
-    if (iter->getDuplicates().clientMaxBodySize == false)
+    if (iter->duplicates_.clientMaxBodySize == false)
       iter->clientMaxBodySize_ = this->clientMaxBodySize_;
-    if (iter->getDuplicates().index == false) iter->index_ = this->index_;
-    if (iter->getDuplicates().root == false) iter->root_ = this->root_;
-    std::map<int, std::string> newErrorPage = this->errorPage_;
+    if (iter->duplicates_.index == false) iter->index_ = this->index_;
+    if (iter->duplicates_.root == false) iter->root_ = this->root_;
+    ErrorPage newErrorPage = this->errorPage_;
     newErrorPage.insert(iter->errorPage.begin(), iter->errorPage.end());
     iter->errorPage = newErrorPage;
   }
 }
 
-void Config::fillAllLocations(std::vector<Config>& configs) {
-  for (std::vector<Config>::iterator iter = configs.begin();
+void Config::fillAllLocations(ConfigVector& configs) {
+  for (ConfigVector::iterator iter = configs.begin();
        iter != configs.end(); ++iter) {
     iter->fillLocations_();
   }
 }
 
-void Config::fillHostPort_(std::vector<Config>& configs) {
-  for (std::vector<Config>::iterator configIter = configs.begin();
+void Config::fillHostPort_(ConfigVector& configs) {
+  for (ConfigVector::iterator configIter = configs.begin();
        configIter != configs.end(); ++configIter) {
     for (std::set<int>::iterator listenIter = configIter->listen_.begin();
          listenIter != configIter->listen_.end(); ++listenIter) {
@@ -66,12 +66,12 @@ void Config::fillHostPort_(std::vector<Config>& configs) {
   }
 }
 
-void Config::makeHostPortUnique_(std::vector<Config>& configs) {
-  std::set<std::string> portsInUse;
-  for (std::vector<Config>::iterator configIter = configs.begin();
+void Config::makeHostPortUnique_(ConfigVector& configs) {
+  StringSet portsInUse;
+  for (ConfigVector::iterator configIter = configs.begin();
        configIter != configs.end(); ++configIter) {
-    std::set<std::string> newSet;
-    for (std::set<std::string>::iterator listenIter =
+    StringSet newSet;
+    for (StringSet::iterator listenIter =
              configIter->hostPort_.begin();
          listenIter != configIter->hostPort_.end(); ++listenIter) {
       if (portsInUse.find(*listenIter) == portsInUse.end())
@@ -83,11 +83,11 @@ void Config::makeHostPortUnique_(std::vector<Config>& configs) {
   }
 }
 
-void Config::getPortsFromHostPort_(std::vector<Config>& configs) {
-  for (std::vector<Config>::iterator configIter = configs.begin();
+void Config::getPortsFromHostPort_(ConfigVector& configs) {
+  for (ConfigVector::iterator configIter = configs.begin();
        configIter != configs.end(); ++configIter) {
     configIter->listen_.clear();
-    for (std::set<std::string>::iterator listenIter =
+    for (StringSet::iterator listenIter =
              configIter->hostPort_.begin();
          listenIter != configIter->hostPort_.end(); ++listenIter) {
       configIter->listen_.insert(std::atoi(
@@ -99,9 +99,9 @@ void Config::getPortsFromHostPort_(std::vector<Config>& configs) {
   }
 }
 
-void Config::deleteEmptyServer_(std::vector<Config>& configs) {
-  std::vector<Config> newVector;
-  for (std::vector<Config>::iterator configIter = configs.begin();
+void Config::deleteEmptyServer_(ConfigVector& configs) {
+  ConfigVector newVector;
+  for (ConfigVector::iterator configIter = configs.begin();
        configIter != configs.end(); ++configIter) {
     if (configIter->listen_.size() != 0) newVector.push_back(*configIter);
   }
