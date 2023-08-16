@@ -54,7 +54,7 @@ envMap CgiConnector::buildEnv(const Request& request) {
   return (res);
 }
 
-char** CgiConnector::envToString() {
+char** CgiConnector::envToString_() {
   size_t i = 0;
   std::string variable;
   char** res = new char*[this->env_.size() + 1];
@@ -69,44 +69,42 @@ char** CgiConnector::envToString() {
   return (res);
 }
 
-void CgiConnector::handlePipes(t_fds& fdStruct) {
-  fdStruct.stdIn = dup(0);
-  fdStruct.stdOut = dup(1);
-  pipe(fdStruct.pipes);
-  dup2(fdStruct.pipes[1], 1);
-  dup2(fdStruct.pipes[0], 0);
-  close(fdStruct.pipes[1]);
-  close(fdStruct.pipes[0]);
+void CgiConnector::deleteEnv_(char** env) {
+  size_t i = 0;
+  while (env[i] != NULL) delete[] env[i];
+  delete[] env;
 }
 
-void CgiConnector::handlePipes(t_fds& fdStruct, int) {
-  dup2(fdStruct.stdOut, 1);
-  dup2(fdStruct.stdIn, 0);
-  close(fdStruct.stdIn);
-  close(fdStruct.stdOut);
+void CgiConnector::executeScript_(std::string path, InOutHandler& io) {
+  io.dupInChild();
+  char** env = this->envToString_();
+  if (this->env_["REQUEST_METHOD"] == "POST") std::cout << this->reqBody_;
+  execve(path.c_str(), NULL, env);
+  deleteEnv_(env);
+  std::exit(500);
 }
 
-void CgiConnector::readOutput() {
-  char buffer[1];
-  std::string str;
-  while (read(1, buffer, 1)) str.append(buffer);
-  this->respHeader_ = str.substr(0, str.find("\r\n\r\n") + 4);
-  this->respBody_ = str.substr(str.find("\r\n\r\n") + 4, str.length());
+void CgiConnector::readOutput_() {
+  std::string buffer;
+  while (std::getline(std::cin, buffer) && buffer != "\r\n")
+    this->respHeader_.append(buffer);
+  while (std::getline(std::cin, buffer)) this->respBody_.append(buffer);
+}
+
+std::string pathHelper(std::string name) {
+  char* root = getenv("PWD");
+  std::string res = std::string(root) + "/cgi-bin/" + name;
+  delete root;
+  return (res);
 }
 
 int CgiConnector::makeConnection() {
-  t_fds fdStruct;
-  char** env = envToString();
-  char* root = getenv("PWD");
-  std::string path = std::string(root) + this->env_["SCRIPT_NAME"];
-  delete root;
-  this->handlePipes(fdStruct);
-  if (fork() == 0) {
-    write(0, reqBody_.c_str(), reqBody_.length());
-    execve(path.c_str(), NULL, env);
-    return (500);
-  }
-  this->readOutput();
-  this->handlePipes(fdStruct, 1);
+  InOutHandler io;
+  char** env = this->envToString_();
+  if (fork() == 0)
+    this->executeScript_(env, pathHelper(this->env_["SCRIPT_NAME"]), io);
+  io.dupInParent();
+  this->readOutput_();
+  deleteEnv_(env);
   return (200);
 }

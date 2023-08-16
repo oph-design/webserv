@@ -15,37 +15,46 @@
 #include <string>
 
 #include "Response.hpp"
+#include "Status.hpp"
 
 typedef std::pair<std::string, std::string> envVar;
 typedef std::map<std::string, std::string> envMap;
 
 class CgiConnector {
  public:
-  typedef struct s_fds {
-    int pipes[2];
-    int stdIn;
-    int stdOut;
-  } t_fds;
-
   CgiConnector();
   CgiConnector(const Request& request);
   CgiConnector(const CgiConnector& rhs);
   CgiConnector& operator=(const CgiConnector& rhs);
   ~CgiConnector();
 
-  int makeConnection();
+  void makeConnection(Status& status);
   std::string getHeader_() const;
   std::string getBody_() const;
 
   bool isCgi;
 
  private:
-  envMap buildEnv(const Request& request);
-  char** envToString();
-  void handlePipes(t_fds& fdStruct);
-  void handlePipes(t_fds& fdStruct, int);
-  void readOutput();
-  bool checkCgi();
+  class InOutHandler {
+   public:
+    InOutHandler();
+    ~InOutHandler();
+    void dupInChild();
+    void dupInParent();
+
+   private:
+    int pipes_[2];
+    int stdIn_;
+    int stdOut_;
+  };
+
+  envMap buildEnv_(const Request& request);
+  char** envToString_();
+  static void deleteEnv_(char** env);
+  void executeScript_(std::string path, InOutHandler& io);
+  void readOutput_();
+  bool checkCgi_();
+
   std::string respHeader_;
   std::string respBody_;
   std::string reqBody_;
