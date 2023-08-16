@@ -121,6 +121,6 @@ void CgiConnector::makeConnection(Status& status) {
   if (pid == 0) this->executeScript_(pathHelper(this->env_["SCRIPT_NAME"]), io);
   io.dupInParent();
   waitpid(pid, &exitcode, 0);
-  if (exitcode > 1) status.setCode(500);
+  if (exitcode > 1) status = 500;
   this->readOutput_();
 }
