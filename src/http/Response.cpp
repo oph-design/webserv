@@ -1,10 +1,5 @@
 #include "Response.hpp"
 
-#include <sstream>
-
-#include "CgiConnector.hpp"
-#include "ToString.hpp"
-
 contentMap Response::fileTypes_ = Response::createTypeMap();
 
 /*            constructors                  */
@@ -122,8 +117,8 @@ void Response::handleDeleteRequest_(const Request &request) {
 
 void Response::serveCgi_(CgiConnector &cgi) {
   cgi.makeConnection(this->status_);
-  if (status_.getCode() > 399) {
-    this->body_ = this->status_.getErrorBody();
+  if (status_ > 399) {
+    this->status_ >> this->body_;
     this->header_.insert(contentField("Content-Type", "text/html"));
     this->header_.insert(contentField("Connection", "keep-alive"));
     this->header_.insert(

@@ -1,5 +1,7 @@
 #include "CgiConnector.hpp"
 
+#include "colors.hpp"
+
 CgiConnector::CgiConnector() {}
 
 CgiConnector::CgiConnector(const Request& request) {
@@ -98,6 +100,7 @@ void CgiConnector::executeScript_(std::string path, InOutHandler& io) {
   // size_t i = 0;
   // while (env[i] != NULL) delete[] env[i];
   // delete[] env;
+  std::cerr << RED << path << COLOR_RESET << std::endl;
   std::exit(1);
 }
 
@@ -121,6 +124,7 @@ void CgiConnector::makeConnection(Status& status) {
   if (pid == 0) this->executeScript_(pathHelper(this->env_["SCRIPT_NAME"]), io);
   io.dupInParent();
   waitpid(pid, &exitcode, 0);
+  std::cerr << RED << exitcode << COLOR_RESET << std::endl;
   if (exitcode > 1) status = 500;
   this->readOutput_();
 }
