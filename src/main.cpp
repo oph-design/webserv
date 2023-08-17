@@ -15,7 +15,9 @@ int main(int argc, char *argv[]) {
     std::cout << configFile << std::endl;
     return 1;
   } else {
-    TcpServer Server("localhost", 1234);
+    configFile.~ConfigFile();
+    // TcpServer Server("localhost", 1234);
+    TcpServer Server(configs[0]);
     Server.boot();
   }
   return 0;

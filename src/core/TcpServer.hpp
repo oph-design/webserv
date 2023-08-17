@@ -13,6 +13,7 @@
 #include <sstream>
 #include <string>
 
+#include "Config.hpp"
 #include "Request.hpp"
 #include "Response.hpp"
 #include "Socket.hpp"
@@ -23,9 +24,11 @@
 class TcpServer {
  public:
   TcpServer(std::string ip_addr, int port);
+  TcpServer(Config &config);
   TcpServer(const TcpServer &);
   ~TcpServer();
   TcpServer &operator=(const TcpServer &);
+
   void boot();
 
  private:
@@ -51,6 +54,8 @@ class TcpServer {
   int port_;
   int nfds_;
   int socketopt_;
+
+  Config config_;
 };
 
 #endif  // TCPSERVER_HPP
