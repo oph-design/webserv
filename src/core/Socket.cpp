@@ -22,6 +22,8 @@ Socket &Socket::operator=(const Socket &rhs) {
   this->keepAlive_ = rhs.keepAlive_;
   this->socketOpt_ = rhs.socketOpt_;
   this->socketFd_ = rhs.socketFd_;
+  this->timeout_ = rhs.timeout_;
+  this->inUse_ = rhs.inUse_;
   return *this;
 }
 

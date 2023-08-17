@@ -177,10 +177,27 @@ void TcpServer::boot() {
 TcpServer::TcpServer(std::string ip_addr, int port)
     : ip_addr_(ip_addr), port_(port), nfds_(1), socketopt_(1) {}
 
-TcpServer::TcpServer(const TcpServer &rhs) { (void)rhs; }
+TcpServer::TcpServer(Config &config)
+    : ip_addr_(config.getRoot()),
+      port_(*config.getListen().begin()),
+      nfds_(1),
+      socketopt_(1),
+      config_(config) {}
+
+TcpServer::TcpServer(const TcpServer &rhs) { *this = rhs; }
 TcpServer::~TcpServer() {}
 
 TcpServer &TcpServer::operator=(const TcpServer &rhs) {
-  (void)rhs;
+  this->listening_socket_ = rhs.listening_socket_;
+  this->servaddr_ = rhs.servaddr_;
+  for (int i = 0; i < MAX_CLIENTS; ++i) {
+    this->fds_[i] = rhs.fds_[i];
+    this->pollSockets_[i] = rhs.pollSockets_[i];
+  }
+  this->ip_addr_ = rhs.ip_addr_;
+  this->port_ = rhs.port_;
+  this->nfds_ = rhs.nfds_;
+  this->socketopt_ = rhs.socketopt_;
+  this->config_ = rhs.config_;
   return *this;
 }
