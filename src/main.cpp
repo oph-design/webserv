@@ -17,7 +17,7 @@ int main(int argc, char *argv[]) {
   } else {
     configFile.~ConfigFile();
     // TcpServer Server("localhost", 1234);
-    TcpServer Server(configs[0]);
+    TcpServer Server(configs[0], *configs[0].getListen().begin());
     Server.boot();
   }
   return 0;

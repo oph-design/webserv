@@ -177,9 +177,9 @@ void TcpServer::boot() {
 TcpServer::TcpServer(std::string ip_addr, int port)
     : ip_addr_(ip_addr), port_(port), nfds_(1), socketopt_(1) {}
 
-TcpServer::TcpServer(Config &config)
+TcpServer::TcpServer(Config &config, int port)
     : ip_addr_(config.getRoot()),
-      port_(*config.getListen().begin()),
+      port_(port),
       nfds_(1),
       socketopt_(1),
       config_(config) {}
