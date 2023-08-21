@@ -100,7 +100,6 @@ void CgiConnector::executeScript_(std::string path, InOutHandler& io) {
   size_t i = 0;
   while (env[i] != NULL) delete env[i++];
   delete[] env;
-  std::cerr << RED << path << COLOR_RESET << std::endl;
   std::exit(1);
 }
 
@@ -117,14 +116,28 @@ std::string pathHelper(std::string name) {
   return (res);
 }
 
+pid_t CgiConnector::timeout(int* exitcode) {
+  pid_t pid = 0;
+  while ((pid = waitpid(WAIT_ANY, exitcode, 0)) == -1 ); 
+  return pid;
+}
+
 void CgiConnector::makeConnection(Status& status) {
   InOutHandler io;
   int exitcode;
+  pid_t timer = fork();
+  if (!timer) {
+    sleep(5);
+    std::exit(1);
+  }
   pid_t pid = fork();
-  if (pid == 0) this->executeScript_(pathHelper(this->env_["SCRIPT_NAME"]), io);
+  if (!pid) this->executeScript_(pathHelper(this->env_["SCRIPT_NAME"]), io);
   io.dupInParent();
-  waitpid(pid, &exitcode, 0);
-  std::cerr << RED << exitcode << COLOR_RESET << std::endl;
-  if (exitcode > 1) status = 500;
+  if (timeout(&exitcode) == timer)
+    kill(pid, SIGKILL);
+  if (exitcode > 0) {
+    status = 500;
+    return;
+  }
   this->readOutput_();
 }

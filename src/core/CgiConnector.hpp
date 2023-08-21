@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <sys/wait.h>
 #include <unistd.h>
+#include <signal.h>
 
 #include <exception>
 #include <fstream>
@@ -52,6 +53,7 @@ class CgiConnector {
   envMap buildEnv_(const Request& request);
   char** envToString_();
   static void deleteEnv_(char** env);
+  static pid_t timeout(int* exitcode);
   void executeScript_(std::string path, InOutHandler& io);
   void readOutput_();
   bool checkCgi_();
