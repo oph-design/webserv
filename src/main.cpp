@@ -1,12 +1,7 @@
-#include <fstream>
 #include <iostream>
 
-#include "Config.hpp"
 #include "ConfigFile.hpp"
-#include "Response.hpp"
 #include "ServerCluster.hpp"
-#include "Status.hpp"
-#include "TcpServer.hpp"
 
 int main(int argc, char *argv[]) {
   ConfigFile configFile;
