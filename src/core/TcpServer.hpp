@@ -13,6 +13,7 @@
 #include <sstream>
 #include <string>
 
+#include "Config.hpp"
 #include "Request.hpp"
 #include "Response.hpp"
 #include "Socket.hpp"
@@ -21,16 +22,20 @@
 #define BUFFER_SIZE 1024
 
 class TcpServer {
+  friend class ServerCluster;
+
  public:
   TcpServer(std::string ip_addr, int port);
+  TcpServer(Config &config, int port);
   TcpServer(const TcpServer &);
   ~TcpServer();
   TcpServer &operator=(const TcpServer &);
+
   void boot();
 
  private:
   void bootServer_();
-  void serverLoop_();
+  bool serverLoop_();
   void initNewConnection_();
   bool existingConnection_(Socket &, pollfd &, int &);
   void sendFile_(int, std::list<std::string>);
@@ -51,6 +56,8 @@ class TcpServer {
   int port_;
   int nfds_;
   int socketopt_;
+
+  Config config_;
 };
 
 #endif  // TCPSERVER_HPP

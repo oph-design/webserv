@@ -23,12 +23,12 @@ Config& Config::operator=(const Config& obj) {
 }
 
 ConfigVector& Config::handleDuplicates_(ConfigVector& configs) {
-  fillHostPort_(configs);
-  makeHostPortUnique_(configs);
-  getPortsFromHostPort_(configs);
-  deleteEmptyServer_(configs);
+  Config::fillHostPort_(configs);
+  Config::makeHostPortUnique_(configs);
+  Config::getPortsFromHostPort_(configs);
+  Config::deleteEmptyServer_(configs);
 
-  fillAllLocations_(configs);
+  Config::fillAllLocations_(configs);
   return configs;
 }
 

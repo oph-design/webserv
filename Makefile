@@ -2,7 +2,8 @@ NAME							=	webserv
 
 CC								=	c++
 LCFLAGS						=	-fsanitize=address
-HEADERFLAGS				=	-I src/core -I include -I src/utils -I src/http -I src/config
+HEADERFLAGS				=	-I src/core -I include -I src/utils -I src/http \
+										-I src/config
 CFLAGS						=	$(LCFLAGS) $(HEADERFLAGS) \
 											-std=c++98 -Wall -Wextra -Werror -g -pedantic
 LFLAGS						=	$(LCFLAGS)
@@ -93,7 +94,9 @@ $(ALL_OBJ_DIR):
 	mkdir -p $(ALL_OBJ_DIR)
 
 norm:
-	-cpplint $(ALL_SRC)
+	@cpplint $(shell find src -type f -name "*.cpp") \
+						$(shell find src -type f -name "*.hpp") \
+						$(shell find include -type f -name "*.hpp")
 
 ################################################################################
 ################################################################################

@@ -1,11 +1,7 @@
-#include <fstream>
 #include <iostream>
 
-#include "Config.hpp"
 #include "ConfigFile.hpp"
-#include "Response.hpp"
-#include "Status.hpp"
-#include "TcpServer.hpp"
+#include "ServerCluster.hpp"
 
 int main(int argc, char *argv[]) {
   ConfigFile configFile;
@@ -15,8 +11,9 @@ int main(int argc, char *argv[]) {
     std::cout << configFile << std::endl;
     return 1;
   } else {
-    TcpServer Server("localhost", 1234);
-    Server.boot();
+    configFile.~ConfigFile();
+    ServerCluster cluster(configs);
+    cluster.boot();
   }
   return 0;
 }
