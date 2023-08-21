@@ -18,6 +18,12 @@ void TcpServer::bootServer_() {
     error_();
   }
 
+  if (setsockopt(this->listening_socket_, SOL_SOCKET, SO_REUSEPORT,
+                 &this->socketopt_, sizeof(this->socketopt_)) == -1) {
+    std::cerr << "Error: Setting SO_REUSEADDR" << std::endl;
+    error_();
+  }
+
   if (bind(this->listening_socket_, (struct sockaddr *)&this->servaddr_,
            sizeof(this->servaddr_)) != 0) {
     std::cerr << "Error: Could not bind socket" << std::endl;
@@ -43,13 +49,13 @@ void TcpServer::updateFds_() {
   }
 }
 
-void TcpServer::serverLoop_() {
-  while (true) {
+bool TcpServer::serverLoop_() {
+  // while (true) {
     this->updateFds_();
-    int ret = poll(this->fds_, this->nfds_, 5000);
+    int ret = poll(this->fds_, this->nfds_, 1);
     if (ret == -1) {
       perror("poll error");
-      break;
+      return true;
     }
     this->checkPending_();
     for (int i = 0; i < this->nfds_; i++) {
@@ -61,7 +67,7 @@ void TcpServer::serverLoop_() {
       if (this->fds_[i].revents & POLLIN) {  // if incoming connection
         if (this->fds_[i].fd == this->listening_socket_) {
           this->initNewConnection_();
-          break;
+          return true;
         } else {
           if (this->existingConnection_(this->pollSockets_[i], this->fds_[i],
                                         i) == false)
@@ -75,7 +81,8 @@ void TcpServer::serverLoop_() {
       this->pollSockets_[i].setRevent(0);
       this->fds_[i].revents = 0;
     }
-  }
+  // }
+  return false;
 }
 
 void TcpServer::checkPending_() {

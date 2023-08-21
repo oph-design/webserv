@@ -1,5 +1,8 @@
 #include "ServerCluster.hpp"
 
+ServerCluster::ServerCluster(ConfigVector configs) {
+}
+
 ServerCluster::ServerCluster() {}
 
 ServerCluster::~ServerCluster() {}
