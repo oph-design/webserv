@@ -7,7 +7,7 @@ Config ConfigParsing::parseServer_(LineIter &iter, const LineIter &end) {
   for (; iter != end; ++iter) {
     if (iter->firstWord() == "location" && iter->last() == '{')
       config.locations_.push_back(
-          parseLocation_(iter, end));  // add to class later
+          ConfigParsing::parseLocation_(iter, end));  // add to class later
     else if (iter->firstWord() == "listen")
       config.listen_.insert(ConfigParsing::parseListen(*iter));
     else if (iter->firstWord() == "client_max_body_size")

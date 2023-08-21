@@ -44,7 +44,7 @@ void TcpServer::bootServer_() {
 }
 
 void TcpServer::updateFds_() {
-  for (size_t i = 0; i < MAX_CLIENTS; i++) {
+  for (std::size_t i = 0; i < MAX_CLIENTS; ++i) {
     this->fds_[i] = this->pollSockets_[i].getSocketPoll();
   }
 }
@@ -57,13 +57,13 @@ bool TcpServer::serverLoop_() {
     return true;
   }
   this->checkPending_();
-  for (int i = 0; i < this->nfds_; i++) {
+  for (int i = 0; i < this->nfds_; ++i) {
     std::cout << "fds[" << this->fds_[i].fd
               << "].revents: " << this->fds_[i].revents << std::endl;
     if (this->fds_[i].revents & POLLHUP) {
       std::cout << "HANGUP " << i << " " << std::endl;
     }
-    if (this->fds_[i].revents & POLLIN) {  // if incoming connection
+    if (this->fds_[i].revents & POLLIN) {
       if (this->fds_[i].fd == this->listening_socket_) {
         this->initNewConnection_();
         return true;
@@ -84,7 +84,7 @@ bool TcpServer::serverLoop_() {
 }
 
 void TcpServer::checkPending_() {
-  for (int i = 0; i < nfds_; i++) {
+  for (int i = 0; i < nfds_; ++i) {
     if (this->pollSockets_[i].pendingSend == true) {
       this->sendResponse_(this->pollSockets_[i], fds_[i], i);
       return;

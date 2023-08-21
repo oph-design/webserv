@@ -33,7 +33,7 @@ bool ConfigFile::openFile(int argc, char* argv[]) {
   while (std::getline(file, buffer)) {
     Line line(lineCount, buffer);
     this->content_.push_back(line);
-    lineCount++;
+    ++lineCount;
     buffer.clear();
   }
   this->backup_ = this->content_;
