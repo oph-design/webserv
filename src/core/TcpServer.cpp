@@ -142,7 +142,7 @@ void TcpServer::sendResponse_(Socket &socket, pollfd &fd, int &i) {
 
 bool TcpServer::existingConnection_(Socket &socket, pollfd &fd, int &i) {
   char buffer[BUFFER_SIZE] = {0};
-  size_t bytes_read = 0;
+  std::size_t bytes_read = 0;
 
   bytes_read = recv(socket.getSocketFd(), buffer, sizeof(buffer), 0);
   if (bytes_read > 0) {
@@ -154,7 +154,8 @@ bool TcpServer::existingConnection_(Socket &socket, pollfd &fd, int &i) {
     }
     this->sendResponse_(socket, fd, i);
   }
-  if (bytes_read == (size_t)-1 && (errno == EWOULDBLOCK || errno == EAGAIN)) {
+  if (bytes_read == static_cast<std::size_t>(-1) &&
+      (errno == EWOULDBLOCK || errno == EAGAIN)) {
     std::cout << "BLOCKER: " << socket.getSocketFd() << std::endl;
   } else if (bytes_read == 0) {
     std::cout << "client closed connection on socket " << socket.getSocketFd()

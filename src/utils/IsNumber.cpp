@@ -1,6 +1,4 @@
-#include <cctype>
-#include <iterator>
-#include <string>
+#include "IsNumber.hpp"
 
 bool isNumber(std::string str) {
   for (std::string::iterator iter = str.begin(); iter != str.end(); ++iter) {
