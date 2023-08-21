@@ -31,9 +31,9 @@ class TcpServer {
 
   void boot();
 
- private:
   void bootServer_();
-  void serverLoop_();
+  bool serverLoop_();
+ private:
   void initNewConnection_();
   bool existingConnection_(Socket &, pollfd &, int &);
   void sendFile_(int, std::list<std::string>);
