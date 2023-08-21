@@ -50,38 +50,36 @@ void TcpServer::updateFds_() {
 }
 
 bool TcpServer::serverLoop_() {
-  // while (true) {
-    this->updateFds_();
-    int ret = poll(this->fds_, this->nfds_, 1);
-    if (ret == -1) {
-      perror("poll error");
-      return true;
+  this->updateFds_();
+  int ret = poll(this->fds_, this->nfds_, 1);
+  if (ret == -1) {
+    perror("poll error");
+    return true;
+  }
+  this->checkPending_();
+  for (int i = 0; i < this->nfds_; i++) {
+    std::cout << "fds[" << this->fds_[i].fd
+              << "].revents: " << this->fds_[i].revents << std::endl;
+    if (this->fds_[i].revents & POLLHUP) {
+      std::cout << "HANGUP " << i << " " << std::endl;
     }
-    this->checkPending_();
-    for (int i = 0; i < this->nfds_; i++) {
-      std::cout << "fds[" << this->fds_[i].fd
-                << "].revents: " << this->fds_[i].revents << std::endl;
-      if (this->fds_[i].revents & POLLHUP) {
-        std::cout << "HANGUP " << i << " " << std::endl;
+    if (this->fds_[i].revents & POLLIN) {  // if incoming connection
+      if (this->fds_[i].fd == this->listening_socket_) {
+        this->initNewConnection_();
+        return true;
+      } else {
+        if (this->existingConnection_(this->pollSockets_[i], this->fds_[i],
+                                      i) == false)
+          this->closeConnection_(this->pollSockets_[i], this->fds_[i], i);
       }
-      if (this->fds_[i].revents & POLLIN) {  // if incoming connection
-        if (this->fds_[i].fd == this->listening_socket_) {
-          this->initNewConnection_();
-          return true;
-        } else {
-          if (this->existingConnection_(this->pollSockets_[i], this->fds_[i],
-                                        i) == false)
-            this->closeConnection_(this->pollSockets_[i], this->fds_[i], i);
-        }
-      }
-      if (this->pollSockets_[i].checkTimeout()) {
-        std::cout << "Timeout of Socket: " << this->fds_[i].fd << std::endl;
-        this->closeConnection_(this->pollSockets_[i], this->fds_[i], i);
-      }
-      this->pollSockets_[i].setRevent(0);
-      this->fds_[i].revents = 0;
     }
-  // }
+    if (this->pollSockets_[i].checkTimeout()) {
+      std::cout << "Timeout of Socket: " << this->fds_[i].fd << std::endl;
+      this->closeConnection_(this->pollSockets_[i], this->fds_[i], i);
+    }
+    this->pollSockets_[i].setRevent(0);
+    this->fds_[i].revents = 0;
+  }
   return false;
 }
 
