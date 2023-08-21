@@ -33,7 +33,6 @@ class TcpServer {
 
   void boot();
 
-
  private:
   void bootServer_();
   bool serverLoop_();
