@@ -33,10 +33,10 @@ class TcpServer {
 
   void boot();
 
-  void bootServer_();
-  bool serverLoop_();
 
  private:
+  void bootServer_();
+  bool serverLoop_();
   void initNewConnection_();
   bool existingConnection_(Socket &, pollfd &, int &);
   void sendFile_(int, std::list<std::string>);
