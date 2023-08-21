@@ -91,7 +91,7 @@ docker_clean:
 
 
 $(ALL_OBJ_DIR):
-	mkdir -p $(ALL_OBJ_DIR)
+	@mkdir -p $(ALL_OBJ_DIR)
 
 norm:
 	@cpplint $(shell find src -type f -name "*.cpp") \
