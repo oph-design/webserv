@@ -16,7 +16,7 @@ SRC_FILES					=	main.cpp
 
 CORE							=	$(addprefix $(CORE_DIR), $(CORE_FILES))
 CORE_DIR					=	src/core/
-CORE_FILES				=	Socket.cpp TcpServer.cpp
+CORE_FILES				=	Socket.cpp TcpServer.cpp ServerCluster.cpp
 
 HTTP							=	$(addprefix $(HTTP_DIR), $(HTTP_FILES))
 HTTP_DIR					=	src/http/
