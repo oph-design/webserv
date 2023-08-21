@@ -94,9 +94,9 @@ $(ALL_OBJ_DIR):
 	mkdir -p $(ALL_OBJ_DIR)
 
 norm:
-	-cpplint $(shell find src -type f -name "*.cpp")
-	-cpplint $(shell find src -type f -name "*.hpp")
-	-cpplint $(shell find include -type f -name "*.hpp")
+	@cpplint $(shell find src -type f -name "*.cpp") \
+						$(shell find src -type f -name "*.hpp") \
+						$(shell find include -type f -name "*.hpp")
 
 ################################################################################
 ################################################################################
