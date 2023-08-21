@@ -22,6 +22,8 @@
 #define BUFFER_SIZE 1024
 
 class TcpServer {
+  friend class ServerCluster;
+
  public:
   TcpServer(std::string ip_addr, int port);
   TcpServer(Config &config, int port);
@@ -33,6 +35,7 @@ class TcpServer {
 
   void bootServer_();
   bool serverLoop_();
+
  private:
   void initNewConnection_();
   bool existingConnection_(Socket &, pollfd &, int &);
