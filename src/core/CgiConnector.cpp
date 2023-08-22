@@ -6,8 +6,8 @@ CgiConnector::CgiConnector() {}
 
 CgiConnector::CgiConnector(const Request& request) {
   if (request.getRequestBodyExists()) this->reqBody_ = request.getRequestBody();
-  this->env_ = buildEnv_(request);
-  this->isCgi = checkCgi_();
+  this->isCgi = checkCgi_(request.getPath());
+  if (this->isCgi) this->env_ = buildEnv_(request);
 }
 
 CgiConnector::CgiConnector(const CgiConnector& rhs) { *this = rhs; }
@@ -42,12 +42,11 @@ std::map<std::string, std::string> CgiConnector::getHeader() const {
 
 std::string CgiConnector::getBody() const { return this->respBody_; }
 
-bool CgiConnector::checkCgi_() {
-  std::string name = this->env_["SCRIPT_NAME"];
+bool CgiConnector::checkCgi_(std::string uri) {
+  std::string name = uri.substr(uri.rfind("/") + 1, uri.size());
   std::string extention = name.substr(name.rfind(".") + 1, name.length());
   if (extention != "php" && extention != "py" && extention != "pl")
     return (false);
-
   struct dirent* file;
   DIR* bin = opendir("./cgi-bin");
   while ((file = readdir(bin)) != NULL)
