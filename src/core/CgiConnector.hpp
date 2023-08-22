@@ -37,25 +37,12 @@ class CgiConnector {
   bool isCgi;
 
  private:
-  class InOutHandler {
-   public:
-    InOutHandler();
-    ~InOutHandler();
-    void dupInChild();
-    void dupInParent();
-
-   private:
-    int pipes_[2];
-    int stdIn_;
-    int stdOut_;
-  };
-
   envMap buildEnv_(const Request& request);
   char** envToString_();
   static void deleteEnv_(char** env);
   static pid_t timeout(int* exitcode);
-  void executeScript_(std::string path, InOutHandler& io);
-  void readOutput_();
+  void executeScript_(std::string path, int pipes[2]);
+  void readOutput_(int pipes[2]);
   bool checkCgi_();
 
   std::string respHeader_;

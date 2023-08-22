@@ -92,8 +92,10 @@ char** CgiConnector::envToString_() {
   return (res);
 }
 
-void CgiConnector::executeScript_(std::string path, InOutHandler& io) {
-  io.dupInChild();
+void CgiConnector::executeScript_(std::string path, int pipes[2]) {
+  dup2(pipes[1], 1);
+  close(pipes[0]);
+  close(pipes[1]);
   char** env = this->envToString_();
   if (this->env_["REQUEST_METHOD"] == "POST") std::cout << this->reqBody_;
   execve(path.c_str(), NULL, env);
@@ -103,11 +105,17 @@ void CgiConnector::executeScript_(std::string path, InOutHandler& io) {
   std::exit(1);
 }
 
-void CgiConnector::readOutput_() {
+void CgiConnector::readOutput_(int pipes[2]) {
+  int in = dup(0);
+  dup2(pipes[0], 0);
+  close(pipes[0]);
+  close(pipes[1]);
   std::string buffer;
   while (std::getline(std::cin, buffer) && buffer.length() != 0)
     this->respHeader_.append(buffer + "\r\n");
   while (std::getline(std::cin, buffer)) this->respBody_.append(buffer);
+  dup2(in, 0);
+  close(in);
 }
 
 std::string pathHelper(std::string name) {
@@ -123,21 +131,13 @@ pid_t CgiConnector::timeout(int* exitcode) {
 }
 
 void CgiConnector::makeConnection(Status& status) {
-  InOutHandler io;
+  int pipes[2];
   int exitcode;
-  pid_t timer = fork();
-  if (!timer) {
-    sleep(5);
-    std::exit(1);
-  }
+  pipe(pipes);
   pid_t pid = fork();
-  if (!pid) this->executeScript_(pathHelper(this->env_["SCRIPT_NAME"]), io);
-  io.dupInParent();
-  if (timeout(&exitcode) == timer)
-    kill(pid, SIGKILL);
-  if (exitcode > 0) {
-    status = 500;
-    return;
-  }
-  this->readOutput_();
+  if (!pid) this->executeScript_(pathHelper(this->env_["SCRIPT_NAME"]), pipes);
+  waitpid(pid, &exitcode, 0);
+  if (exitcode > 0) 
+    return (void)(status = 500);
+  this->readOutput_(pipes);
 }
