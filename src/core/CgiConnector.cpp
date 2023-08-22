@@ -126,7 +126,7 @@ std::string pathHelper(std::string name) {
 
 pid_t CgiConnector::waitAny(int* exitcode) {
   pid_t pid = 0;
-  while ( (pid = waitpid(WAIT_ANY, exitcode, 0)) == -1 ) {
+  while ((pid = waitpid(WAIT_ANY, exitcode, 0)) == -1) {
     if (errno == EINTR) {
       continue;
     } else {
@@ -148,8 +148,10 @@ void CgiConnector::makeConnection(Status& status) {
     std::exit(112);
   }
   if (!pid) this->executeScript_(pathHelper(this->env_["SCRIPT_NAME"]), pipes);
-  if (waitAny(&exitcode) == timer) kill(pid, SIGKILL);
-  else kill(timer, SIGKILL);
+  if (waitAny(&exitcode) == timer)
+    kill(pid, SIGKILL);
+  else
+    kill(timer, SIGKILL);
   if (exitcode > 0) return (void)(status = 500);
   this->readOutput_(pipes);
 }

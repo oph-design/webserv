@@ -3,10 +3,10 @@
 
 #include <dirent.h>
 #include <fcntl.h>
+#include <signal.h>
 #include <stdio.h>
 #include <sys/wait.h>
 #include <unistd.h>
-#include <signal.h>
 
 #include <exception>
 #include <fstream>

@@ -58,7 +58,7 @@ bool TcpServer::serverLoop_() {
   }
   this->checkPending_();
   for (int i = 0; i < this->nfds_; ++i) {
-    if (this->fds_[i].revents & POLLHUP) 
+    if (this->fds_[i].revents & POLLHUP)
       std::cout << "HANGUP " << i << " " << std::endl;
     if (this->fds_[i].revents & POLLIN) {
       if (this->fds_[i].fd == this->listening_socket_) {
