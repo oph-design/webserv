@@ -97,11 +97,14 @@ void CgiConnector::executeScript_(std::string path, int pipes[2]) {
   close(pipes[0]);
   close(pipes[1]);
   char** env = this->envToString_();
+  char** args = new char*;
+  *args = const_cast<char*>(path.c_str());
   if (this->env_["REQUEST_METHOD"] == "POST") std::cout << this->reqBody_;
-  execve(path.c_str(), NULL, env);
+  execve(path.c_str(), args, env);
   size_t i = 0;
   while (env[i] != NULL) delete env[i++];
   delete[] env;
+  delete args;
   std::exit(1);
 }
 
