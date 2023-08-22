@@ -58,14 +58,18 @@ bool TcpServer::serverLoop_() {
   }
   this->checkPending_();
   for (int i = 0; i < this->nfds_; ++i) {
-    if (this->fds_[i].revents & POLLHUP)
+    std::cout << "fds[" << this->fds_[i].fd
+              << "].revents: " << this->fds_[i].revents << std::endl;
+    if (this->fds_[i].revents & POLLHUP) {
       std::cout << "HANGUP " << i << " " << std::endl;
+    }
     if (this->fds_[i].revents & POLLIN) {
       if (this->fds_[i].fd == this->listening_socket_) {
         this->initNewConnection_();
         return true;
       } else {
-        if (this->existingConnection_(this->pollSockets_[i], this->fds_[i], i))
+        if (this->existingConnection_(this->pollSockets_[i], this->fds_[i],
+                                      i) == false)
           this->closeConnection_(this->pollSockets_[i], this->fds_[i], i);
       }
     }
@@ -142,7 +146,8 @@ bool TcpServer::existingConnection_(Socket &socket, pollfd &fd, int &i) {
 
   bytes_read = recv(socket.getSocketFd(), buffer, sizeof(buffer), 0);
   if (bytes_read > 0) {
-    std::cout << "connection socket " << socket.getSocketFd() << std::endl;
+    std::cout << "connection established with socket " << socket.getSocketFd()
+              << " " << std::endl;
     socket.setTimestamp();
     if (socket.pendingSend == false) {
       socket.response_ = this->createResponse_(buffer);
@@ -153,7 +158,8 @@ bool TcpServer::existingConnection_(Socket &socket, pollfd &fd, int &i) {
       (errno == EWOULDBLOCK || errno == EAGAIN)) {
     std::cout << "BLOCKER: " << socket.getSocketFd() << std::endl;
   } else if (bytes_read == 0) {
-    std::cout << "closed socket " << socket.getSocketFd() << std::endl;
+    std::cout << "client closed connection on socket " << socket.getSocketFd()
+              << " " << std::endl;
     return false;
   }
   return true;
