@@ -51,7 +51,7 @@ void TcpServer::updateFds_() {
 
 bool TcpServer::serverLoop_() {
   this->updateFds_();
-  int ret = poll(this->fds_, this->nfds_, 1);
+  int ret = poll(this->fds_, this->nfds_, 10);
   if (ret == -1) {
     perror("poll error");
     return true;
