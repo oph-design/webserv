@@ -2,6 +2,7 @@
 
 #include <exception>
 
+#include "FindFile.hpp"
 #include "SwapColumns.hpp"
 #include "Utils.hpp"
 #include "getContentDisposition.hpp"
@@ -90,9 +91,14 @@ void Response::handleGetRequest(const Request &request) {
 
 void Response::createFile(std::string filename, std::string ext,
                           std::string data) {
+  std::string file = "./upload/" + filename + "." + ext;
+  if (findFile(file, "./upload"))
+    this->status_ = 204;
+  else
+    this->status_ = 201;
   std::ofstream outfile("./upload/" + filename + "." + ext);
+  if (!outfile.is_open()) this->status_ = 500;
   outfile << data;
-  this->status_ = 201;
 }
 
 void Response::buildPostBody() {

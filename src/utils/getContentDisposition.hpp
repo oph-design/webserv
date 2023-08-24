@@ -5,6 +5,7 @@
 #include <string>
 
 #include "Request.hpp"
+#include "Trim.hpp"
 
 std::string getContentDispostion(const Request& request, std::string key);
 

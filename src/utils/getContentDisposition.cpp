@@ -1,17 +1,12 @@
-#include "getContentDisposition.hpp"
+#include "GetContentDisposition.hpp"
 
 std::string getContentDispostion(const Request& request, std::string key) {
-  std::string dispo;
   std::string value;
   try {
-    dispo = request["Content-Disposition"];
-  } catch (std::exception& e) {
-    throw e;
-  }
-  try {
-    value = dispo.substr(dispo.find(key), dispo.length());
-    value = dispo.substr(0, dispo.find("="));
-    value = dispo.substr(0, dispo.find(";"));
+    value = request["Content-Disposition"];
+    value = value.substr(value.find(key), value.length());
+    value = value.substr(value.find("=") + 1, value.length());
+    value = trim(value.substr(0, value.find(";")), "\'\"");
   } catch (std::exception& e) {
     throw e;
   }
