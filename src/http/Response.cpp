@@ -1,12 +1,5 @@
 #include "Response.hpp"
 
-#include <exception>
-
-#include "FindFile.hpp"
-#include "SwapColumns.hpp"
-#include "Utils.hpp"
-#include "getContentDisposition.hpp"
-
 contentMap Response::fileTypes_ = Response::createTypeMap();
 
 /*            constructors                  */
@@ -91,12 +84,12 @@ void Response::handleGetRequest(const Request &request) {
 
 void Response::createFile(std::string filename, std::string ext,
                           std::string data) {
-  std::string file = "./upload/" + filename + "." + ext;
+  std::string file = filename + "." + ext;
   if (findFile(file, "./upload"))
-    this->status_ = 204;
+    this->status_ = 200;
   else
     this->status_ = 201;
-  std::ofstream outfile("./upload/" + filename + "." + ext);
+  std::ofstream outfile("./upload/" + file);
   if (!outfile.is_open()) this->status_ = 500;
   outfile << data;
 }

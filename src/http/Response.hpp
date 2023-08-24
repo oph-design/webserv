@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include <cstring>
+#include <exception>
 #include <fstream>
 #include <iostream>
 #include <iterator>
