@@ -6,5 +6,6 @@
 #include "SwapColumns.hpp"
 #include "ToString.hpp"
 #include "Types.hpp"
+#include "getContentDisposition.hpp"
 
 #endif  // UTILS_HPP_

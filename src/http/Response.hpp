@@ -14,7 +14,7 @@
 
 #include "Request.hpp"
 #include "Status.hpp"
-#include "ToString.hpp"
+#include "Utils.hpp"
 
 #define CHUNKSIZE 1024
 
@@ -32,18 +32,18 @@ class Response {
   const std::string& operator[](const std::string& key);
   const std::string& operator[](const char* key);
   friend std::ostream& operator<<(std::ostream& stream, const Response& resp);
-  const std::list<std::string> getBodyChunked() const;
   const std::string& getBody() const;
   const std::string getHeader() const;
   static contentMap createTypeMap();
 
  private:
-  static std::string buildChunk_(std::string line);
   std::string readBody_(std::string dir);
   std::string findType_(std::string url);
   void handleGetRequest(const Request& request);
   void handlePostRequest(const Request& request);
   void handleDeleteRequest(const Request& request);
+  void createFile(std::string filename, std::string ext, std::string data);
+  void buildPostBody();
 
   static contentMap fileTypes_;
   contentMap header_;

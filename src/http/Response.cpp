@@ -3,6 +3,8 @@
 #include <exception>
 
 #include "SwapColumns.hpp"
+#include "Utils.hpp"
+#include "getContentDisposition.hpp"
 
 contentMap Response::fileTypes_ = Response::createTypeMap();
 
@@ -73,22 +75,6 @@ const std::string Response::getHeader() const {
 
 const std::string &Response::getBody() const { return (body_); }
 
-const std::list<std::string> Response::getBodyChunked() const {
-  size_t i = 0;
-  std::string tmp = this->body_;
-  std::list<std::string> res;
-
-  for (std::string::iterator it = tmp.begin(); it < tmp.end(); ++it) {
-    if (tmp.at(i) == '\n') {
-      res.push_back(buildChunk_(tmp.substr(0, i + 1)));
-      tmp = tmp.substr(i + 1, tmp.length());
-      i = 0;
-    }
-  }
-  if (tmp.length() > 0) res.push_back(buildChunk_(tmp));
-  return (res);
-}
-
 /*            private functions                  */
 
 void Response::handleGetRequest(const Request &request) {
@@ -102,25 +88,43 @@ void Response::handleGetRequest(const Request &request) {
   this->header_.insert(contentField("Content-Length", length));
 }
 
+void Response::createFile(std::string filename, std::string ext,
+                          std::string data) {
+  std::ofstream outfile("./upload/" + filename + "." + ext);
+  outfile << data;
+  this->status_ = 201;
+}
+
+void Response::buildPostBody() {
+  this->body_ = "{\n";
+  this->body_.append("\"status\": ");
+  if (this->status_ < 400)
+    this->body_.append("\"success\",\n");
+  else
+    this->body_.append("\"error\",\n");
+  this->body_.append("}");
+}
+
 void Response::handlePostRequest(const Request &request) {
-  (void)request;
-  this->status_ = 405;
-  this->status_ >> this->body_;
+  std::string filename;
+  std::string extention;
+  try {
+    filename = getContentDispostion(request, "filename");
+    extention = swapColumns(fileTypes_)[request["Content-Type"]];
+  } catch (std::exception &) {
+    this->status_ = 400;
+  }
+  if (this->status_ < 400)
+    createFile(filename, extention, request.getRequestBody());
+  this->header_.insert(contentField("Connection", "keep-alive"));
+  this->header_.insert(contentField("Content-Type", "application/json"));
+  buildPostBody();
 }
 
 void Response::handleDeleteRequest(const Request &request) {
   (void)request;
   this->status_ = 405;
   this->status_ >> this->body_;
-}
-
-std::string Response::buildChunk_(std::string line) {
-  std::stringstream bytes;
-  std::string res;
-
-  bytes << std::hex << line.length();
-  res = bytes.str() + "\r\n" + line + "\r\n";
-  return (res);
 }
 
 std::string Response::readBody_(std::string dir) {

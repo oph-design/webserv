@@ -30,7 +30,7 @@ CONFIG_FILES			=	ConfigFile.cpp Line.cpp Location.cpp Config.cpp \
 
 UTILS							=	$(addprefix $(UTILS_DIR), $(UTILS_FILES))
 UTILS_DIR					=	src/utils/
-UTILS_FILES				= IsNumber.cpp
+UTILS_FILES				= IsNumber.cpp getContentDisposition.cpp
 
 ALL_SRC						=	$(SRC) $(CORE) $(UTILS) $(HTTP) $(CONFIG)
 
@@ -103,9 +103,9 @@ norm:
 GREEN							=	"\033[32m"
 LGREEN						=	"\033[92m"
 DEFAULT						=	"\033[39m"
-RED								=	"\033[31m"
+RED								=	"\033[94m"
 LGREY							= "\033[37m"
-CLEANING					= `printf "\033[91mcleaning:\033[37m"`
+CLEANING					= `printf "\033[36mcleaning:\033[37m"`
 
 ################################################################################
 ################################################################################
