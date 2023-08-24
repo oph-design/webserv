@@ -1,7 +1,7 @@
 NAME							=	webserv
 
 CC								=	c++
-LCFLAGS						=	-fsanitize=address
+LCFLAGS						=	#-fsanitize=address
 HEADERFLAGS				=	-I src/core -I include -I src/utils -I src/http \
 										-I src/config
 CFLAGS						=	$(LCFLAGS) $(HEADERFLAGS) \
@@ -48,21 +48,20 @@ all: $(ALL_OBJ_DIR) $(NAME)
 
 $(OBJ_DIR)%.o: $(SRC_DIR)%.cpp
 	@$(CC) $(LCFLAGS) -c $< -o $@ $(CFLAGS)
-	@echo $(LGREEN)"compiled "$^$(DEFAULT)
+	@echo $(LGREEN)"compiled: "$(LGREY)$^
 
 $(NAME): $(ALL_OBJ_DIR) $(ALL_OBJ)
 	@$(CC) $(ALL_OBJ) -o $(NAME) $(LFLAGS) $(LCFLAGS)
-	@echo $(GREEN)"linked "$@$(DEFAULT)
+	@echo $(GREEN)"webserv compiled and ready!"$(DEFAULT)
 
 clean:
-	@echo $(RED)"cleaning:"
-	@rm -rfv $(patsubst %/,%,$(OBJ_DIR))
-	@echo "cleaned"$(DEFAULT)
+	@rm -rfv $(patsubst %/,%,$(OBJ_DIR)) | grep '\.o$$' | sed "s/^/$(CLEANING) /"
+	@echo $(RED)"repository cleaned of ofiles!"$(DEFAULT)
 
 fclean:
-	@echo $(RED)"fcleaning:"
-	@rm -rfv $(patsubst %/,%,$(OBJ_DIR)) $(NAME)
-	@echo "fcleaned"$(DEFAULT)
+	@rm -rfv $(patsubst %/,%,$(OBJ_DIR)) | grep '\.o$$' | sed "s/^/$(CLEANING) /"
+	@rm -rfv $(NAME) | sed "s/^/$(CLEANING) /"
+	@echo $(RED)"repository cleaned entirely!"$(DEFAULT)
 
 re:	fclean all
 
@@ -105,6 +104,8 @@ GREEN							=	"\033[32m"
 LGREEN						=	"\033[92m"
 DEFAULT						=	"\033[39m"
 RED								=	"\033[31m"
+LGREY							= "\033[37m"
+CLEANING					= `printf "\033[91mcleaning:\033[37m"`
 
 ################################################################################
 ################################################################################
