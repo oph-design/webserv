@@ -35,6 +35,7 @@ std::map<std::string, std::string> CgiConnector::getHeader() const {
       value = buffer.substr(buffer.find(":") + 2, buffer.length());
     } catch (std::exception& e) {
       std::cout << e.what() << std::endl;
+      continue;
     }
     res.insert(std::pair<std::string, std::string>(key, value));
   }
