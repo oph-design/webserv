@@ -1,9 +1,5 @@
 #include "Response.hpp"
 
-#include <exception>
-
-#include "SwapColumns.hpp"
-
 contentMap Response::fileTypes_ = Response::createTypeMap();
 
 /*            constructors                  */
@@ -18,13 +14,13 @@ Response::Response(const Request &request) {
   t_methodTypes method = request.getRequestMethodType();
   switch (method) {
     case 0:
-      handleGetRequest(request);
+      handleGetRequest_(request);
       break;
     case 1:
-      handlePostRequest(request);
+      handlePostRequest_(request);
       break;
     case 3:
-      handleDeleteRequest(request);
+      handleDeleteRequest_(request);
       break;
     default:
       this->status_ = 405;
@@ -91,7 +87,12 @@ const std::list<std::string> Response::getBodyChunked() const {
 
 /*            private functions                  */
 
-void Response::handleGetRequest(const Request &request) {
+void Response::handleGetRequest_(const Request &request) {
+  CgiConnector cgi(request);
+  if (cgi.isCgi) {
+    serveCgi_(cgi);
+    return;
+  }
   this->body_ = readBody_(request.getPath());
   std::string type = findType_(request.getPath());
   if (this->status_ > 399) this->status_ >> this->body_;
@@ -102,16 +103,30 @@ void Response::handleGetRequest(const Request &request) {
   this->header_.insert(contentField("Content-Length", length));
 }
 
-void Response::handlePostRequest(const Request &request) {
+void Response::handlePostRequest_(const Request &request) {
   (void)request;
   this->status_ = 405;
   this->status_ >> this->body_;
 }
 
-void Response::handleDeleteRequest(const Request &request) {
+void Response::handleDeleteRequest_(const Request &request) {
   (void)request;
   this->status_ = 405;
   this->status_ >> this->body_;
+}
+
+void Response::serveCgi_(CgiConnector &cgi) {
+  cgi.makeConnection(this->status_);
+  if (status_ > 399) {
+    this->status_ >> this->body_;
+    this->header_.insert(contentField("Content-Type", "text/html"));
+    this->header_.insert(contentField("Connection", "keep-alive"));
+    this->header_.insert(
+        contentField("Content-Length", toString(this->body_.length())));
+    return;
+  }
+  this->header_ = cgi.getHeader();
+  this->body_ = cgi.getBody();
 }
 
 std::string Response::buildChunk_(std::string line) {

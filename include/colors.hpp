@@ -10,6 +10,6 @@
 #define CYAN "\33[0;36m"
 #define WHITE "\33[0;37m"
 
-#define COLOR_RESET "\e[0m"
+#define COLOR_RESET "\33[0m"
 
 #endif  // COLORS_HPP_
