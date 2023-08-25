@@ -16,6 +16,7 @@ CgiConnector& CgiConnector::operator=(const CgiConnector& rhs) {
   this->respBody_ = rhs.respBody_;
   this->respHeader_ = rhs.respHeader_;
   this->env_ = rhs.env_;
+  this->isCgi = rhs.isCgi;
   return (*this);
 }
 
