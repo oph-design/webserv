@@ -5,6 +5,7 @@
 #include <iterator>
 #include <map>
 #include <set>
+#include <vector>
 
 template <typename Content>
 std::ostream &operator<<(std::ostream &stream,

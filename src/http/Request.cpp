@@ -75,6 +75,8 @@ t_methodTypes Request::getRequestMethodType() const {
   return this->requestMethodType_;
 }
 
+std::string Request::getQueryString() const { return this->queryString_; }
+
 std::string Request::getRequestBody() const { return this->requestBody_; }
 
 std::string Request::getRequestMethodString() const {
@@ -82,6 +84,8 @@ std::string Request::getRequestMethodString() const {
 }
 
 std::string Request::getHTTPVersion() const { return this->httpVersion_; }
+
+bool Request::getRequestBodyExists() const { return this->requestBodyExists_; }
 
 void Request::parseRequestLine_(std::string &requestLine) {
   std::stringstream ss(requestLine);

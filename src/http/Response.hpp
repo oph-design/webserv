@@ -13,6 +13,7 @@
 #include <stdexcept>
 #include <string>
 
+#include "CgiConnector.hpp"
 #include "Request.hpp"
 #include "Status.hpp"
 #include "Utils.hpp"
@@ -40,11 +41,12 @@ class Response {
  private:
   std::string readBody_(std::string dir);
   std::string findType_(std::string url);
-  void handleGetRequest(const Request& request);
-  void handlePostRequest(const Request& request);
-  void handleDeleteRequest(const Request& request);
+  void handleGetRequest_(const Request& request);
+  void handlePostRequest_(const Request& request);
+  void handleDeleteRequest_(const Request& request);
   void createFile(std::string filename, std::string ext, std::string data);
   void buildPostBody();
+  void serveCgi_(CgiConnector& cgi);
 
   static contentMap fileTypes_;
   contentMap header_;
