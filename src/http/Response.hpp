@@ -1,6 +1,8 @@
 #ifndef RESPONSE_HPP
 #define RESPONSE_HPP
 
+#include <unistd.h>
+
 #include <algorithm>
 #include <cstring>
 #include <exception>
@@ -10,7 +12,6 @@
 #include <list>
 #include <map>
 #include <sstream>
-#include <stdexcept>
 #include <string>
 
 #include "CgiConnector.hpp"

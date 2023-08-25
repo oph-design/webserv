@@ -11,15 +11,19 @@ Response::Response() : body_("Server is online") {
 }
 
 Response::Response(const Request &request) {
-  t_methodTypes method = request.getRequestMethodType();
-  switch (method) {
+  CgiConnector cgi(request);
+  if (cgi.isCgi) {
+    serveCgi_(cgi);
+    return;
+  }
+  switch (request.getRequestMethodType()) {
     case 0:
       handleGetRequest_(request);
       break;
     case 1:
       handlePostRequest_(request);
       break;
-    case 3:
+    case 2:
       handleDeleteRequest_(request);
       break;
     default:
@@ -72,11 +76,6 @@ const std::string &Response::getBody() const { return (body_); }
 /*            private functions                  */
 
 void Response::handleGetRequest_(const Request &request) {
-  CgiConnector cgi(request);
-  if (cgi.isCgi) {
-    serveCgi_(cgi);
-    return;
-  }
   this->body_ = readBody_(request.getPath());
   std::string type = findType_(request.getPath());
   if (this->status_ > 399) this->status_ >> this->body_;
@@ -118,6 +117,7 @@ void Response::handlePostRequest_(const Request &request) {
   } catch (std::exception &) {
     this->status_ = 400;
   }
+  if (!request.getRequestBodyExists()) this->status_ = 400;
   if (this->status_ < 400)
     createFile(filename, extention, request.getRequestBody());
   this->header_.insert(contentField("Connection", "keep-alive"));
@@ -126,9 +126,19 @@ void Response::handlePostRequest_(const Request &request) {
 }
 
 void Response::handleDeleteRequest_(const Request &request) {
-  (void)request;
-  this->status_ = 405;
-  this->status_ >> this->body_;
+  std::string path = "./html" + request.getPath();
+  std::cout << path << std::endl;
+  if (access(path.c_str(), F_OK)) this->status_ = 403;
+  std::cout << this->status_ << std::endl;
+  if (!findFile(path.substr(path.rfind("/") + 1, path.length()),
+                path.substr(0, path.rfind("/"))))
+    this->status_ = 404;
+  std::cout << this->status_ << std::endl;
+  if (this->status_ < 400 && remove(path.c_str())) this->status_ = 500;
+  std::cout << this->status_ << std::endl;
+  this->header_.insert(contentField("Connection", "keep-alive"));
+  this->header_.insert(contentField("Content-Type", "application/json"));
+  buildPostBody();
 }
 
 void Response::serveCgi_(CgiConnector &cgi) {
