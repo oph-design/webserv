@@ -45,7 +45,8 @@ class Response {
   void handleGetRequest_(const Request& request);
   void handlePostRequest_(const Request& request);
   void handleDeleteRequest_(const Request& request);
-  void createFile(std::string filename, std::string ext, std::string data);
+  void createFile_(std::string filename, std::string ext, std::string data,
+                   std::string path);
   void buildJsonBody_();
   void serveCgi_(const Request& request);
 

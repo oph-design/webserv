@@ -118,14 +118,15 @@ void Response::handleGetRequest_(const Request &request) {
 
 /*             Post Request                  */
 
-void Response::createFile(std::string filename, std::string ext,
-                          std::string data) {
+void Response::createFile_(std::string filename, std::string ext,
+                           std::string data, std::string path) {
+  path = ".hmtl" + path.substr(0, path.rfind("/"));
   std::string file = filename + "." + ext;
-  if (findFile(file, "./upload"))
+  if (findFile(file, path))
     this->status_ = 200;
   else
     this->status_ = 201;
-  std::ofstream outfile("./upload/" + file);
+  std::ofstream outfile(path + file);
   if (!outfile.is_open()) this->status_ = 500;
   outfile << data;
 }
@@ -142,19 +143,20 @@ void Response::buildJsonBody_() {
 
 void Response::handlePostRequest_(const Request &request) {
   if (CgiConnector::isCgi(request.getPath())) return (void)(serveCgi_(request));
-  std::string file;
-  std::string extention;
+  std::string file = request.getPath();
+  std::string ext;
+  file = file.substr(file.rfind("/") + 1, file.length());
+  file = file.substr(0, file.rfind("."));
   try {
+    ext = swapColumns(fileTypes_)[request["Content-Type"]];
     file = getContentDispostion(request, "filename");
-    extention = swapColumns(fileTypes_)[request["Content-Type"]];
-  } catch (std::exception &) {
+  } catch (std::exception &e) {
+    std::cout << e.what() << std::endl;
+  }
+  if (!request.getRequestBodyExists() || !file.length() || !ext.length())
     this->status_ = 400;
-  }
-  if (!request.getRequestBodyExists()) this->status_ = 400;
-  if (this->status_ < 400) {
-    createFile(file, extention, request.getRequestBody());
-    this->header_.insert(contentField("Content-Location", "./upload" + file));
-  }
+  if (this->status_ < 400)
+    this->createFile_(file, ext, request.getRequestBody(), request.getPath());
   this->header_.insert(contentField("Connection", "keep-alive"));
   this->header_.insert(contentField("Content-Type", "application/json"));
   buildJsonBody_();
