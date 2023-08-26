@@ -4,11 +4,8 @@
 
 CgiConnector::CgiConnector() {}
 
-CgiConnector::CgiConnector(const Request& request) {
-  if (request.getRequestBodyExists()) this->reqBody_ = request.getRequestBody();
-  this->isCgi = checkCgi_(request.getPath());
-  if (this->isCgi) this->env_ = buildEnv_(request);
-}
+CgiConnector::CgiConnector(const Request& request)
+    : reqBody_(request.getRequestBody()), env_(buildEnv_(request)) {}
 
 CgiConnector::CgiConnector(const CgiConnector& rhs) { *this = rhs; }
 
@@ -16,7 +13,6 @@ CgiConnector& CgiConnector::operator=(const CgiConnector& rhs) {
   this->respBody_ = rhs.respBody_;
   this->respHeader_ = rhs.respHeader_;
   this->env_ = rhs.env_;
-  this->isCgi = rhs.isCgi;
   return (*this);
 }
 
@@ -44,11 +40,10 @@ std::map<std::string, std::string> CgiConnector::getHeader() const {
 
 std::string CgiConnector::getBody() const { return this->respBody_; }
 
-bool CgiConnector::checkCgi_(std::string uri) {
+bool CgiConnector::isCgi(std::string uri) {
   std::string name = uri.substr(uri.rfind("/") + 1, uri.size());
   std::string extention = name.substr(name.rfind(".") + 1, name.length());
-  if (extention != "php" && extention != "py" && extention != "pl")
-    return (false);
+  if (extention != "py") return (false);
   struct dirent* file;
   DIR* bin = opendir("./cgi-bin");
   while ((file = readdir(bin)) != NULL)

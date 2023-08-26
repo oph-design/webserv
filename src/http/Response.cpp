@@ -11,11 +11,6 @@ Response::Response() : body_("Server is online") {
 }
 
 Response::Response(const Request &request) {
-  CgiConnector cgi(request);
-  if (cgi.isCgi) {
-    serveCgi_(cgi);
-    return;
-  }
   switch (request.getRequestMethodType()) {
     case 0:
       handleGetRequest_(request);
@@ -58,7 +53,7 @@ std::ostream &operator<<(std::ostream &stream, const Response &resp) {
   return (stream);
 }
 
-/*            Public Functions           */
+/*            Getters           */
 
 const std::string Response::getHeader() const {
   std::stringstream header;
@@ -73,86 +68,24 @@ const std::string Response::getHeader() const {
 
 const std::string &Response::getBody() const { return (body_); }
 
-/*            private functions                  */
+/*             Get Request                  */
 
-void Response::handleGetRequest_(const Request &request) {
-  this->body_ = readBody_(request.getPath());
-  std::string type = findType_(request.getPath());
-  if (this->status_ > 399) this->status_ >> this->body_;
-  std::string length = toString<std::size_t>(this->body_.length());
-
-  this->header_.insert(contentField("Content-Type", type));
-  this->header_.insert(contentField("Connection", "keep-alive"));
-  this->header_.insert(contentField("Content-Length", length));
-}
-
-void Response::createFile(std::string filename, std::string ext,
-                          std::string data) {
-  std::string file = filename + "." + ext;
-  if (findFile(file, "./upload"))
-    this->status_ = 200;
-  else
-    this->status_ = 201;
-  std::ofstream outfile("./upload/" + file);
-  if (!outfile.is_open()) this->status_ = 500;
-  outfile << data;
-}
-
-void Response::buildPostBody() {
-  this->body_ = "{\n";
-  this->body_.append("\"status\": ");
-  if (this->status_ < 400)
-    this->body_.append("\"success\",\n");
-  else
-    this->body_.append("\"error\",\n");
-  this->body_.append("}");
-}
-
-void Response::handlePostRequest_(const Request &request) {
-  std::string filename;
+std::string Response::findType_(std::string url) {
   std::string extention;
-  try {
-    filename = getContentDispostion(request, "filename");
-    extention = swapColumns(fileTypes_)[request["Content-Type"]];
-  } catch (std::exception &) {
-    this->status_ = 400;
-  }
-  if (!request.getRequestBodyExists()) this->status_ = 400;
-  if (this->status_ < 400)
-    createFile(filename, extention, request.getRequestBody());
-  this->header_.insert(contentField("Connection", "keep-alive"));
-  this->header_.insert(contentField("Content-Type", "application/json"));
-  buildPostBody();
-}
+  contentMap::iterator search;
+  std::string type;
 
-void Response::handleDeleteRequest_(const Request &request) {
-  std::string path = "./html" + request.getPath();
-  std::cout << path << std::endl;
-  if (access(path.c_str(), F_OK)) this->status_ = 403;
-  std::cout << this->status_ << std::endl;
-  if (!findFile(path.substr(path.rfind("/") + 1, path.length()),
-                path.substr(0, path.rfind("/"))))
-    this->status_ = 404;
-  std::cout << this->status_ << std::endl;
-  if (this->status_ < 400 && remove(path.c_str())) this->status_ = 500;
-  std::cout << this->status_ << std::endl;
-  this->header_.insert(contentField("Connection", "keep-alive"));
-  this->header_.insert(contentField("Content-Type", "application/json"));
-  buildPostBody();
-}
-
-void Response::serveCgi_(CgiConnector &cgi) {
-  cgi.makeConnection(this->status_);
-  if (status_ > 399) {
-    this->status_ >> this->body_;
-    this->header_.insert(contentField("Content-Type", "text/html"));
-    this->header_.insert(contentField("Connection", "keep-alive"));
-    this->header_.insert(
-        contentField("Content-Length", toString(this->body_.length())));
-    return;
+  if (!url.compare("/")) url.append("index.html");
+  extention = url.substr(url.rfind(".") + 1, url.length());
+  search = Response::fileTypes_.find(extention);
+  if (search != Response::fileTypes_.end()) {
+    type = Response::fileTypes_[extention];
+  } else {
+    this->status_ = 415;
+    type = "text/html";
   }
-  this->header_ = cgi.getHeader();
-  this->body_ = cgi.getBody();
+  type.append("; charset=UTF-8");
+  return (type);
 }
 
 std::string Response::readBody_(std::string dir) {
@@ -171,22 +104,96 @@ std::string Response::readBody_(std::string dir) {
   return (content.str());
 }
 
-std::string Response::findType_(std::string url) {
-  std::string extention;
-  contentMap::iterator search;
-  std::string type;
+void Response::handleGetRequest_(const Request &request) {
+  if (CgiConnector::isCgi(request.getPath())) return (void)(serveCgi_(request));
+  this->body_ = readBody_(request.getPath());
+  std::string type = findType_(request.getPath());
+  if (this->status_ > 399) this->status_ >> this->body_;
+  std::string length = toString<std::size_t>(this->body_.length());
 
-  if (!url.compare("/")) url.append("index.html");
-  extention = url.substr(url.rfind(".") + 1, url.length());
-  search = Response::fileTypes_.find(extention);
-  if (search != Response::fileTypes_.end()) {
-    type = Response::fileTypes_[extention];
-  } else {
-    this->status_ = 415;
-    type = "text/html";
+  this->header_.insert(contentField("Content-Type", type));
+  this->header_.insert(contentField("Connection", "keep-alive"));
+  this->header_.insert(contentField("Content-Length", length));
+}
+
+/*             Post Request                  */
+
+void Response::createFile(std::string filename, std::string ext,
+                          std::string data) {
+  std::string file = filename + "." + ext;
+  if (findFile(file, "./upload"))
+    this->status_ = 200;
+  else
+    this->status_ = 201;
+  std::ofstream outfile("./upload/" + file);
+  if (!outfile.is_open()) this->status_ = 500;
+  outfile << data;
+}
+
+void Response::buildJsonBody_() {
+  this->body_ = "{\n";
+  this->body_.append("\"status\": ");
+  if (this->status_ < 400)
+    this->body_.append("\"success\",\n");
+  else
+    this->body_.append("\"error\",\n");
+  this->body_.append("}");
+}
+
+void Response::handlePostRequest_(const Request &request) {
+  if (CgiConnector::isCgi(request.getPath())) return (void)(serveCgi_(request));
+  std::string file;
+  std::string extention;
+  try {
+    file = getContentDispostion(request, "filename");
+    extention = swapColumns(fileTypes_)[request["Content-Type"]];
+  } catch (std::exception &) {
+    this->status_ = 400;
   }
-  type.append("; charset=UTF-8");
-  return (type);
+  if (!request.getRequestBodyExists()) this->status_ = 400;
+  if (this->status_ < 400) {
+    createFile(file, extention, request.getRequestBody());
+    this->header_.insert(contentField("Content-Location", "./upload" + file));
+  }
+  this->header_.insert(contentField("Connection", "keep-alive"));
+  this->header_.insert(contentField("Content-Type", "application/json"));
+  buildJsonBody_();
+}
+
+/*             Delete Request                  */
+
+void Response::handleDeleteRequest_(const Request &request) {
+  if (CgiConnector::isCgi(request.getPath())) return (void)(serveCgi_(request));
+  std::string path = "./html" + request.getPath();
+  std::cout << path << std::endl;
+  if (access(path.c_str(), F_OK)) this->status_ = 403;
+  std::cout << this->status_ << std::endl;
+  if (!findFile(path.substr(path.rfind("/") + 1, path.length()),
+                path.substr(0, path.rfind("/"))))
+    this->status_ = 404;
+  std::cout << this->status_ << std::endl;
+  if (this->status_ < 400 && remove(path.c_str())) this->status_ = 500;
+  std::cout << this->status_ << std::endl;
+  this->header_.insert(contentField("Connection", "keep-alive"));
+  this->header_.insert(contentField("Content-Type", "application/json"));
+  buildJsonBody_();
+}
+
+/*             Cgi Request                  */
+
+void Response::serveCgi_(const Request &request) {
+  CgiConnector cgi(request);
+  cgi.makeConnection(this->status_);
+  if (status_ > 399) {
+    this->status_ >> this->body_;
+    this->header_.insert(contentField("Content-Type", "text/html"));
+    this->header_.insert(contentField("Connection", "keep-alive"));
+    this->header_.insert(
+        contentField("Content-Length", toString(this->body_.length())));
+    return;
+  }
+  this->header_ = cgi.getHeader();
+  this->body_ = cgi.getBody();
 }
 
 /*            global funnctions                  */

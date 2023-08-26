@@ -46,8 +46,8 @@ class Response {
   void handlePostRequest_(const Request& request);
   void handleDeleteRequest_(const Request& request);
   void createFile(std::string filename, std::string ext, std::string data);
-  void buildPostBody();
-  void serveCgi_(CgiConnector& cgi);
+  void buildJsonBody_();
+  void serveCgi_(const Request& request);
 
   static contentMap fileTypes_;
   contentMap header_;
