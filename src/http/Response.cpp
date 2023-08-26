@@ -120,12 +120,13 @@ void Response::handleGetRequest_(const Request &request) {
 
 void Response::createFile_(std::string filename, std::string ext,
                            std::string data, std::string path) {
-  path = ".hmtl" + path.substr(0, path.rfind("/"));
+  path = "./html" + path.substr(0, path.rfind("/") + 1);
   std::string file = filename + "." + ext;
   if (findFile(file, path))
     this->status_ = 200;
   else
     this->status_ = 201;
+  std::cout << "test" << std::endl;
   std::ofstream outfile(path + file);
   if (!outfile.is_open()) this->status_ = 500;
   outfile << data;
@@ -147,6 +148,7 @@ void Response::handlePostRequest_(const Request &request) {
   std::string ext;
   file = file.substr(file.rfind("/") + 1, file.length());
   file = file.substr(0, file.rfind("."));
+  ext = swapColumns(fileTypes_)[request["Content-Type"]];
   try {
     ext = swapColumns(fileTypes_)[request["Content-Type"]];
     file = getContentDispostion(request, "filename");
