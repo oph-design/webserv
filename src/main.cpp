@@ -12,6 +12,7 @@ int main(int argc, char *argv[]) {
     return 1;
   } else {
     configFile.~ConfigFile();
+    configs = ConfigFile::splitUpListens_(configs);
     ServerCluster cluster(configs);
     cluster.boot();
   }

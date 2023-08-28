@@ -26,7 +26,7 @@ class TcpServer {
 
  public:
   TcpServer(std::string ip_addr, int port);
-  TcpServer(Config &config, int port);
+  TcpServer(Config &config);
   TcpServer(const TcpServer &);
   ~TcpServer();
   TcpServer &operator=(const TcpServer &);

@@ -33,6 +33,7 @@ class ConfigFile {
   bool isValid();
 
   friend std::ostream& operator<<(std::ostream& stream, ConfigFile& config);
+  static ConfigVector splitUpListens_(ConfigVector &configvector);
 
  private:
   void cleanContent_();
