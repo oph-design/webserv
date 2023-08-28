@@ -1,5 +1,8 @@
 #include "CgiConnector.hpp"
 
+#include <strings.h>
+#include <sys/wait.h>
+
 #include "colors.hpp"
 
 CgiConnector::CgiConnector() {}
@@ -88,35 +91,6 @@ char** CgiConnector::envToString_() {
   return (res);
 }
 
-void CgiConnector::executeScript_(std::string path, int pipes[2]) {
-  dup2(pipes[1], 1);
-  close(pipes[0]);
-  close(pipes[1]);
-  char** env = this->envToString_();
-  char** args = new char*;
-  *args = const_cast<char*>(path.c_str());
-  if (this->env_["REQUEST_METHOD"] == "POST") std::cout << this->reqBody_;
-  execve(path.c_str(), args, env);
-  size_t i = 0;
-  while (env[i] != NULL) delete env[i++];
-  delete[] env;
-  delete args;
-  std::exit(1);
-}
-
-void CgiConnector::readOutput_(int pipes[2]) {
-  int in = dup(0);
-  dup2(pipes[0], 0);
-  close(pipes[0]);
-  close(pipes[1]);
-  std::string buffer;
-  while (std::getline(std::cin, buffer) && buffer.length() != 0)
-    this->respHeader_.append(buffer + "\r\n");
-  while (std::getline(std::cin, buffer)) this->respBody_.append(buffer);
-  dup2(in, 0);
-  close(in);
-}
-
 std::string pathHelper(std::string name) {
   char* root = getenv("PWD");
   std::string res = std::string(root) + "/cgi-bin/" + name;
@@ -136,21 +110,65 @@ pid_t CgiConnector::waitAny(int* exitcode) {
   return pid;
 }
 
+void CgiConnector::readOutput_(int pipes[2]) {
+  close(pipes[1]);
+  char buf[16];
+  bzero(buf, 16);
+  std::string bufferStr;
+  while (read(pipes[0], buf, 15) > 0) {
+    std::cout << buf << std::endl;
+    bufferStr.append(buf);
+    bzero(buf, 16);
+  }
+  std::cout << "loop exited" << std::endl;
+  this->respHeader_ = bufferStr.substr(0, bufferStr.find("\n\n"));
+  this->respBody_ =
+      bufferStr.substr(bufferStr.find("\n\n") + 2, bufferStr.size());
+  std::cout << GREEN << this->respHeader_ << std::endl;
+  std::cout << this->respBody_ << COLOR_RESET << std::endl;
+  close(pipes[0]);
+  // std::cin.seekg(std::ios::beg);
+}
+
+void CgiConnector::executeScript_(std::string path, int pipes[2]) {
+  dup2(pipes[1], 1);
+  close(pipes[0]);
+  close(pipes[1]);
+  char** env = this->envToString_();
+  char** args = new char*[2];
+  args[0] = const_cast<char*>(path.c_str());
+  args[1] = NULL;
+  if (this->env_["REQUEST_METHOD"] == "POST") std::cout << this->reqBody_;
+  execve(path.c_str(), args, env);
+  perror("");
+  std::cerr << RED << "execve failed" << COLOR_RESET << std::endl;
+  size_t i = 0;
+  while (env[i] != NULL) delete env[i++];
+  delete[] env;
+  delete[] args;
+  std::exit(1);
+}
+
 void CgiConnector::makeConnection(Status& status) {
   int pipes[2];
   int exitcode;
   pipe(pipes);
-  pid_t timer = fork();
+  // pid_t timer = fork();
   pid_t pid = fork();
-  if (timer == 0) {
-    sleep(1);
-    std::exit(112);
-  }
+  // if (timer == 0) {
+  //   sleep(1);
+  //   std::exit(112);
+  // }
   if (!pid) this->executeScript_(pathHelper(this->env_["SCRIPT_NAME"]), pipes);
-  if (waitAny(&exitcode) == timer)
-    kill(pid, SIGKILL);
-  else
-    kill(timer, SIGKILL);
-  if (exitcode > 0) return (void)(status = 500);
+  waitpid(pid, &exitcode, 0);
+  exitcode = WEXITSTATUS(exitcode);
+  std::cout << RED << exitcode << COLOR_RESET << std::endl;
+  // if (exitcode > 0) {
+  //   close(pipes[0]);
+  //   close(pipes[1]);
+  //   status = 500;
+  //   return;
+  // }
+  status = 200;
   this->readOutput_(pipes);
 }

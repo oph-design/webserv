@@ -126,10 +126,9 @@ void Response::createFile_(std::string filename, std::string ext,
     this->status_ = 200;
   else
     this->status_ = 201;
-  std::cout << "test" << std::endl;
-  std::ofstream outfile(path + file);
+  std::ofstream outfile(path + file, std::ios::out | std::ios::binary);
   if (!outfile.is_open()) this->status_ = 500;
-  outfile << data;
+  outfile.write(data.c_str(), data.length());
 }
 
 void Response::buildJsonBody_() {
@@ -155,6 +154,7 @@ void Response::handlePostRequest_(const Request &request) {
   } catch (std::exception &e) {
     std::cout << e.what() << std::endl;
   }
+  std::cout << file << std::endl;
   if (!request.getRequestBodyExists() || !file.length() || !ext.length())
     this->status_ = 400;
   if (this->status_ < 400)
