@@ -204,14 +204,14 @@ void Response::serveCgi_(const Request &request) {
 
 /*                Folder Request                  */
 
-void Response::serverFolder_(const Request &request) {
+void Response::serveFolder_(const Request &request) {
   (void)request;
 }
 
 bool Response::isFolder_(std::string uri)
 {
   (void)uri;
-  return false;
+  return true;
 }
 
 /*            global funnctions                  */

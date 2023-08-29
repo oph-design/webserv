@@ -51,7 +51,7 @@ class Response {
   void serveCgi_(const Request& request);
 
   static bool isFolder_(std::string uri);
-  void serverFolder_(const Request &request);
+  void serveFolder_(const Request &request);
 
   static contentMap fileTypes_;
   contentMap header_;
