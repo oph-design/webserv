@@ -11,15 +11,14 @@ Response::Response() : body_("Server is online") {
 }
 
 Response::Response(const Request &request) {
-  t_methodTypes method = request.getRequestMethodType();
-  switch (method) {
+  switch (request.getRequestMethodType()) {
     case 0:
       handleGetRequest_(request);
       break;
     case 1:
       handlePostRequest_(request);
       break;
-    case 3:
+    case 2:
       handleDeleteRequest_(request);
       break;
     default:
@@ -54,7 +53,7 @@ std::ostream &operator<<(std::ostream &stream, const Response &resp) {
   return (stream);
 }
 
-/*            Public Functions           */
+/*            Getters           */
 
 const std::string Response::getHeader() const {
   std::stringstream header;
@@ -69,73 +68,24 @@ const std::string Response::getHeader() const {
 
 const std::string &Response::getBody() const { return (body_); }
 
-const std::list<std::string> Response::getBodyChunked() const {
-  size_t i = 0;
-  std::string tmp = this->body_;
-  std::list<std::string> res;
+/*             Get Request                  */
 
-  for (std::string::iterator it = tmp.begin(); it < tmp.end(); ++it) {
-    if (tmp.at(i) == '\n') {
-      res.push_back(buildChunk_(tmp.substr(0, i + 1)));
-      tmp = tmp.substr(i + 1, tmp.length());
-      i = 0;
-    }
+std::string Response::findType_(std::string url) {
+  std::string extention;
+  contentMap::iterator search;
+  std::string type;
+
+  if (!url.compare("/")) url.append("index.html");
+  extention = url.substr(url.rfind(".") + 1, url.length());
+  search = Response::fileTypes_.find(extention);
+  if (search != Response::fileTypes_.end()) {
+    type = Response::fileTypes_[extention];
+  } else {
+    this->status_ = 415;
+    type = "text/html";
   }
-  if (tmp.length() > 0) res.push_back(buildChunk_(tmp));
-  return (res);
-}
-
-/*            private functions                  */
-
-void Response::handleGetRequest_(const Request &request) {
-  CgiConnector cgi(request);
-  if (cgi.isCgi) {
-    serveCgi_(cgi);
-    return;
-  }
-  this->body_ = readBody_(request.getPath());
-  std::string type = findType_(request.getPath());
-  if (this->status_ > 399) this->status_ >> this->body_;
-  std::string length = toString<std::size_t>(this->body_.length());
-
-  this->header_.insert(contentField("Content-Type", type));
-  this->header_.insert(contentField("Connection", "keep-alive"));
-  this->header_.insert(contentField("Content-Length", length));
-}
-
-void Response::handlePostRequest_(const Request &request) {
-  (void)request;
-  this->status_ = 405;
-  this->status_ >> this->body_;
-}
-
-void Response::handleDeleteRequest_(const Request &request) {
-  (void)request;
-  this->status_ = 405;
-  this->status_ >> this->body_;
-}
-
-void Response::serveCgi_(CgiConnector &cgi) {
-  cgi.makeConnection(this->status_);
-  if (status_ > 399) {
-    this->status_ >> this->body_;
-    this->header_.insert(contentField("Content-Type", "text/html"));
-    this->header_.insert(contentField("Connection", "keep-alive"));
-    this->header_.insert(
-        contentField("Content-Length", toString(this->body_.length())));
-    return;
-  }
-  this->header_ = cgi.getHeader();
-  this->body_ = cgi.getBody();
-}
-
-std::string Response::buildChunk_(std::string line) {
-  std::stringstream bytes;
-  std::string res;
-
-  bytes << std::hex << line.length();
-  res = bytes.str() + "\r\n" + line + "\r\n";
-  return (res);
+  type.append("; charset=UTF-8");
+  return (type);
 }
 
 std::string Response::readBody_(std::string dir) {
@@ -154,22 +104,99 @@ std::string Response::readBody_(std::string dir) {
   return (content.str());
 }
 
-std::string Response::findType_(std::string url) {
-  std::string extention;
-  contentMap::iterator search;
-  std::string type;
+void Response::handleGetRequest_(const Request &request) {
+  if (CgiConnector::isCgi(request.getPath())) return (void)(serveCgi_(request));
+  this->body_ = readBody_(request.getPath());
+  std::string type = findType_(request.getPath());
+  if (this->status_ > 399) this->status_ >> this->body_;
+  std::string length = toString<std::size_t>(this->body_.length());
 
-  if (!url.compare("/")) url.append("index.html");
-  extention = url.substr(url.rfind(".") + 1, url.length());
-  search = Response::fileTypes_.find(extention);
-  if (search != Response::fileTypes_.end()) {
-    type = Response::fileTypes_[extention];
-  } else {
-    this->status_ = 415;
-    type = "text/html";
+  this->header_.insert(contentField("Content-Type", type));
+  this->header_.insert(contentField("Connection", "keep-alive"));
+  this->header_.insert(contentField("Content-Length", length));
+}
+
+/*             Post Request                  */
+
+void Response::createFile_(std::string filename, std::string ext,
+                           std::string data, std::string path) {
+  path = "./html" + path.substr(0, path.rfind("/") + 1);
+  std::string file = filename + "." + ext;
+  if (findFile(file, path))
+    this->status_ = 200;
+  else
+    this->status_ = 201;
+  std::ofstream outfile((path + file).c_str());
+  if (!outfile.is_open()) this->status_ = 500;
+  outfile.write(data.c_str(), data.length());
+}
+
+void Response::buildJsonBody_() {
+  this->body_ = "{\n";
+  this->body_.append("\"status\": ");
+  if (this->status_ < 400)
+    this->body_.append("\"success\",\n");
+  else
+    this->body_.append("\"error\",\n");
+  this->body_.append("}");
+  this->header_.insert(
+      contentField("Content-Length", toString(this->body_.size())));
+}
+
+void Response::handlePostRequest_(const Request &request) {
+  if (CgiConnector::isCgi(request.getPath())) return (void)(serveCgi_(request));
+  std::string file = request.getPath();
+  std::string ext;
+  file = file.substr(file.rfind("/") + 1, file.length());
+  file = file.substr(0, file.rfind("."));
+  ext = swapColumns(fileTypes_)[request["Content-Type"]];
+  try {
+    ext = swapColumns(fileTypes_)[request["Content-Type"]];
+    file = getContentDispostion(request, "filename");
+  } catch (std::exception &e) {
+    std::cout << e.what() << std::endl;
   }
-  type.append("; charset=UTF-8");
-  return (type);
+  std::cout << file << std::endl;
+  if (!request.getRequestBodyExists() || !file.length() || !ext.length())
+    this->status_ = 400;
+  if (this->status_ < 400)
+    this->createFile_(file, ext, request.getRequestBody(), request.getPath());
+  this->header_.insert(contentField("Connection", "keep-alive"));
+  this->header_.insert(contentField("Content-Type", "application/json"));
+  buildJsonBody_();
+}
+
+/*             Delete Request                  */
+
+void Response::handleDeleteRequest_(const Request &request) {
+  if (CgiConnector::isCgi(request.getPath())) return (void)(serveCgi_(request));
+  std::string path = "./html" + request.getPath();
+  if (access(path.c_str(), F_OK)) this->status_ = 403;
+  std::cout << this->status_ << std::endl;
+  if (!findFile(path.substr(path.rfind("/") + 1, path.length()),
+                path.substr(0, path.rfind("/"))))
+    this->status_ = 404;
+  if (this->status_ < 400 && remove(path.c_str())) this->status_ = 500;
+  this->header_.insert(contentField("Connection", "keep-alive"));
+  this->header_.insert(contentField("Content-Type", "application/json"));
+  buildJsonBody_();
+}
+
+/*             Cgi Request                  */
+
+void Response::serveCgi_(const Request &request) {
+  CgiConnector cgi(request);
+  cgi.makeConnection(this->status_);
+  if (status_ > 399) {
+    this->status_ >> this->body_;
+    this->header_.insert(contentField("Content-Type", "text/html"));
+    this->header_.insert(contentField("Connection", "keep-alive"));
+    this->header_.insert(
+        contentField("Content-Length", toString(this->body_.length())));
+    return;
+  }
+  this->header_ = cgi.getHeader();
+  this->body_ = cgi.getBody();
 }
 
 /*            global funnctions                  */

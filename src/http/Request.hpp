@@ -12,7 +12,7 @@
 #include "colors.hpp"
 
 #ifndef BUFFER_SIZE
-#define BUFFER_SIZE 1024
+#define BUFFER_SIZE 131072
 #endif
 
 typedef enum e_methodTypes {

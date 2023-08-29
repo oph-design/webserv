@@ -1,5 +1,11 @@
 #include "TcpServer.hpp"
 
+#include <sys/fcntl.h>
+#include <sys/socket.h>
+
+#include "Socket.hpp"
+#include "colors.hpp"
+
 void TcpServer::bootServer_() {
   memset(&this->servaddr_, 0, sizeof(this->servaddr_));
   this->servaddr_.sin_family = AF_INET;
@@ -58,8 +64,8 @@ bool TcpServer::serverLoop_() {
   }
   this->checkPending_();
   for (int i = 0; i < this->nfds_; ++i) {
-    std::cout << "fds[" << this->fds_[i].fd
-              << "].revents: " << this->fds_[i].revents << std::endl;
+    // std::cout << "fds[" << this->fds_[i].fd
+    //           << "].revents: " << this->fds_[i].revents << std::endl;
     if (this->fds_[i].revents & POLLHUP) {
       std::cout << "HANGUP " << i << " " << std::endl;
     }
@@ -68,8 +74,7 @@ bool TcpServer::serverLoop_() {
         this->initNewConnection_();
         return true;
       } else {
-        if (this->existingConnection_(this->pollSockets_[i], this->fds_[i],
-                                      i) == false)
+        if (!this->existingConnection_(this->pollSockets_[i], this->fds_[i], i))
           this->closeConnection_(this->pollSockets_[i], this->fds_[i], i);
       }
     }
@@ -119,7 +124,7 @@ void TcpServer::initNewConnection_() {
   ++nfds_;
 }
 
-std::string TcpServer::createResponse_(char buffer[1024]) {
+std::string TcpServer::createResponse_(std::string buffer) {
   Request request(buffer);
   Response resobj(request);
   std::string response = resobj.getHeader() + resobj.getBody();
@@ -141,25 +146,19 @@ void TcpServer::sendResponse_(Socket &socket, pollfd &fd, int &i) {
 }
 
 bool TcpServer::existingConnection_(Socket &socket, pollfd &fd, int &i) {
-  char buffer[BUFFER_SIZE] = {0};
-  std::size_t bytes_read = 0;
-
-  bytes_read = recv(socket.getSocketFd(), buffer, sizeof(buffer), 0);
-  if (bytes_read > 0) {
-    std::cout << "connection established with socket " << socket.getSocketFd()
-              << " " << std::endl;
+  size_t currentBytes;
+  if (receiveRequest(socket, currentBytes) || socket.pendingSend == true) {
+    std::cout << "connection on socket " << socket.getSocketFd() << std::endl;
     socket.setTimestamp();
-    if (socket.pendingSend == false) {
-      socket.response_ = this->createResponse_(buffer);
-    }
+    if (socket.pendingSend == false)
+      socket.response_ = this->createResponse_(socket.reqStatus.buffer);
     this->sendResponse_(socket, fd, i);
   }
-  if (bytes_read == static_cast<std::size_t>(-1) &&
+  if (currentBytes == static_cast<std::size_t>(-1) &&
       (errno == EWOULDBLOCK || errno == EAGAIN)) {
     std::cout << "BLOCKER: " << socket.getSocketFd() << std::endl;
-  } else if (bytes_read == 0) {
-    std::cout << "client closed connection on socket " << socket.getSocketFd()
-              << " " << std::endl;
+  } else if (currentBytes == 0 && socket.reqStatus.pendingReceive == false) {
+    std::cout << "client closed socket " << socket.getSocketFd() << std::endl;
     return false;
   }
   return true;
