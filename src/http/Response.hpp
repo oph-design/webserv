@@ -52,6 +52,7 @@ class Response {
 
   static bool isFolder_(std::string uri);
   void serveFolder_(const Request &request);
+  std::string createFolderBody_();
 
   static contentMap fileTypes_;
   contentMap header_;

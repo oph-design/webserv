@@ -106,7 +106,8 @@ std::string Response::readBody_(std::string dir) {
 
 void Response::handleGetRequest_(const Request &request) {
   if (CgiConnector::isCgi(request.getPath())) return (void)(serveCgi_(request));
-  if (Response::isFolder_(request.getPath())) return (void)(serverFolder_(request));
+  if (Response::isFolder_(request.getPath()))
+    return (void)(serveFolder_(request));
 
   this->body_ = readBody_(request.getPath());
   std::string type = findType_(request.getPath());
@@ -117,7 +118,6 @@ void Response::handleGetRequest_(const Request &request) {
   this->header_.insert(contentField("Connection", "keep-alive"));
   this->header_.insert(contentField("Content-Length", length));
 }
-
 
 /*             Post Request                  */
 
@@ -205,11 +205,29 @@ void Response::serveCgi_(const Request &request) {
 /*                Folder Request                  */
 
 void Response::serveFolder_(const Request &request) {
+  this->body_ = createFolderBody_();
+  this->header_.insert(contentField("Content-Type", "text/html"));
+  this->header_.insert(contentField("Connection", "keep-alive"));
+  this->header_.insert(
+      contentField("Content-Length", toString(this->body_.length())));
   (void)request;
 }
 
-bool Response::isFolder_(std::string uri)
-{
+std::string Response::createFolderBody_() {
+  std::string body;
+
+  body.append("<html>\n");
+  body.append("<head><title>Index of /folder/</title></head>\n");
+  body.append("<body>\n");
+  body.append("<h1>Index of /folder/</h1><hr><pre><a href=\"../\">../</a>\n");
+  body.append("<a href=\"file1.html\">file1.html</a>                                         29-Aug-2023 15:02                 107\n");
+  body.append("<a href=\"file2.html\">file2.html</a>                                         29-Aug-2023 15:03                 107");
+  body.append("</pre><hr></body>\n");
+  body.append("<html>\n");
+  return body;
+}
+
+bool Response::isFolder_(std::string uri) {
   (void)uri;
   return true;
 }
