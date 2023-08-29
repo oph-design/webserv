@@ -5,8 +5,7 @@ LCFLAGS						=	#-fsanitize=address
 HEADERFLAGS				=	-I src/core -I include -I src/utils -I src/http \
 										-I src/config
 CFLAGS						=	$(LCFLAGS) $(HEADERFLAGS) \
-											-std=c++98 -Wall -Wextra -Werror -g -pedantic \
-											-Wc++11-extensions
+											-std=c++98 -Wall -Wextra -Werror -g -pedantic
 LFLAGS						=	$(LCFLAGS)
 
 ################################################################################
