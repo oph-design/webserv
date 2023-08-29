@@ -3,8 +3,8 @@
 ServerCluster::ServerCluster(ConfigVector configs) {
   for (ConfigVector::iterator configIter = configs.begin();
        configIter != configs.end(); ++configIter) {
-      TcpServer server(*configIter);
-      this->cluster_.push_back(server);
+    TcpServer server(*configIter);
+    this->cluster_.push_back(server);
   }
 }
 

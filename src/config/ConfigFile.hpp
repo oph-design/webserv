@@ -33,9 +33,9 @@ class ConfigFile {
   bool isValid();
 
   friend std::ostream& operator<<(std::ostream& stream, ConfigFile& config);
-  static ConfigVector splitUpListens_(ConfigVector &configvector);
 
  private:
+  static ConfigVector splitUpListens(ConfigVector& configvector);
   void cleanContent_();
   void vaildateConfigFile_();
   ConfigVector createConfigVector_();
