@@ -5,7 +5,8 @@ LCFLAGS						=	-fsanitize=address
 HEADERFLAGS				=	-I src/core -I include -I src/utils -I src/http \
 										-I src/config
 CFLAGS						=	$(LCFLAGS) $(HEADERFLAGS) \
-											-std=c++98 -Wall -Wextra -Werror -g -pedantic
+											-std=c++98 -Wall -Wextra -Werror -g -pedantic \
+											-Wc++11-extensions
 LFLAGS						=	$(LCFLAGS)
 
 ################################################################################
@@ -30,7 +31,7 @@ CONFIG_FILES			=	ConfigFile.cpp Line.cpp Location.cpp Config.cpp \
 
 UTILS							=	$(addprefix $(UTILS_DIR), $(UTILS_FILES))
 UTILS_DIR					=	src/utils/
-UTILS_FILES				= IsNumber.cpp
+UTILS_FILES				= 
 
 ALL_SRC						=	$(SRC) $(CORE) $(UTILS) $(HTTP) $(CONFIG)
 

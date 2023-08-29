@@ -5,6 +5,11 @@
 #include <iterator>
 #include <string>
 
-bool isNumber(std::string str);
-
+template <typename Type>
+bool isNumber(Type str) {
+  for (typename Type::iterator iter = str.begin(); iter != str.end(); ++iter) {
+    if (!std::isdigit(*iter)) return false;
+  }
+  return true;
+}
 #endif  // ISNUMBER_HPP_
