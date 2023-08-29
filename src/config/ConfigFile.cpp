@@ -115,6 +115,7 @@ ConfigVector ConfigFile::createConfig() {
   ConfigVector configVector = ConfigFile::createConfigVector_();
   if (this->isValid() == false) return ConfigVector();
   configVector = Config::handleDuplicates_(configVector);
+  configVector = ConfigFile::splitUpListens_(configVector);
   return configVector;
 }
 
@@ -133,7 +134,7 @@ ConfigVector ConfigFile::createConfigVector_() {
   return configVector;
 }
 
-ConfigVector ConfigFile::splitUpListens_(ConfigVector &configvector) {
+ConfigVector ConfigFile::splitUpListens_(ConfigVector& configvector) {
   ConfigVector newConfigVector;
   for (ConfigVector::iterator vectorIter = configvector.begin();
        vectorIter != configvector.end(); ++vectorIter) {
