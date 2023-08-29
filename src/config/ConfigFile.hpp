@@ -35,7 +35,7 @@ class ConfigFile {
   friend std::ostream& operator<<(std::ostream& stream, ConfigFile& config);
 
  private:
-  static ConfigVector splitUpListens(ConfigVector& configvector);
+  static ConfigVector splitUpListens_(ConfigVector& configvector);
   void cleanContent_();
   void vaildateConfigFile_();
   ConfigVector createConfigVector_();
