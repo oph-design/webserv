@@ -126,7 +126,7 @@ void Response::createFile_(std::string filename, std::string ext,
     this->status_ = 200;
   else
     this->status_ = 201;
-  std::ofstream outfile(path + file, std::ios::out | std::ios::binary);
+  std::ofstream outfile((path + file).c_str());
   if (!outfile.is_open()) this->status_ = 500;
   outfile.write(data.c_str(), data.length());
 }

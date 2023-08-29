@@ -1,3 +1,5 @@
+#include <cstdlib>
+
 #include "Socket.hpp"
 
 int parseCl(std::string buffer) {
