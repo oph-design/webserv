@@ -3,8 +3,6 @@
 // public
 Socket::Socket()
     : pendingSend(false),
-      pendingReceive(false),
-      readBytes(0),
       keepAlive_(true),
       socketOpt_(1),
       timestamp_(0),
@@ -13,6 +11,7 @@ Socket::Socket()
   this->socketFd_.fd = -1;
   this->socketFd_.events = POLLIN;
   this->socketFd_.revents = 0;
+  this->setReqStatus();
 }
 
 Socket::~Socket() {}
@@ -55,6 +54,11 @@ void Socket::setEvent(int event) { this->socketFd_.events = event; }
 
 void Socket::setKeepAlive(bool set) { this->keepAlive_ = set; }
 
+void Socket::setReqStatus() {
+  this->reqStatus.pendingReceive = false;
+  this->reqStatus.clen = 0;
+  this->reqStatus.readBytes = 0;
+}
 // other functions
 bool Socket::checkTimeout() {
   if (this->inUse_) {

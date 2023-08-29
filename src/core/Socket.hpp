@@ -15,6 +15,13 @@
 #include <sstream>
 #include <string>
 
+typedef struct s_reqStatus {
+  bool pendingReceive;
+  int clen;
+  int readBytes;
+  std::string buffer;
+} t_reqStatus;
+
 class Socket {
  public:
   Socket();
@@ -36,6 +43,7 @@ class Socket {
   void setRevent(int);
   void setEvent(int);
   void setKeepAlive(bool);
+  void setReqStatus();
 
   // other functions
   bool checkTimeout();
@@ -45,11 +53,8 @@ class Socket {
   std::string response_;
   std::list<std::string>::iterator it;
   bool pendingSend;
-  bool pendingReceive;
-  int clen;
-  int readBytes;
-  std::string buffer;
   size_t dataSend;
+  t_reqStatus reqStatus;
 
  private:
   struct pollfd socketFd_;

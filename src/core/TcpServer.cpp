@@ -3,6 +3,7 @@
 #include <sys/fcntl.h>
 #include <sys/socket.h>
 
+#include "Socket.hpp"
 #include "colors.hpp"
 
 void TcpServer::bootServer_() {
@@ -156,37 +157,39 @@ int subtrHeader(std::string buffer) {
 
 bool receiveRequest(Socket &socket, size_t &bytes) {
   char buffer[BUFFER_SIZE] = {0};
+  t_reqStatus &reqstatus = socket.reqStatus;
+
   bytes = recv(socket.getSocketFd(), buffer, sizeof(buffer), O_NONBLOCK);
-  socket.readBytes += bytes;
-  if (socket.pendingReceive == false) {
-    socket.clen = parseCl(buffer);
-    socket.buffer = std::string(buffer, bytes);
-    socket.readBytes -= subtrHeader(buffer);
+  reqstatus.readBytes += bytes;
+  if (bytes == 0) return (false);
+  if (reqstatus.pendingReceive == false) {
+    reqstatus.clen = parseCl(buffer);
+    reqstatus.buffer = std::string(buffer, bytes);
+    reqstatus.readBytes -= subtrHeader(buffer);
   } else {
-    socket.buffer.append(std::string(buffer, bytes));
+    reqstatus.buffer.append(std::string(buffer, bytes));
   }
-  if (socket.readBytes == socket.clen) {
-    socket.pendingReceive = false;
-    socket.readBytes = 0;
+  if (reqstatus.readBytes == reqstatus.clen) {
+    socket.setReqStatus();
     return (true);
   }
-  socket.pendingReceive = true;
+  reqstatus.pendingReceive = true;
   return (false);
 }
 
 bool TcpServer::existingConnection_(Socket &socket, pollfd &fd, int &i) {
   size_t currentBytes;
-  if (receiveRequest(socket, currentBytes)) {
+  if (receiveRequest(socket, currentBytes) || socket.pendingSend == true) {
     std::cout << "connection on socket " << socket.getSocketFd() << std::endl;
     socket.setTimestamp();
     if (socket.pendingSend == false)
-      socket.response_ = this->createResponse_(socket.buffer);
+      socket.response_ = this->createResponse_(socket.reqStatus.buffer);
     this->sendResponse_(socket, fd, i);
   }
   if (currentBytes == static_cast<std::size_t>(-1) &&
       (errno == EWOULDBLOCK || errno == EAGAIN)) {
     std::cout << "BLOCKER: " << socket.getSocketFd() << std::endl;
-  } else if (currentBytes == 0 && socket.pendingReceive == false) {
+  } else if (currentBytes == 0 && socket.reqStatus.pendingReceive == false) {
     std::cout << "client closed socket " << socket.getSocketFd() << std::endl;
     return false;
   }
