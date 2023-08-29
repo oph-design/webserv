@@ -15,14 +15,14 @@
 #include <sstream>
 #include <string>
 
-typedef struct s_reqStatus {
-  bool pendingReceive;
-  int clen;
-  int readBytes;
-  std::string buffer;
-} t_reqStatus;
+typedef enum eSocketType {
+  SERVER,
+  CLIENT,
+  UNUSED
+} SocketType;
 
 class Socket {
+	friend class Webserver;
  public:
   Socket();
   ~Socket();
@@ -30,39 +30,24 @@ class Socket {
   Socket &operator=(const Socket &);
 
   // getter
-  int getRevents(void) const;
-  struct pollfd getSocketPoll() const;
   bool getKeepAlive() const;
   int getSocketFd();
 
   // setter
   void setFd(int fd);
-  void setPollfd(const struct pollfd);
-  void setTimestamp();
-  void setInUse(bool);
-  void setRevent(int);
-  void setEvent(int);
-  void setKeepAlive(bool);
-  void setReqStatus();
+  void setSocketIndex(int socketIndex);
 
   // other functions
-  bool checkTimeout();
-  void closeSocket();
 
   // public vars
-  std::string response_;
-  std::list<std::string>::iterator it;
-  bool pendingSend;
-  size_t dataSend;
-  t_reqStatus reqStatus;
 
  private:
-  struct pollfd socketFd_;
-  bool keepAlive_;
-  int socketOpt_;
-  time_t timestamp_;
-  double timeout_;
-  bool inUse_;
+  int fd_;
+  int socketIndex_;
+  SocketType socketType_;
+	int	socketOpt_;
+	int listeningSocket_;
+  sockaddr_in servaddr_;
 };
 
 bool receiveRequest(Socket &socket, size_t &bytes);
