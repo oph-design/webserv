@@ -19,7 +19,7 @@
 #include "Socket.hpp"
 
 #define MAX_CLIENTS 1024
-#define BUFFER_SIZE 1024
+#define BUFFER_SIZE 131072
 
 class TcpServer {
   friend class ServerCluster;

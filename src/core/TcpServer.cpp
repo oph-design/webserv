@@ -124,8 +124,6 @@ void TcpServer::initNewConnection_() {
 }
 
 std::string TcpServer::createResponse_(std::string buffer) {
-  std::cout << RED << "Request Input: " << buffer.length() << COLOR_RESET
-            << std::endl;
   Request request(buffer);
   Response resobj(request);
   std::string response = resobj.getHeader() + resobj.getBody();

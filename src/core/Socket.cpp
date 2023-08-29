@@ -8,7 +8,7 @@ Socket::Socket()
       keepAlive_(true),
       socketOpt_(1),
       timestamp_(0),
-      timeout_(20.0),
+      timeout_(5.0),
       inUse_(false) {
   this->socketFd_.fd = -1;
   this->socketFd_.events = POLLIN;
