@@ -3,11 +3,11 @@
 
 #include <cctype>
 #include <iterator>
-#include <string>
 
 template <typename Type>
-bool isNumber(Type str) {
-  for (typename Type::iterator iter = str.begin(); iter != str.end(); ++iter) {
+bool isNumber(Type cont) {
+  for (typename Type::iterator iter = cont.begin(); iter != cont.end();
+       ++iter) {
     if (!std::isdigit(*iter)) return false;
   }
   return true;
