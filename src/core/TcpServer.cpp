@@ -1,5 +1,10 @@
 #include "TcpServer.hpp"
 
+#include <sys/fcntl.h>
+#include <sys/socket.h>
+
+#include "colors.hpp"
+
 void TcpServer::bootServer_() {
   memset(&this->servaddr_, 0, sizeof(this->servaddr_));
   this->servaddr_.sin_family = AF_INET;
@@ -118,7 +123,9 @@ void TcpServer::initNewConnection_() {
   ++nfds_;
 }
 
-std::string TcpServer::createResponse_(char buffer[1024]) {
+std::string TcpServer::createResponse_(std::string buffer) {
+  std::cout << RED << "Request Input: " << buffer.length() << COLOR_RESET
+            << std::endl;
   Request request(buffer);
   Response resobj(request);
   std::string response = resobj.getHeader() + resobj.getBody();
@@ -139,23 +146,49 @@ void TcpServer::sendResponse_(Socket &socket, pollfd &fd, int &i) {
   }
 }
 
-bool TcpServer::existingConnection_(Socket &socket, pollfd &fd, int &i) {
-  char buffer[BUFFER_SIZE] = {0};
-  std::size_t bytes_read = 0;
+int parseCl(std::string buffer) {
+  buffer = buffer.substr(buffer.find("Content-Length") + 16, buffer.length());
+  return (atoi(buffer.c_str()));
+}
 
-  bytes_read = recv(socket.getSocketFd(), buffer, sizeof(buffer), 0);
-  if (bytes_read > 0) {
+int subtrHeader(std::string buffer) {
+  buffer = buffer.substr(0, buffer.find("\r\n\r\n") + 4);
+  return (buffer.length());
+}
+
+bool receiveRequest(Socket &socket, size_t &bytes) {
+  char buffer[BUFFER_SIZE] = {0};
+  bytes = recv(socket.getSocketFd(), buffer, sizeof(buffer), O_NONBLOCK);
+  socket.readBytes += bytes;
+  if (socket.pendingReceive == false) {
+    socket.clen = parseCl(buffer);
+    socket.buffer = std::string(buffer, bytes);
+    socket.readBytes -= subtrHeader(buffer);
+  } else {
+    socket.buffer.append(std::string(buffer, bytes));
+  }
+  if (socket.readBytes == socket.clen) {
+    socket.pendingReceive = false;
+    socket.readBytes = 0;
+    return (true);
+  }
+  socket.pendingReceive = true;
+  return (false);
+}
+
+bool TcpServer::existingConnection_(Socket &socket, pollfd &fd, int &i) {
+  size_t currentBytes;
+  if (receiveRequest(socket, currentBytes)) {
     std::cout << "connection on socket " << socket.getSocketFd() << std::endl;
     socket.setTimestamp();
-    if (socket.pendingSend == false) {
-      socket.response_ = this->createResponse_(buffer);
-    }
+    if (socket.pendingSend == false)
+      socket.response_ = this->createResponse_(socket.buffer);
     this->sendResponse_(socket, fd, i);
   }
-  if (bytes_read == static_cast<std::size_t>(-1) &&
+  if (currentBytes == static_cast<std::size_t>(-1) &&
       (errno == EWOULDBLOCK || errno == EAGAIN)) {
     std::cout << "BLOCKER: " << socket.getSocketFd() << std::endl;
-  } else if (bytes_read == 0) {
+  } else if (currentBytes == 0 && socket.pendingReceive == false) {
     std::cout << "client closed socket " << socket.getSocketFd() << std::endl;
     return false;
   }

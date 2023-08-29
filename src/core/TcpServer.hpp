@@ -41,7 +41,7 @@ class TcpServer {
   void sendFile_(int, std::list<std::string>);
   bool isKeepAlive_(const Socket &socket);
   void closeConnection_(Socket &socket, pollfd &fd, int &i);
-  std::string createResponse_(char[MAX_CLIENTS]);
+  std::string createResponse_(std::string buffer);
   void sendResponse_(Socket &, pollfd &, int &);
   void checkPending_();
   void error_();

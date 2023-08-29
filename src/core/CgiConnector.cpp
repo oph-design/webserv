@@ -1,7 +1,10 @@
 #include "CgiConnector.hpp"
 
 #include <strings.h>
+#include <sys/signal.h>
 #include <sys/wait.h>
+
+#include <csignal>
 
 #include "colors.hpp"
 
@@ -99,13 +102,8 @@ std::string pathHelper(std::string name) {
 
 pid_t CgiConnector::waitAny(int* exitcode) {
   pid_t pid = 0;
-  while ((pid = waitpid(WAIT_ANY, exitcode, 0)) == -1) {
-    if (errno == EINTR) {
-      continue;
-    } else {
-      perror("waitpid");
-      abort();
-    }
+  while (pid == 0) {
+    pid = waitpid(WAIT_ANY, exitcode, WNOHANG);
   }
   return pid;
 }
@@ -116,18 +114,13 @@ void CgiConnector::readOutput_(int pipes[2]) {
   bzero(buf, 16);
   std::string bufferStr;
   while (read(pipes[0], buf, 15) > 0) {
-    std::cout << buf << std::endl;
     bufferStr.append(buf);
     bzero(buf, 16);
   }
-  std::cout << "loop exited" << std::endl;
   this->respHeader_ = bufferStr.substr(0, bufferStr.find("\n\n"));
   this->respBody_ =
       bufferStr.substr(bufferStr.find("\n\n") + 2, bufferStr.size());
-  std::cout << GREEN << this->respHeader_ << std::endl;
-  std::cout << this->respBody_ << COLOR_RESET << std::endl;
   close(pipes[0]);
-  // std::cin.seekg(std::ios::beg);
 }
 
 void CgiConnector::executeScript_(std::string path, int pipes[2]) {
@@ -152,23 +145,26 @@ void CgiConnector::executeScript_(std::string path, int pipes[2]) {
 void CgiConnector::makeConnection(Status& status) {
   int pipes[2];
   int exitcode;
+  pid_t timer = fork();
+  if (timer == 0) {
+    sleep(1);
+    std::exit(112);
+  }
   pipe(pipes);
-  // pid_t timer = fork();
   pid_t pid = fork();
-  // if (timer == 0) {
-  //   sleep(1);
-  //   std::exit(112);
-  // }
   if (!pid) this->executeScript_(pathHelper(this->env_["SCRIPT_NAME"]), pipes);
-  waitpid(pid, &exitcode, 0);
+  if (waitAny(&exitcode) == timer)
+    kill(pid, SIGTERM);
+  else
+    kill(timer, SIGTERM);
+  waitpid(WAIT_ANY, NULL, 0);
   exitcode = WEXITSTATUS(exitcode);
   std::cout << RED << exitcode << COLOR_RESET << std::endl;
-  // if (exitcode > 0) {
-  //   close(pipes[0]);
-  //   close(pipes[1]);
-  //   status = 500;
-  //   return;
-  // }
-  status = 200;
+  if (exitcode > 0) {
+    close(pipes[0]);
+    close(pipes[1]);
+    status = 500;
+    return;
+  }
   this->readOutput_(pipes);
 }

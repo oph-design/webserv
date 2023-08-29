@@ -11,6 +11,7 @@ Response::Response() : body_("Server is online") {
 }
 
 Response::Response(const Request &request) {
+  std::cout << "ParsedBody: " << request.getRequestBody().length() << std::endl;
   switch (request.getRequestMethodType()) {
     case 0:
       handleGetRequest_(request);
@@ -139,6 +140,8 @@ void Response::buildJsonBody_() {
   else
     this->body_.append("\"error\",\n");
   this->body_.append("}");
+  this->header_.insert(
+      contentField("Content-Length", toString(this->body_.size())));
 }
 
 void Response::handlePostRequest_(const Request &request) {

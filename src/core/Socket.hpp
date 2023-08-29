@@ -45,6 +45,10 @@ class Socket {
   std::string response_;
   std::list<std::string>::iterator it;
   bool pendingSend;
+  bool pendingReceive;
+  int clen;
+  int readBytes;
+  std::string buffer;
   size_t dataSend;
 
  private:
