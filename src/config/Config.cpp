@@ -19,6 +19,7 @@ Config& Config::operator=(const Config& obj) {
   this->root_ = obj.root_;
   this->locations_ = obj.locations_;
   this->errorPage_ = obj.errorPage_;
+  this->port_ = obj.port_;
   return *this;
 }
 

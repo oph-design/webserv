@@ -33,13 +33,13 @@ class Config {
 
   friend std::ostream& operator<<(std::ostream& stream, const Config& config);
 
-  const std::set<int>& getListen() const;
   const int& getClientMaxBodySize() const;
   const std::string& getServerName() const;
   const std::string& getIndex() const;
   const std::string& getRoot() const;
   const LocationVector& getLocations() const;
   const ErrorMap& getErrorPage() const;
+  const int& getPort() const;
 
  private:
   static ConfigVector& handleDuplicates_(ConfigVector& configs);
@@ -52,6 +52,7 @@ class Config {
   static void deleteEmptyServer_(ConfigVector& configs);
 
   std::set<int> listen_;
+  int port_;
   int clientMaxBodySize_;
   std::string serverName_;
   std::string index_;

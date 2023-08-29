@@ -115,6 +115,7 @@ ConfigVector ConfigFile::createConfig() {
   ConfigVector configVector = ConfigFile::createConfigVector_();
   if (this->isValid() == false) return ConfigVector();
   configVector = Config::handleDuplicates_(configVector);
+  configVector = ConfigFile::splitUpListens_(configVector);
   return configVector;
 }
 
@@ -131,6 +132,20 @@ ConfigVector ConfigFile::createConfigVector_() {
       iter->addError("server: unknown argument");
   }
   return configVector;
+}
+
+ConfigVector ConfigFile::splitUpListens_(ConfigVector& configvector) {
+  ConfigVector newConfigVector;
+  for (ConfigVector::iterator vectorIter = configvector.begin();
+       vectorIter != configvector.end(); ++vectorIter) {
+    for (std::set<int>::iterator listenIter = vectorIter->listen_.begin();
+         listenIter != vectorIter->listen_.end(); ++listenIter) {
+      Config newConfig(*vectorIter);
+      newConfig.port_ = *listenIter;
+      newConfigVector.push_back(newConfig);
+    }
+  }
+  return newConfigVector;
 }
 
 std::ostream& operator<<(std::ostream& stream, ConfigFile& config) {

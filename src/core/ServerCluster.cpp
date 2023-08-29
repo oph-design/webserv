@@ -3,12 +3,8 @@
 ServerCluster::ServerCluster(ConfigVector configs) {
   for (ConfigVector::iterator configIter = configs.begin();
        configIter != configs.end(); ++configIter) {
-    for (std::set<int>::iterator listenIter = configIter->getListen().begin();
-         listenIter != configIter->getListen().end();
-         std::advance(listenIter, 1)) {
-      TcpServer server(*configIter, *listenIter);
-      this->cluster_.push_back(server);
-    }
+    TcpServer server(*configIter);
+    this->cluster_.push_back(server);
   }
 }
 
