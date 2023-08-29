@@ -23,6 +23,7 @@ class ConfigParsing {
   static int parseCientMaxBodySize(Line &line, Duplicates &duplicates);
   static std::string parseIndex(Line &line, Duplicates &duplicates);
   static std::string parseRoot(Line &line, Duplicates &duplicates);
+  static std::string parseUpload(Line &line, Duplicates &duplicates);
   static ErrorPage parseErrorPage(Line &line);
 
   // in Server

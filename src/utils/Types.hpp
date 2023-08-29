@@ -31,6 +31,7 @@ typedef std::map<int, std::string> ErrorMap;
 typedef struct s_duplicates {
   bool index;
   bool root;
+  bool upload_pass;
   bool clientMaxBodySize;
 } Duplicates;
 

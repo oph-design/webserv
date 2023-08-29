@@ -31,14 +31,8 @@ Request::Request(std::string bufferString) {
         line.substr(line.find(": ") + 2, line.end() - line.begin());
     this->requestHeaderFields_.insert(keyPair);
   }
-  while (true) {
-    line.clear();
-    std::getline(ss, line);
-    line.erase(std::remove(line.begin(), line.end(), '\r'), line.end());
-    if (line.size() == 0) break;
-    this->requestBody_.append(line);
-    this->requestBody_.append("\n");
-  }
+  this->requestBody_ = bufferString.substr(bufferString.find("\r\n\r\n") + 4,
+                                           bufferString.length());
   if (requestBody_.size() != 0) this->requestBodyExists_ = true;
 }
 

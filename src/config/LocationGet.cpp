@@ -12,6 +12,8 @@ const std::string& Location::getPath() const { return this->path_; }
 
 const std::string& Location::getRoot() const { return this->root_; }
 
+const std::string& Location::getUploadPass() const { return this->uploadPass_; }
+
 const StringSet& Location::getMethods() const { return this->limitExcept_; }
 
 const std::map<std::string, std::string>& Location::getFastcgiPass() const {

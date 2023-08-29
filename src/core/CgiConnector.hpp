@@ -34,8 +34,7 @@ class CgiConnector {
   void makeConnection(Status& status);
   std::map<std::string, std::string> getHeader() const;
   std::string getBody() const;
-
-  bool isCgi;
+  static bool isCgi(std::string uri);
 
  private:
   envMap buildEnv_(const Request& request);
@@ -44,7 +43,6 @@ class CgiConnector {
   static pid_t waitAny(int* exitcode);
   void executeScript_(std::string path, int pipes[2]);
   void readOutput_(int pipes[2]);
-  bool checkCgi_(std::string uri);
 
   std::string respHeader_;
   std::string respBody_;

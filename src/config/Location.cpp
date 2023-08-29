@@ -9,6 +9,7 @@ Location::Location() {
   this->duplicates_.clientMaxBodySize = false;
   this->duplicates_.index = false;
   this->duplicates_.root = false;
+  this->duplicates_.upload_pass = false;
 }
 
 Location::~Location() {}
@@ -21,6 +22,7 @@ Location& Location::operator=(const Location& obj) {
   this->index_ = obj.index_;
   this->path_ = obj.path_;
   this->root_ = obj.root_;
+  this->uploadPass_ = obj.uploadPass_;
   this->limitExcept_ = obj.limitExcept_;
   this->fastcgiPass_ = obj.fastcgiPass_;
   this->errorPage_ = obj.errorPage_;
@@ -34,6 +36,7 @@ std::ostream& operator<<(std::ostream& stream, const Location& location) {
   stream << "client_max_body_size: " << location.clientMaxBodySize_ << "\n";
   stream << "index: " << location.index_ << "\n";
   stream << "root: " << location.root_ << "\n";
+  stream << "upload_pass: " << location.uploadPass_ << "\n";
   stream << "limit_except:\n" << location.limitExcept_;
   stream << "fastcgi_pass:\n" << location.fastcgiPass_;
   stream << "error_page:\n" << location.errorPage_;

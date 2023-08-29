@@ -30,6 +30,7 @@ class Location {
   const std::string& getIndex() const;
   const std::string& getPath() const;
   const std::string& getRoot() const;
+  const std::string& getUploadPass() const;
   const StringSet& getMethods() const;
   const std::map<std::string, std::string>& getFastcgiPass() const;
   const ErrorMap& getErrorPage() const;
@@ -40,6 +41,7 @@ class Location {
   std::string index_;
   std::string path_;
   std::string root_;
+  std::string uploadPass_;
   StringSet limitExcept_;
   std::map<std::string, std::string> fastcgiPass_;
   ErrorMap errorPage_;
