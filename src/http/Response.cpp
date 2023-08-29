@@ -106,6 +106,8 @@ std::string Response::readBody_(std::string dir) {
 
 void Response::handleGetRequest_(const Request &request) {
   if (CgiConnector::isCgi(request.getPath())) return (void)(serveCgi_(request));
+  if (Response::isFolder_(request.getPath())) return (void)(serverFolder_(request));
+
   this->body_ = readBody_(request.getPath());
   std::string type = findType_(request.getPath());
   if (this->status_ > 399) this->status_ >> this->body_;
@@ -115,6 +117,7 @@ void Response::handleGetRequest_(const Request &request) {
   this->header_.insert(contentField("Connection", "keep-alive"));
   this->header_.insert(contentField("Content-Length", length));
 }
+
 
 /*             Post Request                  */
 
@@ -197,6 +200,18 @@ void Response::serveCgi_(const Request &request) {
   }
   this->header_ = cgi.getHeader();
   this->body_ = cgi.getBody();
+}
+
+/*                Folder Request                  */
+
+void Response::serverFolder_(const Request &request) {
+  (void)request;
+}
+
+bool Response::isFolder_(std::string uri)
+{
+  (void)uri;
+  return false;
 }
 
 /*            global funnctions                  */
