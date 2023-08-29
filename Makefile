@@ -1,7 +1,7 @@
 NAME							=	webserv
 
 CC								=	c++
-LCFLAGS						=	#-fsanitize=address
+LCFLAGS						=	-fsanitize=address
 HEADERFLAGS				=	-I src/core -I include -I src/utils -I src/http \
 										-I src/config
 CFLAGS						=	$(LCFLAGS) $(HEADERFLAGS) \
@@ -17,7 +17,8 @@ SRC_FILES					=	main.cpp
 
 CORE							=	$(addprefix $(CORE_DIR), $(CORE_FILES))
 CORE_DIR					=	src/core/
-CORE_FILES				=	Socket.cpp TcpServer.cpp CgiConnector.cpp ServerCluster.cpp
+CORE_FILES				=	Socket.cpp TcpServer.cpp CgiConnector.cpp ServerCluster.cpp \
+										Receive.cpp
 
 HTTP							=	$(addprefix $(HTTP_DIR), $(HTTP_FILES))
 HTTP_DIR					=	src/http/

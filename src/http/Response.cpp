@@ -171,15 +171,12 @@ void Response::handlePostRequest_(const Request &request) {
 void Response::handleDeleteRequest_(const Request &request) {
   if (CgiConnector::isCgi(request.getPath())) return (void)(serveCgi_(request));
   std::string path = "./html" + request.getPath();
-  std::cout << path << std::endl;
   if (access(path.c_str(), F_OK)) this->status_ = 403;
   std::cout << this->status_ << std::endl;
   if (!findFile(path.substr(path.rfind("/") + 1, path.length()),
                 path.substr(0, path.rfind("/"))))
     this->status_ = 404;
-  std::cout << this->status_ << std::endl;
   if (this->status_ < 400 && remove(path.c_str())) this->status_ = 500;
-  std::cout << this->status_ << std::endl;
   this->header_.insert(contentField("Connection", "keep-alive"));
   this->header_.insert(contentField("Content-Type", "application/json"));
   buildJsonBody_();

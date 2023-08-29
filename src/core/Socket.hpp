@@ -65,4 +65,6 @@ class Socket {
   bool inUse_;
 };
 
+bool receiveRequest(Socket &socket, size_t &bytes);
+
 #endif  //  SOCKET_HPP
