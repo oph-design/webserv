@@ -126,7 +126,8 @@ void Webserver::sendResponse_(Socket &socket, pollfd &fd, size_t &i) {
     } else {
         socket.pendingSend = false;
         fd.events = POLLIN;
-        closeConnection_(socket, fd, i);
+        (void)i;
+        //closeConnection_(socket, fd, i);
     }
 }
 
