@@ -24,7 +24,7 @@
 class Webserver {
   
  public:
-  Webserver(std::string ip_addr, int port);
+  Webserver(int port);
   Webserver(Config &config, int port);
   Webserver(const Webserver &);
   ~Webserver();
@@ -33,14 +33,22 @@ class Webserver {
   void boot();
 
  private:
-	int	socketNum_;
-	int serverSocketNum_;
-	int clientSocketNum_;
+    size_t	socketNum_;
+    size_t serverSocketNum_;
+    size_t clientSocketNum_;
 	int socketOpt_;
 	struct pollfd fds_[MAX_CLIENTS];
 	Socket Sockets_[MAX_CLIENTS];
 
 	void createServerSocket_(Socket &, int);
+    void createClientSocket_(Socket &);
+    void startServerRoutine_();
+    void error_(std::string);
+    int getServerListen();
+    void sendResponse_(Socket &socket, pollfd &fd, size_t &i);
+    bool existingConnection_(Socket &socket, pollfd &fd, size_t &i);
+    std::string createResponse_(std::string buffer);
+    void closeConnection_(Socket &socket, pollfd &fd, size_t &i);
 
 };
 

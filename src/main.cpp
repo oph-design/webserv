@@ -1,7 +1,7 @@
 #include <iostream>
 
 #include "ConfigFile.hpp"
-#include "ServerCluster.hpp"
+#include "Webserver.hpp"
 
 int main(int argc, char *argv[]) {
   ConfigFile configFile;
@@ -11,9 +11,10 @@ int main(int argc, char *argv[]) {
     std::cout << configFile << std::endl;
     return 1;
   } else {
-    configFile.~ConfigFile();
-    ServerCluster cluster(configs);
-    cluster.boot();
+    //configFile.~ConfigFile();
+   // ServerCluster cluster(configs);
+    //cluster.boot();
+    Webserver Server(1234);
   }
   return 0;
 }
