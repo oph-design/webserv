@@ -118,12 +118,24 @@ void CgiConnector::readOutput_(int pipes[2]) {
     bzero(buf, 16);
   }
   this->respHeader_ = bufferStr.substr(0, bufferStr.find("\n\n"));
+  std::cout << this->respHeader_ << std::endl;
   this->respBody_ =
       bufferStr.substr(bufferStr.find("\n\n") + 2, bufferStr.size());
+  std::cout << this->respBody_ << std::endl;
   close(pipes[0]);
 }
 
+void CgiConnector::writeReqBody() {
+  int script_input[2];
+  pipe(script_input);
+  dup2(script_input[0], 0);
+  close(script_input[0]);
+  write(script_input[1], this->reqBody_.c_str(), this->reqBody_.size());
+  close(script_input[1]);
+}
+
 void CgiConnector::executeScript_(std::string path, int pipes[2]) {
+  if (this->env_["REQUEST_METHOD"] == "POST") this->writeReqBody();
   dup2(pipes[1], 1);
   close(pipes[0]);
   close(pipes[1]);
@@ -131,10 +143,7 @@ void CgiConnector::executeScript_(std::string path, int pipes[2]) {
   char** args = new char*[2];
   args[0] = const_cast<char*>(path.c_str());
   args[1] = NULL;
-  if (this->env_["REQUEST_METHOD"] == "POST") std::cout << this->reqBody_;
   execve(path.c_str(), args, env);
-  perror("");
-  std::cerr << RED << "execve failed" << COLOR_RESET << std::endl;
   size_t i = 0;
   while (env[i] != NULL) delete env[i++];
   delete[] env;
@@ -147,7 +156,7 @@ void CgiConnector::makeConnection(Status& status) {
   int exitcode;
   pid_t timer = fork();
   if (timer == 0) {
-    sleep(1);
+    sleep(100);
     std::exit(112);
   }
   pipe(pipes);
