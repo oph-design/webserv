@@ -43,6 +43,7 @@ class CgiConnector {
   static pid_t waitAny(int* exitcode);
   void executeScript_(std::string path, int pipes[2]);
   void readOutput_(int pipes[2]);
+  void writeReqBody();
 
   std::string respHeader_;
   std::string respBody_;
