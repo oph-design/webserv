@@ -1,7 +1,7 @@
 #include "Socket.hpp"
 
 // public
-Socket::Socket() : fd_(-1), socketIndex_(-1), socketType_(UNUSED), socketOpt_(1) {}
+Socket::Socket() : fd_(-1), socketIndex_(-1), inUse(false), socketType_(UNUSED), socketOpt_(1), listeningSocket_(-1), dataSend(0), pendingSend(false) {}
 
 Socket::~Socket() {}
 

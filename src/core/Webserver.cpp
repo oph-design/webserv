@@ -74,19 +74,21 @@ int Webserver::getServerListen(){
 void Webserver::createClientSocket_(Socket &clientSocket) {
     socklen_t boundServerAdress_len = sizeof(clientSocket.boundServerAdress_);
     int new_client_sock;
-    if((new_client_sock = accept(clientSocket.fd_,
-                                 (struct sockaddr *)&clientSocket.boundServerAdress_, &boundServerAdress_len) == -1))
+    if ((new_client_sock = accept(clientSocket.fd_,
+                                  (struct sockaddr *)&clientSocket.boundServerAdress_, &boundServerAdress_len)) == -1)
         error_("Accept Error");
+    std::cout << new_client_sock << std::endl;
     if (fcntl(new_client_sock, F_SETFL, O_NONBLOCK, FD_CLOEXEC) == -1) {
         error_("Error: Setting socket to nonblocking");
     }
     this->Sockets_[socketNum_].fd_ = new_client_sock;
+    this->fds_[socketNum_].fd = new_client_sock;
     this->Sockets_[socketNum_].inUse = true;
     this->Sockets_[socketNum_].socketIndex_ = socketNum_;
     this->Sockets_[socketNum_].socketType_ = CLIENT;
     socketNum_++;
     clientSocketNum_++;
-    std::cout << "Connection Established with " << clientSocket.fd_ << std::endl;
+    std::cout << "Connection Established with " << this->Sockets_[socketNum_ - 1].fd_ << std::endl;
 }
 
 void Webserver::startServerRoutine_(){
@@ -130,7 +132,7 @@ void Webserver::sendResponse_(Socket &socket, pollfd &fd, size_t &i) {
 
 bool Webserver::existingConnection_(Socket &socket, pollfd &fd, size_t &i) {
     size_t currentBytes;
-    if (receiveRequest(socket, currentBytes) || socket.pendingSend == true) {
+    if (receiveRequest(socket, currentBytes) || socket.pendingSend) {
         std::cout << "connection on socket " << socket.fd_ << std::endl;
         //socket.setTimestamp();
         if (socket.pendingSend == false)
