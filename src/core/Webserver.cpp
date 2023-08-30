@@ -96,6 +96,7 @@ void Webserver::startServerRoutine_(){
         int ret = poll(this->fds_, this->socketNum_, 10000);
         if(ret == -1)
             error_("poll error");
+        checkPending_();
         for(size_t i = 0; i < socketNum_; i++ ){
             if(this->fds_[i].revents == POLLIN){
                 if(Sockets_[i].socketType_ == SERVER)
@@ -161,6 +162,15 @@ void Webserver::closeConnection_(Socket &socket, pollfd &fd, size_t &i) {
     clientSocketNum_--;
     i--;
 
+}
+
+void Webserver::checkPending_() {
+    for (size_t i = 0; i < socketNum_; ++i) {
+        if (this->Sockets_[i].pendingSend == true) {
+            this->sendResponse_(this->Sockets_[i], fds_[i], i);
+            return;
+        }
+    }
 }
 
 void Webserver::error_(std::string error) {

@@ -49,6 +49,7 @@ class Webserver {
     bool existingConnection_(Socket &socket, pollfd &fd, size_t &i);
     std::string createResponse_(std::string buffer);
     void closeConnection_(Socket &socket, pollfd &fd, size_t &i);
+    void checkPending_();
 
 };
 
