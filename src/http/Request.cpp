@@ -1,5 +1,8 @@
 #include "Request.hpp"
 
+#include <exception>
+#include <sstream>
+
 Request::Request() {
   this->requestMethodType_ = INVALID;
   this->requestBodyExists_ = false;
@@ -12,6 +15,7 @@ Request::Request(char buffer[BUFFER_SIZE]) {
 }
 
 Request::Request(std::string bufferString) {
+  std::cout << GREEN << bufferString.length() << COLOR_RESET << std::endl;
   this->requestBodyExists_ = false;
   std::stringstream ss(bufferString);
   std::string line;
@@ -33,7 +37,31 @@ Request::Request(std::string bufferString) {
   }
   this->requestBody_ = bufferString.substr(bufferString.find("\r\n\r\n") + 4,
                                            bufferString.length());
-  if (requestBody_.size() != 0) this->requestBodyExists_ = true;
+  if (requestBody_.size() != 0) {
+    this->requestBodyExists_ = true;
+    this->unchunkBody_();
+  }
+}
+
+void Request::unchunkBody_() {
+  try {
+    std::string newBody = "";
+    size_t clen = atoi((*this)["Content-Length"].c_str());
+    if ((*this)["Transfer-Encoding"] == "chunked") return;
+    while (newBody.length() != clen) {
+      int postion = requestBody_.find("\r\n");
+      std::stringstream ss;
+      int len;
+      ss << std::hex << requestBody_.substr(0, postion);
+      ss >> len;
+      requestBody_ = requestBody_.substr(postion + 2, requestBody_.length());
+      newBody.append(this->requestBody_.substr(0, len));
+      requestBody_ = requestBody_.substr(len - 1, requestBody_.length());
+    }
+    this->requestBody_ = newBody;
+  } catch (std::exception &e) {
+    std::cout << e.what() << std::endl;
+  }
 }
 
 Request::~Request() {}
