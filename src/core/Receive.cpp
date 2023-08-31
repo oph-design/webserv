@@ -1,6 +1,7 @@
 #include <cstdlib>
 
 #include "Socket.hpp"
+#include "colors.hpp"
 
 int parseCl(std::string buffer) {
   buffer = buffer.substr(buffer.find("Content-Length") + 16, buffer.length());
@@ -10,6 +11,10 @@ int parseCl(std::string buffer) {
 int subtrHeader(std::string buffer) {
   buffer = buffer.substr(0, buffer.find("\r\n\r\n") + 4);
   return (buffer.length());
+}
+
+bool getTransferEncoding(std::string buffer) {
+  return (buffer.find("Transfer-Encoding: chunked") != buffer.npos);
 }
 
 bool receiveRequest(Socket &socket, size_t &bytes) {
@@ -23,10 +28,13 @@ bool receiveRequest(Socket &socket, size_t &bytes) {
     reqstatus.clen = parseCl(buffer);
     reqstatus.buffer = std::string(buffer, bytes);
     reqstatus.readBytes -= subtrHeader(buffer);
+    reqstatus.chunked = getTransferEncoding(buffer);
+    std::cout << GREEN << std::string(buffer, 400) << COLOR_RESET << std::endl;
   } else {
     reqstatus.buffer.append(std::string(buffer, bytes));
   }
-  if (reqstatus.readBytes == reqstatus.clen) {
+  if (reqstatus.readBytes == reqstatus.clen ||
+      (reqstatus.readBytes > reqstatus.clen && reqstatus.chunked)) {
     socket.setReqStatus();
     return (true);
   }
