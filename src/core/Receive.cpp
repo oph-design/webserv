@@ -29,7 +29,6 @@ bool receiveRequest(Socket &socket, size_t &bytes) {
     reqstatus.buffer = std::string(buffer, bytes);
     reqstatus.readBytes -= subtrHeader(buffer);
     reqstatus.chunked = getTransferEncoding(buffer);
-    std::cout << GREEN << std::string(buffer, 400) << COLOR_RESET << std::endl;
   } else {
     reqstatus.buffer.append(std::string(buffer, bytes));
   }

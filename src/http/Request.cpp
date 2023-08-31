@@ -17,7 +17,6 @@ Request::Request(char buffer[BUFFER_SIZE]) {
 }
 
 Request::Request(std::string bufferString) {
-  std::cout << GREEN << bufferString.length() << COLOR_RESET << std::endl;
   this->requestBodyExists_ = false;
   std::stringstream ss(bufferString);
   std::string line;
