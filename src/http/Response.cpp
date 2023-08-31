@@ -12,18 +12,18 @@ Response::Response() : body_("Server is online") {
 
 Response::Response(const Request &request) {
   switch (request.getRequestMethodType()) {
-    case 0:
-      handleGetRequest_(request);
-      break;
-    case 1:
-      handlePostRequest_(request);
-      break;
-    case 2:
-      handleDeleteRequest_(request);
-      break;
-    default:
-      this->status_ = 405;
-      this->status_ >> this->body_;
+  case 0:
+    handleGetRequest_(request);
+    break;
+  case 1:
+    handlePostRequest_(request);
+    break;
+  case 2:
+    handleDeleteRequest_(request);
+    break;
+  default:
+    this->status_ = 405;
+    this->status_ >> this->body_;
   }
 }
 
@@ -75,7 +75,8 @@ std::string Response::findType_(std::string url) {
   contentMap::iterator search;
   std::string type;
 
-  if (!url.compare("/")) url.append("index.html");
+  if (!url.compare("/"))
+    url.append("index.html");
   extention = url.substr(url.rfind(".") + 1, url.length());
   search = Response::fileTypes_.find(extention);
   if (search != Response::fileTypes_.end()) {
@@ -89,7 +90,8 @@ std::string Response::findType_(std::string url) {
 }
 
 std::string Response::readBody_(std::string dir) {
-  if (!dir.compare("/")) dir.append("index.html");
+  if (!dir.compare("/"))
+    dir.append("index.html");
   std::ifstream file(("./html" + dir).c_str());
 
   if (file.is_open()) {
@@ -105,13 +107,15 @@ std::string Response::readBody_(std::string dir) {
 }
 
 void Response::handleGetRequest_(const Request &request) {
-  if (CgiConnector::isCgi(request.getPath())) return (void)(serveCgi_(request));
+  if (CgiConnector::isCgi(request.getPath()))
+    return (void)(serveCgi_(request));
   if (Response::isFolder_(request.getPath()))
     return (void)(serveFolder_(request));
 
   this->body_ = readBody_(request.getPath());
   std::string type = findType_(request.getPath());
-  if (this->status_ > 399) this->status_ >> this->body_;
+  if (this->status_ > 399)
+    this->status_ >> this->body_;
   std::string length = toString<std::size_t>(this->body_.length());
 
   this->header_.insert(contentField("Content-Type", type));
@@ -130,7 +134,8 @@ void Response::createFile_(std::string filename, std::string ext,
   else
     this->status_ = 201;
   std::ofstream outfile((path + file).c_str());
-  if (!outfile.is_open()) this->status_ = 500;
+  if (!outfile.is_open())
+    this->status_ = 500;
   outfile.write(data.c_str(), data.length());
 }
 
@@ -147,7 +152,8 @@ void Response::buildJsonBody_() {
 }
 
 void Response::handlePostRequest_(const Request &request) {
-  if (CgiConnector::isCgi(request.getPath())) return (void)(serveCgi_(request));
+  if (CgiConnector::isCgi(request.getPath()))
+    return (void)(serveCgi_(request));
   std::string file = request.getPath();
   std::string ext;
   file = file.substr(file.rfind("/") + 1, file.length());
@@ -172,14 +178,17 @@ void Response::handlePostRequest_(const Request &request) {
 /*             Delete Request                  */
 
 void Response::handleDeleteRequest_(const Request &request) {
-  if (CgiConnector::isCgi(request.getPath())) return (void)(serveCgi_(request));
+  if (CgiConnector::isCgi(request.getPath()))
+    return (void)(serveCgi_(request));
   std::string path = "./html" + request.getPath();
-  if (access(path.c_str(), F_OK)) this->status_ = 403;
+  if (access(path.c_str(), F_OK))
+    this->status_ = 403;
   std::cout << this->status_ << std::endl;
   if (!findFile(path.substr(path.rfind("/") + 1, path.length()),
                 path.substr(0, path.rfind("/"))))
     this->status_ = 404;
-  if (this->status_ < 400 && remove(path.c_str())) this->status_ = 500;
+  if (this->status_ < 400 && remove(path.c_str()))
+    this->status_ = 500;
   this->header_.insert(contentField("Connection", "keep-alive"));
   this->header_.insert(contentField("Content-Type", "application/json"));
   buildJsonBody_();
@@ -205,7 +214,7 @@ void Response::serveCgi_(const Request &request) {
 /*                Folder Request                  */
 
 void Response::serveFolder_(const Request &request) {
-  this->body_ = createFolderBody_();
+  this->body_ = createFolderBody_(request);
   this->header_.insert(contentField("Content-Type", "text/html"));
   this->header_.insert(contentField("Connection", "keep-alive"));
   this->header_.insert(
@@ -213,26 +222,65 @@ void Response::serveFolder_(const Request &request) {
   (void)request;
 }
 
-std::string Response::createFolderBody_() {
+std::deque<std::string> getFilesInFolder(const std::string &folderPath) {
+  DIR *dir = opendir(folderPath.c_str());
+  std::deque<std::string> names;
+  if (dir) {
+    struct dirent *entry;
+    while ((entry = readdir(dir)) != NULL) {
+      std::string fileName = entry->d_name;
+
+      if (fileName != "." && fileName != "..") {
+        struct stat fileStat;
+        std::string filePath = folderPath + "/" + fileName;
+
+        if (stat(filePath.c_str(), &fileStat) == 0) {
+          //        if (S_ISREG(fileStat.st_mode)) {
+          names.push_back((fileName));
+          //          }
+        }
+      }
+    }
+    closedir(dir);
+  }
+  return names;
+}
+
+std::string Response::createFolderBody_(const Request &request) {
   std::string body;
+  std::deque<std::string> names =
+      getFilesInFolder("./html" + request.getPath());
 
   body.append("<html>\n");
-  body.append("<head><title>Index of /folder/</title></head>\n");
+  body.append("<head><title>Index of" + request.getPath() +
+              " </title></head>\n");
   body.append("<body>\n");
-  body.append("<h1>Index of /folder/</h1><hr><pre><a href=\"../\">../</a>\n");
-  body.append("<a href=\"file1.html\">file1.html</a>                                         29-Aug-2023 15:02                 107\n");
-  body.append("<a href=\"file2.html\">file2.html</a>                                         29-Aug-2023 15:03                 107");
+  body.append("<h1>Index of " + request.getPath() +
+              " </h1><hr><pre><a href=\"../\">../</a>\n");
+  for (std::deque<std::string>::iterator iter = names.begin();
+       iter != names.end(); ++iter) {
+    body.append("<a href=\"");
+    body.append(*iter);
+    body.append("\">");
+    body.append(*iter);
+    body.append("</a>\n");
+  }
   body.append("</pre><hr></body>\n");
   body.append("<html>\n");
+
   return body;
 }
 
 bool Response::isFolder_(std::string uri) {
-  (void)uri;
-  return true;
+  uri = "./html" + uri; // enter root here
+  struct stat st;
+  if (stat(uri.c_str(), &st) == 0 && S_ISDIR(st.st_mode)) {
+    return true;
+  }
+  return false;
 }
 
-/*            global funnctions                  */
+/*            global functions                  */
 
 contentMap Response::createTypeMap() {
   std::ifstream data("./resources/filetypes.csv");

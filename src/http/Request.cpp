@@ -24,7 +24,8 @@ Request::Request(std::string bufferString) {
     std::getline(ss, line);
     line.erase(std::remove(line.begin(), line.end(), '\r'), line.end());
     line.erase(std::remove(line.begin(), line.end(), '\n'), line.end());
-    if (line.size() == 0) break;
+    if (line.size() == 0)
+      break;
     std::pair<std::string, std::string> keyPair;
     keyPair.first = line.substr(0, line.find(": "));
     keyPair.second =
@@ -33,7 +34,8 @@ Request::Request(std::string bufferString) {
   }
   this->requestBody_ = bufferString.substr(bufferString.find("\r\n\r\n") + 4,
                                            bufferString.length());
-  if (requestBody_.size() != 0) this->requestBodyExists_ = true;
+  if (requestBody_.size() != 0)
+    this->requestBodyExists_ = true;
 }
 
 Request::~Request() {}
@@ -144,9 +146,11 @@ void Request::splitQuery_() {
   std::stringstream ss(this->queryString_);
   std::string queryLine;
   while (std::getline(ss, queryLine, '&')) {
-    if (queryLine.size() == 0) continue;
+    if (queryLine.empty())
+      continue;
     std::size_t equalPosition = queryLine.find('=');
-    if (equalPosition != queryLine.npos && equalPosition + 1 != queryLine.npos)
+    if (equalPosition != std::string::npos &&
+        equalPosition + 1 != std::string::npos)
       this->queryTable_.insert(
           std::make_pair(queryLine.substr(0, equalPosition),
                          queryLine.substr(equalPosition + 1)));
@@ -168,7 +172,8 @@ std::ostream &operator<<(std::ostream &stream, const Request &header) {
     stream << "[" << iter->first << "=" << iter->second << "]";
     stream << "\n";
   }
-  if (header.requestBodyExists_) stream << header.requestBody_;
+  if (header.requestBodyExists_)
+    stream << header.requestBody_;
   stream << "QUERY=" << header.queryString_ << "\n";
   for (std::map<std::string, std::string>::const_iterator iter =
            header.queryTable_.begin();
