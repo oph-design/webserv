@@ -29,7 +29,7 @@ run_minilinux()
 {
   echo "Creating container..."
   docker run -it \
-              -v "$PWD"/html:/var/www/html \
+              -v "$PWD"/html:/html \
               --name $IMG_NAME \
               -e DOCKER_CONTAINER_NAME=$IMG_NAME \
               -p 6969:6969 \
@@ -54,8 +54,8 @@ launch_container()
 clean_up()
 {
   docker container rm $IMG_NAME
+  docker rmi $IMG_NAME
   echo "Cleaning up..."
-  docker rmi $(docker images -f "dangling=true" -q) 2>/dev/null
 }
 
 start_docker

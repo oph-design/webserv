@@ -14,6 +14,10 @@ EXPOSE 7373
 
 RUN apt install nginx -y
 
+RUN mkdir /html
+
+WORKDIR /html
+
 COPY ./nginx.conf /etc/nginx/conf.d/default.conf
 
 CMD ["nginx", "-g", "daemon off;"]

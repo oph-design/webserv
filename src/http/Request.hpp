@@ -50,11 +50,14 @@ class Request {
   bool getRequestBodyExists() const;
   std::string getRequestBody() const;
 
+  void setPath(const std::string &path);
+
  private:
   void parseRequestLine_(std::string &requestLine);
   void decodeURI_();
   void splitURI_();
   void splitQuery_();
+  void unchunkBody_();
 
   std::map<std::string, std::string> requestHeaderFields_;
   std::map<std::string, std::string> queryTable_;

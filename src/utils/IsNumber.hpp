@@ -3,8 +3,13 @@
 
 #include <cctype>
 #include <iterator>
-#include <string>
 
-bool isNumber(std::string str);
-
+template <typename Type>
+bool isNumber(Type cont) {
+  for (typename Type::iterator iter = cont.begin(); iter != cont.end();
+       ++iter) {
+    if (!std::isdigit(*iter)) return false;
+  }
+  return true;
+}
 #endif  // ISNUMBER_HPP_

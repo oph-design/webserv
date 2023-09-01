@@ -1,13 +1,5 @@
 #include "CgiConnector.hpp"
 
-#include <strings.h>
-#include <sys/signal.h>
-#include <sys/wait.h>
-
-#include <csignal>
-
-#include "colors.hpp"
-
 CgiConnector::CgiConnector() {}
 
 CgiConnector::CgiConnector(const Request& request)
@@ -100,12 +92,23 @@ std::string pathHelper(std::string name) {
   return (res);
 }
 
-pid_t CgiConnector::waitAny(int* exitcode) {
-  pid_t pid = 0;
-  while (pid == 0) {
-    pid = waitpid(WAIT_ANY, exitcode, WNOHANG);
+bool CgiConnector::waitTimeouted(pid_t pid, int* exitcode) {
+  pid_t timer = fork();
+  pid_t tmp = 0;
+  bool res = true;
+  if (timer == 0) {
+    sleep(TIMEOUT);
+    std::exit(112);
   }
-  return pid;
+  while (tmp == 0) tmp = waitpid(WAIT_ANY, exitcode, WNOHANG);
+  if (tmp == timer) {
+    kill(pid, SIGTERM);
+    res = false;
+  } else {
+    kill(timer, SIGTERM);
+  }
+  waitpid(WAIT_ANY, NULL, 0);
+  return (res);
 }
 
 void CgiConnector::readOutput_(int pipes[2]) {
@@ -118,12 +121,24 @@ void CgiConnector::readOutput_(int pipes[2]) {
     bzero(buf, 16);
   }
   this->respHeader_ = bufferStr.substr(0, bufferStr.find("\n\n"));
+  std::cout << this->respHeader_ << std::endl;
   this->respBody_ =
       bufferStr.substr(bufferStr.find("\n\n") + 2, bufferStr.size());
+  std::cout << this->respBody_ << std::endl;
   close(pipes[0]);
 }
 
+void CgiConnector::writeReqBody() {
+  int script_input[2];
+  pipe(script_input);
+  dup2(script_input[0], 0);
+  close(script_input[0]);
+  write(script_input[1], this->reqBody_.c_str(), this->reqBody_.size());
+  close(script_input[1]);
+}
+
 void CgiConnector::executeScript_(std::string path, int pipes[2]) {
+  if (this->env_["REQUEST_METHOD"] == "POST") this->writeReqBody();
   dup2(pipes[1], 1);
   close(pipes[0]);
   close(pipes[1]);
@@ -131,10 +146,7 @@ void CgiConnector::executeScript_(std::string path, int pipes[2]) {
   char** args = new char*[2];
   args[0] = const_cast<char*>(path.c_str());
   args[1] = NULL;
-  if (this->env_["REQUEST_METHOD"] == "POST") std::cout << this->reqBody_;
   execve(path.c_str(), args, env);
-  perror("");
-  std::cerr << RED << "execve failed" << COLOR_RESET << std::endl;
   size_t i = 0;
   while (env[i] != NULL) delete env[i++];
   delete[] env;
@@ -145,19 +157,10 @@ void CgiConnector::executeScript_(std::string path, int pipes[2]) {
 void CgiConnector::makeConnection(Status& status) {
   int pipes[2];
   int exitcode;
-  pid_t timer = fork();
-  if (timer == 0) {
-    sleep(1);
-    std::exit(112);
-  }
   pipe(pipes);
   pid_t pid = fork();
   if (!pid) this->executeScript_(pathHelper(this->env_["SCRIPT_NAME"]), pipes);
-  if (waitAny(&exitcode) == timer)
-    kill(pid, SIGTERM);
-  else
-    kill(timer, SIGTERM);
-  waitpid(WAIT_ANY, NULL, 0);
+  if (!waitTimeouted(pid, &exitcode)) std::cerr << "CGI Timeout" << std::endl;
   exitcode = WEXITSTATUS(exitcode);
   std::cout << RED << exitcode << COLOR_RESET << std::endl;
   if (exitcode > 0) {

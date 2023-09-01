@@ -1,11 +1,5 @@
 #include "TcpServer.hpp"
 
-#include <sys/fcntl.h>
-#include <sys/socket.h>
-
-#include "Socket.hpp"
-#include "colors.hpp"
-
 void TcpServer::bootServer_() {
   memset(&this->servaddr_, 0, sizeof(this->servaddr_));
   this->servaddr_.sin_family = AF_INET;
@@ -182,9 +176,9 @@ void TcpServer::boot() {
 TcpServer::TcpServer(std::string ip_addr, int port)
     : ip_addr_(ip_addr), port_(port), nfds_(1), socketopt_(1) {}
 
-TcpServer::TcpServer(Config &config, int port)
+TcpServer::TcpServer(Config &config)
     : ip_addr_(config.getRoot()),
-      port_(port),
+      port_(config.getPort()),
       nfds_(1),
       socketopt_(1),
       config_(config) {}

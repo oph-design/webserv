@@ -12,6 +12,10 @@ int subtrHeader(std::string buffer) {
   return (buffer.length());
 }
 
+bool getTransferEncoding(std::string buffer) {
+  return (buffer.find("Transfer-Encoding: chunked") != buffer.npos);
+}
+
 bool receiveRequest(Socket &socket, size_t &bytes) {
   char buffer[131072] = {0};
   t_reqStatus &reqstatus = socket.reqStatus;
@@ -23,10 +27,12 @@ bool receiveRequest(Socket &socket, size_t &bytes) {
     reqstatus.clen = parseCl(buffer);
     reqstatus.buffer = std::string(buffer, bytes);
     reqstatus.readBytes -= subtrHeader(buffer);
+    reqstatus.chunked = getTransferEncoding(buffer);
   } else {
     reqstatus.buffer.append(std::string(buffer, bytes));
   }
-  if (reqstatus.readBytes == reqstatus.clen) {
+  if (reqstatus.readBytes == reqstatus.clen ||
+      (reqstatus.readBytes > reqstatus.clen && reqstatus.chunked)) {
     socket.setReqStatus();
     return (true);
   }
