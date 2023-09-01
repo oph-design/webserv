@@ -2,65 +2,67 @@
 
 // public
 Socket::Socket()
-    : pendingSend(false),
-      keepAlive_(true),
+    : fd_(-1),
+      socketIndex_(-1),
+      inUse_(false),
+      socketType_(UNUSED),
       socketOpt_(1),
-      timestamp_(0),
-      timeout_(5.0),
-      inUse_(false) {
-  this->socketFd_.fd = -1;
-  this->socketFd_.events = POLLIN;
-  this->socketFd_.revents = 0;
-  this->setReqStatus();
-}
+      listeningSocket_(-1),
+      dataSend_(0),
+      pendingSend_(false),
+      keepAlive_(true),
+      timeout_(5) {}
 
 Socket::~Socket() {}
 
 Socket::Socket(const Socket &rhs) { *this = rhs; }
 
 Socket &Socket::operator=(const Socket &rhs) {
-  this->timestamp_ = rhs.timestamp_;
-  this->keepAlive_ = rhs.keepAlive_;
-  this->socketOpt_ = rhs.socketOpt_;
-  this->socketFd_ = rhs.socketFd_;
-  this->timeout_ = rhs.timeout_;
+  this->fd_ = rhs.fd_;
+  this->socketIndex_ = rhs.socketIndex_;
   this->inUse_ = rhs.inUse_;
+  this->socketType_ = rhs.socketType_;
+  this->boundServerAdress_ = rhs.boundServerAdress_;
+  this->socketOpt_ = rhs.socketOpt_;
+  this->listeningSocket_ = rhs.listeningSocket_;
+  this->servaddr_ = rhs.servaddr_;
+  this->dataSend_ = rhs.dataSend_;
+  this->response_ = rhs.response_;
+  this->pendingSend_ = rhs.pendingSend_;
+  this->keepAlive_ = rhs.keepAlive_;
   return *this;
 }
 
 // getter
-
-int Socket::getRevents() const { return this->socketFd_.revents; }
-
-struct pollfd Socket::getSocketPoll() const { return this->socketFd_; }
-
+int Socket::getFd() { return this->fd_; }
 bool Socket::getKeepAlive() const { return this->keepAlive_; }
-
-int Socket::getSocketFd() { return this->socketFd_.fd; }
-
 // setter
 
-void Socket::setFd(int fd) { this->socketFd_.fd = fd; }
+void Socket::setIdle() {
+  fd_ = -1;
+  socketIndex_ = -1;
+  inUse_ = false;
+  socketType_ = UNUSED;
+  memset(&boundServerAdress_, 0, sizeof(boundServerAdress_));
+  socketOpt_ = 1;
+  listeningSocket_ = -1;
+  memset(&servaddr_, 0, sizeof(servaddr_));
+  dataSend_ = 0;
+  response_.clear();
+  pendingSend_ = false;
+  keepAlive_ = false;
+}
 
-void Socket::setPollfd(const struct pollfd rhs) { this->socketFd_ = rhs; }
-
-void Socket::setTimestamp() { this->timestamp_ = std::time(NULL); }
-
-void Socket::setInUse(bool set) { this->inUse_ = set; }
-
-void Socket::setRevent(int revent) { this->socketFd_.revents = revent; }
-
-void Socket::setEvent(int event) { this->socketFd_.events = event; }
-
-void Socket::setKeepAlive(bool set) { this->keepAlive_ = set; }
-
+// other functions
 void Socket::setReqStatus() {
   this->reqStatus.pendingReceive = false;
   this->reqStatus.chunked = false;
   this->reqStatus.clen = 0;
   this->reqStatus.readBytes = 0;
 }
-// other functions
+
+void Socket::setTimestamp() { this->timestamp_ = std::time(NULL); }
+
 bool Socket::checkTimeout() {
   if (this->inUse_) {
     time_t current = std::time(NULL);
@@ -68,7 +70,3 @@ bool Socket::checkTimeout() {
   }
   return false;
 }
-
-void Socket::closeSocket() { close(this->socketFd_.fd); }
-
-// private

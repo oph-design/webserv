@@ -15,6 +15,8 @@
 #include <sstream>
 #include <string>
 
+typedef enum eSocketType { SERVER, CLIENT, UNUSED } SocketType;
+
 typedef struct s_reqStatus {
   bool pendingReceive;
   bool chunked;
@@ -24,46 +26,49 @@ typedef struct s_reqStatus {
 } t_reqStatus;
 
 class Socket {
+  friend class Webserver;
+
  public:
   Socket();
+
   ~Socket();
+
   Socket(const Socket &);
+
   Socket &operator=(const Socket &);
 
   // getter
-  int getRevents(void) const;
-  struct pollfd getSocketPoll() const;
   bool getKeepAlive() const;
-  int getSocketFd();
+  int getFd();
 
   // setter
-  void setFd(int fd);
-  void setPollfd(const struct pollfd);
-  void setTimestamp();
-  void setInUse(bool);
-  void setRevent(int);
-  void setEvent(int);
-  void setKeepAlive(bool);
   void setReqStatus();
+
+  void setIdle();
+
+  void setTimestamp();
 
   // other functions
   bool checkTimeout();
-  void closeSocket();
 
   // public vars
-  std::string response_;
-  std::list<std::string>::iterator it;
-  bool pendingSend;
-  size_t dataSend;
   t_reqStatus reqStatus;
 
  private:
-  struct pollfd socketFd_;
-  bool keepAlive_;
+  int fd_;
+  int socketIndex_;
+  bool inUse_;
+  SocketType socketType_;
+  sockaddr_in boundServerAdress_;
   int socketOpt_;
+  int listeningSocket_;
+  sockaddr_in servaddr_;
+  unsigned long dataSend_;
+  std::string response_;
+  bool pendingSend_;
+  bool keepAlive_;
   time_t timestamp_;
   double timeout_;
-  bool inUse_;
 };
 
 bool receiveRequest(Socket &socket, size_t &bytes);
