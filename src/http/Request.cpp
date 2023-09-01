@@ -44,7 +44,7 @@ void Request::unchunkBody_() {
     std::string newBody = "";
     size_t clen = atoi((*this)["Content-Length"].c_str());
     if (!((*this)["Transfer-Encoding"] == "chunked")) return;
-    while (newBody.length() != clen) {
+    while (newBody.length() < clen) {
       int position = requestBody_.find("\r\n");
       int len = std::strtol(requestBody_.substr(0, position).c_str(), NULL, 16);
       requestBody_ = requestBody_.substr(position + 2, requestBody_.length());
