@@ -220,12 +220,14 @@ std::deque<std::string> Response::getFilesInFolder_(
   std::deque<std::string> names;
   if (dir) {
     struct dirent *entry;
+    names.push_back("/..");
     while ((entry = readdir(dir)) != NULL) {
       std::string fileName = entry->d_name;
-      if (fileName == "." || (folderPath == "/" && fileName == "..")) continue;
+      if (fileName == "." || fileName == "..") continue;
       struct stat fileStat;
       if (folderPath[folderPath.length() - 1] != '/') fileName = '/' + fileName;
       std::string filePath(root + folderPath + fileName);
+      std::cout << "filename: " << fileName << std::endl;
       if (stat(filePath.c_str(), &fileStat) == 0) names.push_back(fileName);
     }
     closedir(dir);
@@ -245,11 +247,11 @@ std::string Response::createFolderBody_(const Request &request) {
   body.append("<h1>Index of " + request.getPath() + " </h1><hr><pre>\n");
   for (std::deque<std::string>::iterator iter = names.begin();
        iter != names.end(); ++iter) {
-    body.append("<a href=\"" + request.getPath() + *iter + "\">");
-    if ((*iter)[0] == '/')
-      body.append(iter->substr(1));
+    if (last(request.getPath()) == '/')
+      body.append("<a href=\"" + request.getPath() + *iter + "\">");
     else
-      body.append(*iter);
+      body.append("<a href=\"" + request.getPath() + '/' + *iter + "\">");
+    body.append(*iter);
     body.append("</a>\n");
   }
   body.append("</pre><hr></body>\n");
