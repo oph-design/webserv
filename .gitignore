@@ -8,6 +8,7 @@ obj
 .DS_Store
 .clangd
 CMakeLists.txt
+cmake-build-debug
 # Prerequisites
 *.d
 
