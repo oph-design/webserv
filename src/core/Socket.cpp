@@ -27,14 +27,7 @@ Socket &Socket::operator=(const Socket &rhs) {
     return *this;
 }
 
-// getter
-int Socket::getSocketFd() {
-    return this->fd_;
-}
-
 // setter
-
-void Socket::setSocketIndex(int index) { this->socketIndex_ = index; }
 
 bool Socket::getKeepAlive() const {
     return this->keepAlive_;
@@ -72,4 +65,3 @@ bool Socket::checkTimeout() {
     return false;
 }
 
-// private

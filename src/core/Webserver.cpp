@@ -191,7 +191,6 @@ void Webserver::checkTimeoutClients() {
     }
 }
 
-
 void Webserver::error_(std::string error) {
     std::cerr << error << std::endl;
     exit(EXIT_FAILURE);

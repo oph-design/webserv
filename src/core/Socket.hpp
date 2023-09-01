@@ -43,12 +43,7 @@ public:
     // getter
     bool getKeepAlive() const;
 
-    int getSocketFd();
-
     // setter
-
-    void setSocketIndex(int socketIndex);
-
     void setReqStatus();
 
     void setIdle();

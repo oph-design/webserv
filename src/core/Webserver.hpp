@@ -52,8 +52,6 @@ private:
 
     void error_(std::string);
 
-    int getServerListen();
-
     void sendResponse_(Socket &socket, pollfd &fd, size_t &i);
 
     bool existingConnection_(Socket &socket, pollfd &fd, size_t &i);
