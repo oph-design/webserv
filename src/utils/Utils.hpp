@@ -8,5 +8,7 @@
 #include "SwapColumns.hpp"
 #include "ToString.hpp"
 #include "Types.hpp"
+#include "Last.hpp"
+#include "First.hpp"
 
 #endif  // UTILS_HPP_
