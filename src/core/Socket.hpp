@@ -39,7 +39,7 @@ class Socket {
 
   // getter
   bool getKeepAlive() const;
-	int getFd();
+  int getFd();
 
   // setter
   void setReqStatus();

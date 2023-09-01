@@ -11,9 +11,6 @@ int main(int argc, char *argv[]) {
     std::cout << configFile << std::endl;
     return EXIT_FAILURE;
   } else {
-    //configFile.~ConfigFile();
-   // ServerCluster cluster(configs);
-    //cluster.boot();
     Webserver Server(1234);
   }
   return EXIT_SUCCESS;
