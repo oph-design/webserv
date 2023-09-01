@@ -1,7 +1,5 @@
 #include "CgiConnector.hpp"
 
-#include <sys/wait.h>
-
 CgiConnector::CgiConnector() {}
 
 CgiConnector::CgiConnector(const Request& request)
