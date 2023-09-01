@@ -15,62 +15,58 @@
 #include <sstream>
 #include <string>
 
-typedef enum eSocketType {
-    SERVER,
-    CLIENT,
-    UNUSED
-} SocketType;
+typedef enum eSocketType { SERVER, CLIENT, UNUSED } SocketType;
 
 typedef struct s_reqStatus {
-    bool pendingReceive;
-    int clen;
-    int readBytes;
-    std::string buffer;
+  bool pendingReceive;
+  int clen;
+  int readBytes;
+  std::string buffer;
 } t_reqStatus;
 
 class Socket {
-    friend class Webserver;
+  friend class Webserver;
 
-public:
-    Socket();
+ public:
+  Socket();
 
-    ~Socket();
+  ~Socket();
 
-    Socket(const Socket &);
+  Socket(const Socket &);
 
-    Socket &operator=(const Socket &);
+  Socket &operator=(const Socket &);
 
-    // getter
-    bool getKeepAlive() const;
+  // getter
+  bool getKeepAlive() const;
 
-    // setter
-    void setReqStatus();
+  // setter
+  void setReqStatus();
 
-    void setIdle();
+  void setIdle();
 
-    void setTimestamp();
+  void setTimestamp();
 
-    // other functions
-    bool checkTimeout();
+  // other functions
+  bool checkTimeout();
 
-    // public vars
-    t_reqStatus reqStatus;
+  // public vars
+  t_reqStatus reqStatus;
 
-private:
-    int fd_;
-    int socketIndex_;
-    bool inUse_;
-    SocketType socketType_;
-    sockaddr_in boundServerAdress_;
-    int socketOpt_;
-    int listeningSocket_;
-    sockaddr_in servaddr_;
-    unsigned long dataSend_;
-    std::string response_;
-    bool pendingSend_;
-    bool keepAlive_;
-    time_t timestamp_;
-    double timeout_;
+ private:
+  int fd_;
+  int socketIndex_;
+  bool inUse_;
+  SocketType socketType_;
+  sockaddr_in boundServerAdress_;
+  int socketOpt_;
+  int listeningSocket_;
+  sockaddr_in servaddr_;
+  unsigned long dataSend_;
+  std::string response_;
+  bool pendingSend_;
+  bool keepAlive_;
+  time_t timestamp_;
+  double timeout_;
 };
 
 bool receiveRequest(Socket &socket, size_t &bytes);
