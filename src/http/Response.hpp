@@ -27,7 +27,7 @@ typedef std::pair<std::string, std::string> contentField;
 typedef std::map<std::string, std::string> contentMap;
 
 class Response {
-public:
+ public:
   Response();
   Response(Request &request);
   Response(const Response &rhs);
@@ -41,7 +41,7 @@ public:
   const std::string getHeader() const;
   static contentMap createTypeMap();
 
-private:
+ private:
   std::string readBody_(std::string dir);
   std::string findType_(std::string url);
   void handleGetRequest_(Request &request);
@@ -62,4 +62,4 @@ private:
   std::string body_;
 };
 
-#endif // !RESPONSE_HPP
+#endif  // !RESPONSE_HPP

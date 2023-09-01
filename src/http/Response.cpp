@@ -12,18 +12,18 @@ Response::Response() : body_("Server is online") {
 
 Response::Response(Request &request) {
   switch (request.getRequestMethodType()) {
-  case 0:
-    handleGetRequest_(request);
-    break;
-  case 1:
-    handlePostRequest_(request);
-    break;
-  case 2:
-    handleDeleteRequest_(request);
-    break;
-  default:
-    this->status_ = 405;
-    this->status_ >> this->body_;
+    case 0:
+      handleGetRequest_(request);
+      break;
+    case 1:
+      handlePostRequest_(request);
+      break;
+    case 2:
+      handleDeleteRequest_(request);
+      break;
+    default:
+      this->status_ = 405;
+      this->status_ >> this->body_;
   }
 }
 
@@ -103,8 +103,7 @@ std::string Response::readBody_(std::string dir) {
 }
 
 void Response::handleGetRequest_(Request &request) {
-  if (CgiConnector::isCgi(request.getPath()))
-    return (void)(serveCgi_(request));
+  if (CgiConnector::isCgi(request.getPath())) return (void)(serveCgi_(request));
   bool indexSet = true;
   std::string index = "index.html";
   if (indexSet == true && request.getPath() == "/")
@@ -114,8 +113,7 @@ void Response::handleGetRequest_(Request &request) {
 
   this->body_ = readBody_(request.getPath());
   std::string type = findType_(request.getPath());
-  if (this->status_ > 399)
-    this->status_ >> this->body_;
+  if (this->status_ > 399) this->status_ >> this->body_;
   std::string length = toString<std::size_t>(this->body_.length());
 
   this->header_.insert(contentField("Content-Type", type));
@@ -134,8 +132,7 @@ void Response::createFile_(std::string filename, std::string ext,
   else
     this->status_ = 201;
   std::ofstream outfile((path + file).c_str());
-  if (!outfile.is_open())
-    this->status_ = 500;
+  if (!outfile.is_open()) this->status_ = 500;
   outfile.write(data.c_str(), data.length());
 }
 
@@ -152,8 +149,7 @@ void Response::buildJsonBody_() {
 }
 
 void Response::handlePostRequest_(const Request &request) {
-  if (CgiConnector::isCgi(request.getPath()))
-    return (void)(serveCgi_(request));
+  if (CgiConnector::isCgi(request.getPath())) return (void)(serveCgi_(request));
   std::string file = request.getPath();
   std::string ext;
   file = file.substr(file.rfind("/") + 1, file.length());
@@ -178,15 +174,13 @@ void Response::handlePostRequest_(const Request &request) {
 /*             Delete Request                  */
 
 void Response::handleDeleteRequest_(const Request &request) {
-  if (CgiConnector::isCgi(request.getPath()))
-    return (void)(serveCgi_(request));
+  if (CgiConnector::isCgi(request.getPath())) return (void)(serveCgi_(request));
   std::string path = "./html" + request.getPath();
   if (access(path.c_str(), F_OK)) this->status_ = 403;
   if (!findFile(path.substr(path.rfind("/") + 1, path.length()),
                 path.substr(0, path.rfind("/"))))
     this->status_ = 404;
-  if (this->status_ < 400 && remove(path.c_str()))
-    this->status_ = 500;
+  if (this->status_ < 400 && remove(path.c_str())) this->status_ = 500;
   this->header_.insert(contentField("Connection", "keep-alive"));
   this->header_.insert(contentField("Content-Type", "application/json"));
   buildJsonBody_();
@@ -212,8 +206,7 @@ void Response::serveCgi_(const Request &request) {
 /*                Folder Request                  */
 void Response::serveFolder_(Request &request) {
   bool autoindex = true;
-  if (autoindex)
-    this->body_ = createFolderBody_(request);
+  if (autoindex) this->body_ = createFolderBody_(request);
   this->header_.insert(contentField("Content-Type", "text/html"));
   this->header_.insert(contentField("Connection", "keep-alive"));
   this->header_.insert(
@@ -229,14 +222,11 @@ std::deque<std::string> getFilesInFolder(const std::string &root,
     struct dirent *entry;
     while ((entry = readdir(dir)) != NULL) {
       std::string fileName = entry->d_name;
-      if (fileName == "." || (folderPath == "/" && fileName == ".."))
-        continue;
+      if (fileName == "." || (folderPath == "/" && fileName == "..")) continue;
       struct stat fileStat;
-      if (folderPath[folderPath.length() - 1] != '/')
-        fileName = '/' + fileName;
+      if (folderPath[folderPath.length() - 1] != '/') fileName = '/' + fileName;
       std::string filePath(root + folderPath + fileName);
-      if (stat(filePath.c_str(), &fileStat) == 0)
-        names.push_back(fileName);
+      if (stat(filePath.c_str(), &fileStat) == 0) names.push_back(fileName);
     }
     closedir(dir);
   }
