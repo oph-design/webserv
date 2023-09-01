@@ -1,9 +1,5 @@
 #include "Status.hpp"
 
-#include <sstream>
-
-#include "ToString.hpp"
-
 statusMap Status::stats_ = Status::createStatusMap();
 
 Status::Status() : code_(200) {}
