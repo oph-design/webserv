@@ -1,7 +1,6 @@
 #!/usr/bin/python3
 
 from random import choice
-import sys
 
 # Read from stdin until EOF (Ctrl+D on Unix-like systems or Ctrl+Z on Windows)
 comment = [
@@ -47,12 +46,9 @@ Instead setup a meeting in 3 days with at least 2 follow up meetings and 3 unnec
 
 currentComment = choice(comment)
 
-stdin_contents = sys.stdin.read()
-
 print('Content-Type: text/plain')
 print(f'Content-Length: {len(currentComment)}')
 print('Connection: keep-alive')
 print('')
 print("Content in stdin:")
-print(stdin_contents)
 print (currentComment)

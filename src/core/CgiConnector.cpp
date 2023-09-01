@@ -92,12 +92,17 @@ std::string pathHelper(std::string name) {
   return (res);
 }
 
-pid_t CgiConnector::waitAny(int* exitcode) {
+bool CgiConnector::waitAny(int* exitcode) {
+  pid_t timer = fork();
   pid_t pid = 0;
-  while (pid == 0) {
-    pid = waitpid(WAIT_ANY, exitcode, WNOHANG);
+  if (timer == 0) {
+    sleep(1);
+    std::exit(112);
   }
-  return pid;
+  while (pid == 0) pid = waitpid(WAIT_ANY, exitcode, WNOHANG);
+  if (pid == timer) return (false);
+  kill(timer, SIGTERM);
+  return (true);
 }
 
 void CgiConnector::readOutput_(int pipes[2]) {
@@ -146,18 +151,10 @@ void CgiConnector::executeScript_(std::string path, int pipes[2]) {
 void CgiConnector::makeConnection(Status& status) {
   int pipes[2];
   int exitcode;
-  pid_t timer = fork();
-  if (timer == 0) {
-    sleep(100);
-    std::exit(112);
-  }
   pipe(pipes);
   pid_t pid = fork();
   if (!pid) this->executeScript_(pathHelper(this->env_["SCRIPT_NAME"]), pipes);
-  if (waitAny(&exitcode) == timer)
-    kill(pid, SIGTERM);
-  else
-    kill(timer, SIGTERM);
+  if (!waitAny(&exitcode)) kill(pid, SIGTERM);
   waitpid(WAIT_ANY, NULL, 0);
   exitcode = WEXITSTATUS(exitcode);
   std::cout << RED << exitcode << COLOR_RESET << std::endl;

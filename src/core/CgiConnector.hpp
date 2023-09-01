@@ -40,7 +40,7 @@ class CgiConnector {
   envMap buildEnv_(const Request& request);
   char** envToString_();
   static void deleteEnv_(char** env);
-  static pid_t waitAny(int* exitcode);
+  static bool waitAny(int* exitcode);
   void executeScript_(std::string path, int pipes[2]);
   void readOutput_(int pipes[2]);
   void writeReqBody();
