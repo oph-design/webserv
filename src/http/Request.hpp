@@ -28,7 +28,7 @@ typedef enum e_methodTypes {
 } t_methodTypes;
 
 class Request {
- public:
+public:
   Request();
   Request(char buffer[BUFFER_SIZE]);
   Request(std::string bufferString);
@@ -50,7 +50,9 @@ class Request {
   bool getRequestBodyExists() const;
   std::string getRequestBody() const;
 
- private:
+  void setPath(const std::string &path);
+
+private:
   void parseRequestLine_(std::string &requestLine);
   void decodeURI_();
   void splitURI_();
@@ -68,4 +70,4 @@ class Request {
   bool requestBodyExists_;
 };
 
-#endif  // HEADER_HPP_
+#endif // HEADER_HPP_

@@ -29,7 +29,7 @@ typedef std::map<std::string, std::string> contentMap;
 class Response {
 public:
   Response();
-  Response(const Request &request);
+  Response(Request &request);
   Response(const Response &rhs);
   Response &operator=(const Response &rhs);
   ~Response();
@@ -44,7 +44,7 @@ public:
 private:
   std::string readBody_(std::string dir);
   std::string findType_(std::string url);
-  void handleGetRequest_(const Request &request);
+  void handleGetRequest_(Request &request);
   void handlePostRequest_(const Request &request);
   void handleDeleteRequest_(const Request &request);
   void createFile_(std::string filename, std::string ext, std::string data,
@@ -53,7 +53,7 @@ private:
   void serveCgi_(const Request &request);
 
   static bool isFolder_(std::string uri);
-  void serveFolder_(const Request &request);
+  void serveFolder_(Request &request);
   static std::string createFolderBody_(const Request &request);
 
   static contentMap fileTypes_;

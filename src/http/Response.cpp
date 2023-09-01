@@ -10,7 +10,7 @@ Response::Response() : body_("Server is online") {
   this->header_.insert(contentField("Content-Length", "16"));
 }
 
-Response::Response(const Request &request) {
+Response::Response(Request &request) {
   switch (request.getRequestMethodType()) {
   case 0:
     handleGetRequest_(request);
@@ -75,8 +75,6 @@ std::string Response::findType_(std::string url) {
   contentMap::iterator search;
   std::string type;
 
-  if (!url.compare("/"))
-    url.append("index.html");
   extention = url.substr(url.rfind(".") + 1, url.length());
   search = Response::fileTypes_.find(extention);
   if (search != Response::fileTypes_.end()) {
@@ -90,8 +88,6 @@ std::string Response::findType_(std::string url) {
 }
 
 std::string Response::readBody_(std::string dir) {
-  if (!dir.compare("/"))
-    dir.append("index.html");
   std::ifstream file(("./html" + dir).c_str());
 
   if (file.is_open()) {
@@ -106,10 +102,14 @@ std::string Response::readBody_(std::string dir) {
   return (content.str());
 }
 
-void Response::handleGetRequest_(const Request &request) {
+void Response::handleGetRequest_(Request &request) {
   if (CgiConnector::isCgi(request.getPath()))
     return (void)(serveCgi_(request));
-  if (Response::isFolder_(request.getPath()))
+  bool indexSet = true;
+  std::string index = "index.html";
+  if (indexSet == true && request.getPath() == "/")
+    request.setPath(request.getPath() + '/' + index);
+  else if (Response::isFolder_(request.getPath()))
     return (void)(serveFolder_(request));
 
   this->body_ = readBody_(request.getPath());
@@ -212,8 +212,7 @@ void Response::serveCgi_(const Request &request) {
 }
 
 /*                Folder Request                  */
-
-void Response::serveFolder_(const Request &request) {
+void Response::serveFolder_(Request &request) {
   bool autoindex = true;
   if (autoindex)
     this->body_ = createFolderBody_(request);

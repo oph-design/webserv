@@ -183,3 +183,4 @@ std::ostream &operator<<(std::ostream &stream, const Request &header) {
   }
   return stream;
 }
+void Request::setPath(const std::string &path) { this->path_ = path; }
