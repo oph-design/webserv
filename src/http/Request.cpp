@@ -165,9 +165,10 @@ void Request::splitQuery_() {
   std::stringstream ss(this->queryString_);
   std::string queryLine;
   while (std::getline(ss, queryLine, '&')) {
-    if (queryLine.size() == 0) continue;
+    if (queryLine.empty()) continue;
     std::size_t equalPosition = queryLine.find('=');
-    if (equalPosition != queryLine.npos && equalPosition + 1 != queryLine.npos)
+    if (equalPosition != std::string::npos &&
+        equalPosition + 1 != std::string::npos)
       this->queryTable_.insert(
           std::make_pair(queryLine.substr(0, equalPosition),
                          queryLine.substr(equalPosition + 1)));
@@ -199,3 +200,4 @@ std::ostream &operator<<(std::ostream &stream, const Request &header) {
   }
   return stream;
 }
+void Request::setPath(const std::string &path) { this->path_ = path; }

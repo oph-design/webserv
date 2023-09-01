@@ -10,7 +10,7 @@ Response::Response() : body_("Server is online") {
   this->header_.insert(contentField("Content-Length", "16"));
 }
 
-Response::Response(const Request &request) {
+Response::Response(Request &request) {
   switch (request.getRequestMethodType()) {
     case 0:
       handleGetRequest_(request);
@@ -75,7 +75,6 @@ std::string Response::findType_(std::string url) {
   contentMap::iterator search;
   std::string type;
 
-  if (!url.compare("/")) url.append("index.html");
   extention = url.substr(url.rfind(".") + 1, url.length());
   search = Response::fileTypes_.find(extention);
   if (search != Response::fileTypes_.end()) {
@@ -89,7 +88,6 @@ std::string Response::findType_(std::string url) {
 }
 
 std::string Response::readBody_(std::string dir) {
-  if (!dir.compare("/")) dir.append("index.html");
   std::ifstream file(("./html" + dir).c_str());
 
   if (file.is_open()) {
@@ -104,8 +102,15 @@ std::string Response::readBody_(std::string dir) {
   return (content.str());
 }
 
-void Response::handleGetRequest_(const Request &request) {
+void Response::handleGetRequest_(Request &request) {
   if (CgiConnector::isCgi(request.getPath())) return (void)(serveCgi_(request));
+  bool indexSet = true;
+  std::string index = "index.html";
+  if (indexSet == true && request.getPath() == "/")
+    request.setPath(request.getPath() + '/' + index);
+  else if (Response::isFolder_(request.getPath()))
+    return (void)(serveFolder_(request));
+
   this->body_ = readBody_(request.getPath());
   std::string type = findType_(request.getPath());
   if (this->status_ > 399) this->status_ >> this->body_;
@@ -198,7 +203,71 @@ void Response::serveCgi_(const Request &request) {
   this->body_ = cgi.getBody();
 }
 
-/*            global funnctions                  */
+/*                Folder Request                  */
+void Response::serveFolder_(Request &request) {
+  bool autoindex = true;
+  if (autoindex) this->body_ = createFolderBody_(request);
+  this->header_.insert(contentField("Content-Type", "text/html"));
+  this->header_.insert(contentField("Connection", "keep-alive"));
+  this->header_.insert(
+      contentField("Content-Length", toString(this->body_.length())));
+  (void)request;
+}
+
+std::deque<std::string> Response::getFilesInFolder_(
+    const std::string &root, const std::string &folderPath) {
+  DIR *dir = opendir((root + folderPath).c_str());
+  std::deque<std::string> names;
+  if (dir) {
+    struct dirent *entry;
+    while ((entry = readdir(dir)) != NULL) {
+      std::string fileName = entry->d_name;
+      if (fileName == "." || (folderPath == "/" && fileName == "..")) continue;
+      struct stat fileStat;
+      if (folderPath[folderPath.length() - 1] != '/') fileName = '/' + fileName;
+      std::string filePath(root + folderPath + fileName);
+      if (stat(filePath.c_str(), &fileStat) == 0) names.push_back(fileName);
+    }
+    closedir(dir);
+  }
+  return names;
+}
+
+std::string Response::createFolderBody_(const Request &request) {
+  std::string body;
+  std::deque<std::string> names =
+      Response::getFilesInFolder_("./html", request.getPath());
+
+  body.append("<html>\n");
+  body.append("<head><title>Index of" + request.getPath() +
+              " </title></head>\n");
+  body.append("<body>\n");
+  body.append("<h1>Index of " + request.getPath() + " </h1><hr><pre>\n");
+  for (std::deque<std::string>::iterator iter = names.begin();
+       iter != names.end(); ++iter) {
+    body.append("<a href=\"" + request.getPath() + *iter + "\">");
+    if ((*iter)[0] == '/')
+      body.append(iter->substr(1));
+    else
+      body.append(*iter);
+    body.append("</a>\n");
+  }
+  body.append("</pre><hr></body>\n");
+  body.append("<html>\n");
+
+  return body;
+}
+
+bool Response::isFolder_(std::string uri) {
+  uri = "./html" + uri;
+  struct stat st;
+  if (stat(uri.c_str(), &st) == 0 && S_ISDIR(st.st_mode)) {
+    return true;
+  }
+  return false;
+}
+
+/*            global functions                  */
 
 contentMap Response::createTypeMap() {
   std::ifstream data("./resources/filetypes.csv");

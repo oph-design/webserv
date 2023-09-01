@@ -50,6 +50,8 @@ class Request {
   bool getRequestBodyExists() const;
   std::string getRequestBody() const;
 
+  void setPath(const std::string &path);
+
  private:
   void parseRequestLine_(std::string &requestLine);
   void decodeURI_();

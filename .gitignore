@@ -7,7 +7,7 @@ obj
 .idea
 .DS_Store
 .clangd
-
+CMakeLists.txt
 # Prerequisites
 *.d
 
