@@ -33,9 +33,13 @@ Socket &Socket::operator=(const Socket &rhs) {
   return *this;
 }
 
+//getter
+int Socket::getFd(){
+	return this->fd_;
+}
+bool Socket::getKeepAlive() const { return this->keepAlive_; }
 // setter
 
-bool Socket::getKeepAlive() const { return this->keepAlive_; }
 
 void Socket::setIdle() {
   fd_ = -1;
