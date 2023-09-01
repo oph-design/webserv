@@ -1,7 +1,6 @@
 #include <cstdlib>
 
 #include "Socket.hpp"
-#include "colors.hpp"
 
 int parseCl(std::string buffer) {
   buffer = buffer.substr(buffer.find("Content-Length") + 16, buffer.length());

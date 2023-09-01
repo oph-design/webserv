@@ -1,10 +1,5 @@
 #include "Request.hpp"
 
-#include <exception>
-#include <sstream>
-
-#include "colors.hpp"
-
 Request::Request() {
   this->requestMethodType_ = INVALID;
   this->requestBodyExists_ = false;
@@ -51,10 +46,7 @@ void Request::unchunkBody_() {
     if (!((*this)["Transfer-Encoding"] == "chunked")) return;
     while (newBody.length() != clen) {
       int position = requestBody_.find("\r\n");
-      std::stringstream ss;
-      ss << std::hex << requestBody_.substr(0, position);
-      int len;
-      ss >> len;
+      int len = std::strtol(requestBody_.substr(0, position).c_str(), NULL, 16);
       requestBody_ = requestBody_.substr(position + 2, requestBody_.length());
       newBody.append(this->requestBody_.substr(0, len));
       requestBody_ = requestBody_.substr(len + 1, requestBody_.length());

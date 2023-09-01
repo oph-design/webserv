@@ -1,11 +1,5 @@
 #include "TcpServer.hpp"
 
-#include <sys/fcntl.h>
-#include <sys/socket.h>
-
-#include "Socket.hpp"
-#include "colors.hpp"
-
 void TcpServer::bootServer_() {
   memset(&this->servaddr_, 0, sizeof(this->servaddr_));
   this->servaddr_.sin_family = AF_INET;

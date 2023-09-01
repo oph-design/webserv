@@ -1,13 +1,5 @@
 #include "CgiConnector.hpp"
 
-#include <strings.h>
-#include <sys/signal.h>
-#include <sys/wait.h>
-
-#include <csignal>
-
-#include "colors.hpp"
-
 CgiConnector::CgiConnector() {}
 
 CgiConnector::CgiConnector(const Request& request)
