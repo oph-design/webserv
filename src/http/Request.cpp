@@ -34,8 +34,28 @@ Request::Request(std::string bufferString) {
   }
   this->requestBody_ = bufferString.substr(bufferString.find("\r\n\r\n") + 4,
                                            bufferString.length());
-  if (requestBody_.size() != 0)
+  if (requestBody_.size() != 0) {
     this->requestBodyExists_ = true;
+    this->unchunkBody_();
+  }
+}
+
+void Request::unchunkBody_() {
+  try {
+    std::string newBody = "";
+    size_t clen = atoi((*this)["Content-Length"].c_str());
+    if (!((*this)["Transfer-Encoding"] == "chunked")) return;
+    while (newBody.length() < clen) {
+      int position = requestBody_.find("\r\n");
+      int len = std::strtol(requestBody_.substr(0, position).c_str(), NULL, 16);
+      requestBody_ = requestBody_.substr(position + 2, requestBody_.length());
+      newBody.append(this->requestBody_.substr(0, len));
+      requestBody_ = requestBody_.substr(len + 1, requestBody_.length());
+    }
+    this->requestBody_ = newBody;
+  } catch (std::exception &e) {
+    std::cout << e.what() << std::endl;
+  }
 }
 
 Request::~Request() {}

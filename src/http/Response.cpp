@@ -181,9 +181,7 @@ void Response::handleDeleteRequest_(const Request &request) {
   if (CgiConnector::isCgi(request.getPath()))
     return (void)(serveCgi_(request));
   std::string path = "./html" + request.getPath();
-  if (access(path.c_str(), F_OK))
-    this->status_ = 403;
-  std::cout << this->status_ << std::endl;
+  if (access(path.c_str(), F_OK)) this->status_ = 403;
   if (!findFile(path.substr(path.rfind("/") + 1, path.length()),
                 path.substr(0, path.rfind("/"))))
     this->status_ = 404;

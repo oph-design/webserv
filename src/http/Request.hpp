@@ -57,6 +57,7 @@ private:
   void decodeURI_();
   void splitURI_();
   void splitQuery_();
+  void unchunkBody_();
 
   std::map<std::string, std::string> requestHeaderFields_;
   std::map<std::string, std::string> queryTable_;

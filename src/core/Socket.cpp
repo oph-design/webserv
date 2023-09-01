@@ -56,6 +56,7 @@ void Socket::setKeepAlive(bool set) { this->keepAlive_ = set; }
 
 void Socket::setReqStatus() {
   this->reqStatus.pendingReceive = false;
+  this->reqStatus.chunked = false;
   this->reqStatus.clen = 0;
   this->reqStatus.readBytes = 0;
 }
