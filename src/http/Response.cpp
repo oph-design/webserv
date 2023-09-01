@@ -214,8 +214,8 @@ void Response::serveFolder_(Request &request) {
   (void)request;
 }
 
-std::deque<std::string> getFilesInFolder(const std::string &root,
-                                         const std::string &folderPath) {
+std::deque<std::string> Response::getFilesInFolder_(
+    const std::string &root, const std::string &folderPath) {
   DIR *dir = opendir((root + folderPath).c_str());
   std::deque<std::string> names;
   if (dir) {
@@ -235,7 +235,7 @@ std::deque<std::string> getFilesInFolder(const std::string &root,
 
 std::string Response::createFolderBody_(const Request &request) {
   std::string body;
-  std::deque<std::string> names = getFilesInFolder("./html", request.getPath());
+  std::deque<std::string> names = Response::getFilesInFolder_("./html", request.getPath());
 
   body.append("<html>\n");
   body.append("<head><title>Index of" + request.getPath() +
