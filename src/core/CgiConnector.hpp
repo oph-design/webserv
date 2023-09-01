@@ -20,6 +20,8 @@
 #include "Request.hpp"
 #include "Status.hpp"
 
+#define TIMEOUT 1
+
 typedef std::pair<std::string, std::string> envVar;
 typedef std::map<std::string, std::string> envMap;
 
@@ -39,8 +41,7 @@ class CgiConnector {
  private:
   envMap buildEnv_(const Request& request);
   char** envToString_();
-  static void deleteEnv_(char** env);
-  static bool waitAny(int* exitcode);
+  static bool waitTimeouted(pid_t pid, int* exitcode);
   void executeScript_(std::string path, int pipes[2]);
   void readOutput_(int pipes[2]);
   void writeReqBody();
