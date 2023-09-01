@@ -2,7 +2,6 @@
 
 from random import choice
 
-# Read from stdin until EOF (Ctrl+D on Unix-like systems or Ctrl+Z on Windows)
 comment = [
     'Nice individual linter u got there',
     'You know we were supposed to write c++ code rigth? But maybe it compiles anyway. \n\
