@@ -214,7 +214,9 @@ void Response::serveCgi_(const Request &request) {
 /*                Folder Request                  */
 
 void Response::serveFolder_(const Request &request) {
-  this->body_ = createFolderBody_(request);
+  bool autoindex = true;
+  if (autoindex)
+    this->body_ = createFolderBody_(request);
   this->header_.insert(contentField("Content-Type", "text/html"));
   this->header_.insert(contentField("Connection", "keep-alive"));
   this->header_.insert(
@@ -222,24 +224,22 @@ void Response::serveFolder_(const Request &request) {
   (void)request;
 }
 
-std::deque<std::string> getFilesInFolder(const std::string &folderPath) {
-  DIR *dir = opendir(folderPath.c_str());
+std::deque<std::string> getFilesInFolder(const std::string &root,
+                                         const std::string &folderPath) {
+  DIR *dir = opendir((root + folderPath).c_str());
   std::deque<std::string> names;
   if (dir) {
     struct dirent *entry;
     while ((entry = readdir(dir)) != NULL) {
       std::string fileName = entry->d_name;
-
-      if (fileName != "." && fileName != "..") {
-        struct stat fileStat;
-        std::string filePath = folderPath + "/" + fileName;
-
-        if (stat(filePath.c_str(), &fileStat) == 0) {
-          //        if (S_ISREG(fileStat.st_mode)) {
-          names.push_back((fileName));
-          //          }
-        }
-      }
+      if (fileName == "." || (folderPath == "/" && fileName == ".."))
+        continue;
+      struct stat fileStat;
+      if (folderPath[folderPath.length() - 1] != '/')
+        fileName = '/' + fileName;
+      std::string filePath(root + folderPath + fileName);
+      if (stat(filePath.c_str(), &fileStat) == 0)
+        names.push_back(fileName);
     }
     closedir(dir);
   }
@@ -248,21 +248,20 @@ std::deque<std::string> getFilesInFolder(const std::string &folderPath) {
 
 std::string Response::createFolderBody_(const Request &request) {
   std::string body;
-  std::deque<std::string> names =
-      getFilesInFolder("./html" + request.getPath());
+  std::deque<std::string> names = getFilesInFolder("./html", request.getPath());
 
   body.append("<html>\n");
   body.append("<head><title>Index of" + request.getPath() +
               " </title></head>\n");
   body.append("<body>\n");
-  body.append("<h1>Index of " + request.getPath() +
-              " </h1><hr><pre><a href=\"../\">../</a>\n");
+  body.append("<h1>Index of " + request.getPath() + " </h1><hr><pre>\n");
   for (std::deque<std::string>::iterator iter = names.begin();
        iter != names.end(); ++iter) {
-    body.append("<a href=\"");
-    body.append(*iter);
-    body.append("\">");
-    body.append(*iter);
+    body.append("<a href=\"" + request.getPath() + *iter + "\">");
+    if ((*iter)[0] == '/')
+      body.append(iter->substr(1));
+    else
+      body.append(*iter);
     body.append("</a>\n");
   }
   body.append("</pre><hr></body>\n");
@@ -272,7 +271,7 @@ std::string Response::createFolderBody_(const Request &request) {
 }
 
 bool Response::isFolder_(std::string uri) {
-  uri = "./html" + uri; // enter root here
+  uri = "./html" + uri;
   struct stat st;
   if (stat(uri.c_str(), &st) == 0 && S_ISDIR(st.st_mode)) {
     return true;

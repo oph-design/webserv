@@ -54,7 +54,7 @@ private:
 
   static bool isFolder_(std::string uri);
   void serveFolder_(const Request &request);
-  std::string createFolderBody_(const Request &request);
+  static std::string createFolderBody_(const Request &request);
 
   static contentMap fileTypes_;
   contentMap header_;
