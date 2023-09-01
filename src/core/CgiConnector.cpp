@@ -1,5 +1,7 @@
 #include "CgiConnector.hpp"
 
+#include <sys/wait.h>
+
 CgiConnector::CgiConnector() {}
 
 CgiConnector::CgiConnector(const Request& request)
@@ -92,17 +94,23 @@ std::string pathHelper(std::string name) {
   return (res);
 }
 
-bool CgiConnector::waitAny(int* exitcode) {
+bool CgiConnector::waitTimeouted(pid_t pid, int* exitcode) {
   pid_t timer = fork();
-  pid_t pid = 0;
+  pid_t tmp = 0;
+  bool res = true;
   if (timer == 0) {
-    sleep(1);
+    sleep(TIMEOUT);
     std::exit(112);
   }
-  while (pid == 0) pid = waitpid(WAIT_ANY, exitcode, WNOHANG);
-  if (pid == timer) return (false);
-  kill(timer, SIGTERM);
-  return (true);
+  while (tmp == 0) tmp = waitpid(WAIT_ANY, exitcode, WNOHANG);
+  if (tmp == timer) {
+    kill(pid, SIGTERM);
+    res = false;
+  } else {
+    kill(timer, SIGTERM);
+  }
+  waitpid(WAIT_ANY, NULL, 0);
+  return (res);
 }
 
 void CgiConnector::readOutput_(int pipes[2]) {
@@ -154,8 +162,7 @@ void CgiConnector::makeConnection(Status& status) {
   pipe(pipes);
   pid_t pid = fork();
   if (!pid) this->executeScript_(pathHelper(this->env_["SCRIPT_NAME"]), pipes);
-  if (!waitAny(&exitcode)) kill(pid, SIGTERM);
-  waitpid(WAIT_ANY, NULL, 0);
+  if (!waitTimeouted(pid, &exitcode)) std::cerr << "CGI Timeout" << std::endl;
   exitcode = WEXITSTATUS(exitcode);
   std::cout << RED << exitcode << COLOR_RESET << std::endl;
   if (exitcode > 0) {
