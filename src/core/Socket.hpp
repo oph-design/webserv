@@ -69,6 +69,7 @@ class Socket {
   bool keepAlive_;
   time_t timestamp_;
   double timeout_;
+	int configId_;
 };
 
 bool receiveRequest(Socket &socket, size_t &bytes);

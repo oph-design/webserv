@@ -23,9 +23,7 @@
 
 class Webserver {
  public:
-  Webserver(int port);
-
-  Webserver(Config &config, int port);
+  Webserver(ConfigVector&);
 
   Webserver(const Webserver &);
 
