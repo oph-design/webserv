@@ -4,14 +4,16 @@ Webserver::Webserver(const Webserver &rhs) { *this = rhs; }
 
 Webserver::~Webserver() {}
 
-Webserver::Webserver(int port)
+Webserver::Webserver(ConfigVector &configs)
     : socketNum_(0), serverSocketNum_(0), clientSocketNum_(0), socketOpt_(1) {
   for (size_t i = 0; i < MAX_CLIENTS; i++) {
     fds_[i].fd = -1;
     fds_[i].events = POLLIN;
     fds_[i].revents = 0;
   }
-  createServerSocket_(Sockets_[socketNum_], port);
+	for(ConfigVector::iterator it = configs.begin(); it != configs.end(); ++it){
+  	createServerSocket_(Sockets_[socketNum_], it->getPort());
+	}
   startServerRoutine_();
 }
 

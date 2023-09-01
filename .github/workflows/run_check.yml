@@ -29,9 +29,9 @@ jobs:
       run: |
         curl localhost:1234/index.html
 
-    # - name: curl large.jpg
-    #   run: |
-    #     curl localhost:1234/large.jpg
+    - name: curl large.jpg
+      run: |
+        curl localhost:1234/large.jpg
 
     - name: curl with space
       run: |
