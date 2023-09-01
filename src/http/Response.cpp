@@ -235,7 +235,8 @@ std::deque<std::string> Response::getFilesInFolder_(
 
 std::string Response::createFolderBody_(const Request &request) {
   std::string body;
-  std::deque<std::string> names = Response::getFilesInFolder_("./html", request.getPath());
+  std::deque<std::string> names =
+      Response::getFilesInFolder_("./html", request.getPath());
 
   body.append("<html>\n");
   body.append("<head><title>Index of" + request.getPath() +
