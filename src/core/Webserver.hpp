@@ -17,7 +17,6 @@
 #include "Request.hpp"
 #include "Response.hpp"
 #include "Socket.hpp"
-#include "OS.hpp"
 
 #define MAX_CLIENTS 1024
 #define BUFFER_SIZE 131072
