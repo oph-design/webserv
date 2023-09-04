@@ -11,7 +11,7 @@ int main(int argc, char *argv[]) {
     std::cout << configFile << std::endl;
     return EXIT_FAILURE;
   } else {
-    Webserver Server(1234);
+    Webserver Server(configs);
   }
   return EXIT_SUCCESS;
 }

@@ -1,16 +1,12 @@
 #include "Response.hpp"
 
+#include "colors.hpp"
+
 contentMap Response::fileTypes_ = Response::createTypeMap();
 
 /*            constructors                  */
 
-Response::Response() : body_("Server is online") {
-  this->header_.insert(contentField("Content-Type", "text/plain"));
-  this->header_.insert(contentField("Connection", "keep-alive"));
-  this->header_.insert(contentField("Content-Length", "16"));
-}
-
-Response::Response(Request &request) {
+Response::Response(Request &request, Config &config) : config_(config) {
   switch (request.getRequestMethodType()) {
     case 0:
       handleGetRequest_(request);
@@ -27,7 +23,7 @@ Response::Response(Request &request) {
   }
 }
 
-Response::Response(const Response &rhs) { *this = rhs; }
+Response::Response(const Response &rhs) : config_(rhs.config_) { *this = rhs; }
 
 Response &Response::operator=(const Response &rhs) {
   this->body_ = rhs.body_;
