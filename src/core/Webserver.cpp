@@ -38,7 +38,7 @@ void Webserver::createServerSocket_(Socket &serverSocket, int port) {
     error_("Error: Socket creation failed");
   }
 
-#ifndef __APPLE__
+#ifdef __APPLE__
   if (setsockopt(serverSocket.listeningSocket_, SOL_SOCKET, SO_NOSIGPIPE,
                  &serverSocket.socketOpt_,
                  sizeof(serverSocket.socketOpt_)) == -1) {
