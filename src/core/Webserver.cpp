@@ -38,11 +38,12 @@ void Webserver::createServerSocket_(Socket &serverSocket, int port) {
     error_("Error: Socket creation failed");
   }
 
-  if (setsockopt(serverSocket.listeningSocket_, SOL_SOCKET, SO_NOSIGPIPE,
-                 &serverSocket.socketOpt_,
-                 sizeof(serverSocket.socketOpt_)) == -1) {
-    error_("Error: Setting SO_NOSIGPIPE");
-  }
+  if (OS == MACOS)
+    if (setsockopt(serverSocket.listeningSocket_, SOL_SOCKET, SO_NOSIGPIPE,
+                   &serverSocket.socketOpt_,
+                   sizeof(serverSocket.socketOpt_)) == -1) {
+      error_("Error: Setting SO_NOSIGPIPE");
+    }
 
   if (setsockopt(serverSocket.listeningSocket_, SOL_SOCKET, SO_REUSEADDR,
                  &serverSocket.socketOpt_,
