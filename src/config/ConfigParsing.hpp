@@ -30,6 +30,7 @@ class ConfigParsing {
   static int parseListen(Line &line);
   static std::string parseServerName(Line &line);
   static Location parseLocation(Line &line);
+  static int parseTimeout(Line &line);
 
   // in Location
   static std::string parsePath(Line &line);
