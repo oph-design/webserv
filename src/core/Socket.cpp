@@ -32,6 +32,9 @@ Socket &Socket::operator=(const Socket &rhs) {
   this->response_ = rhs.response_;
   this->pendingSend_ = rhs.pendingSend_;
   this->keepAlive_ = rhs.keepAlive_;
+	this->timestamp_ = rhs.timestamp_;
+	this->timeout_ = rhs.timeout_;
+	this->configId_ = rhs.configId_;
   return *this;
 }
 
