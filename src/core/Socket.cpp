@@ -67,7 +67,7 @@ void Socket::setTimestamp() { this->timestamp_ = std::time(NULL); }
 bool Socket::checkTimeout() {
   if (this->inUse_) {
     time_t current = std::time(NULL);
-    if (difftime(current, this->timestamp_) >= this->timeout_) return true;
+    if ((current - this->timestamp_) >= this->timeout_) return true;
   }
   return false;
 }
