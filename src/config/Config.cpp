@@ -5,13 +5,14 @@ Config::Config() {
   this->serverName_ = FALLBACK_SERVERNAME;
   this->index_ = FALLBACK_INDEX;
   this->root_ = FALLBACK_ROOT;
+  this->timeout_ = FALLBACK_TIMEOUT;
 }
 
 Config::~Config() {}
 
-Config::Config(const Config& obj) { *this = obj; }
+Config::Config(const Config &obj) { *this = obj; }
 
-Config& Config::operator=(const Config& obj) {
+Config &Config::operator=(const Config &obj) {
   this->listen_ = obj.listen_;
   this->clientMaxBodySize_ = obj.clientMaxBodySize_;
   this->serverName_ = obj.serverName_;
@@ -20,10 +21,11 @@ Config& Config::operator=(const Config& obj) {
   this->locations_ = obj.locations_;
   this->errorPage_ = obj.errorPage_;
   this->port_ = obj.port_;
+  this->timeout_ = obj.timeout_;
   return *this;
 }
 
-ConfigVector& Config::handleDuplicates_(ConfigVector& configs) {
+ConfigVector &Config::handleDuplicates_(ConfigVector &configs) {
   Config::fillHostPort_(configs);
   Config::makeHostPortUnique_(configs);
   Config::getPortsFromHostPort_(configs);
@@ -46,28 +48,28 @@ void Config::fillLocations_() {
   }
 }
 
-void Config::fillAllLocations_(ConfigVector& configs) {
+void Config::fillAllLocations_(ConfigVector &configs) {
   for (ConfigVector::iterator iter = configs.begin(); iter != configs.end();
        ++iter) {
     iter->fillLocations_();
   }
 }
 
-void Config::fillHostPort_(ConfigVector& configs) {
+void Config::fillHostPort_(ConfigVector &configs) {
   for (ConfigVector::iterator configIter = configs.begin();
        configIter != configs.end(); ++configIter) {
     for (std::set<int>::iterator listenIter = configIter->listen_.begin();
          listenIter != configIter->listen_.end(); ++listenIter) {
       configIter->hostPort_.insert(configIter->serverName_ + ":" +
-                                   toString(*listenIter));
+          toString(*listenIter));
     }
     if (configIter->hostPort_.size() == 0)
       configIter->hostPort_.insert(configIter->serverName_ + ":" +
-                                   toString(FALLBACK_PORT));
+          toString(FALLBACK_PORT));
   }
 }
 
-void Config::makeHostPortUnique_(ConfigVector& configs) {
+void Config::makeHostPortUnique_(ConfigVector &configs) {
   StringSet portsInUse;
   for (ConfigVector::iterator configIter = configs.begin();
        configIter != configs.end(); ++configIter) {
@@ -83,7 +85,7 @@ void Config::makeHostPortUnique_(ConfigVector& configs) {
   }
 }
 
-void Config::getPortsFromHostPort_(ConfigVector& configs) {
+void Config::getPortsFromHostPort_(ConfigVector &configs) {
   for (ConfigVector::iterator configIter = configs.begin();
        configIter != configs.end(); ++configIter) {
     configIter->listen_.clear();
@@ -94,11 +96,11 @@ void Config::getPortsFromHostPort_(ConfigVector& configs) {
     }
     if (configIter->hostPort_.size() == 0)
       configIter->hostPort_.insert(configIter->serverName_ + ":" +
-                                   toString(FALLBACK_PORT));
+          toString(FALLBACK_PORT));
   }
 }
 
-void Config::deleteEmptyServer_(ConfigVector& configs) {
+void Config::deleteEmptyServer_(ConfigVector &configs) {
   ConfigVector newVector;
   for (ConfigVector::iterator configIter = configs.begin();
        configIter != configs.end(); ++configIter) {
@@ -107,7 +109,7 @@ void Config::deleteEmptyServer_(ConfigVector& configs) {
   configs = newVector;
 }
 
-std::ostream& operator<<(std::ostream& stream, const Config& config) {
+std::ostream &operator<<(std::ostream &stream, const Config &config) {
   stream << "listen: " << config.listen_ << "\n";
   stream << "client_max_body_size: " << config.clientMaxBodySize_ << "\n";
   stream << "server_name: " << config.serverName_ << "\n";
