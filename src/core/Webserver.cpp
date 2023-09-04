@@ -12,7 +12,7 @@ Webserver::Webserver(ConfigVector &configs)
       clientSocketNum_(0),
       socketOpt_(1),
       configs_(configs) {
-  for (size_t i = 0; i < MAX_CLIENTS; i++) {
+  for (size_t i = 0; i < MAX_CLIENTS; ++i) {
     fds_[i].fd = -1;
     fds_[i].events = POLLIN;
     fds_[i].revents = 0;
@@ -189,6 +189,7 @@ void Webserver::checkTimeoutClients() {
       std::cout << "Timeout of Client Socket: " << this->Sockets_[i].fd_
                 << std::endl;
       closeConnection_(this->Sockets_[i], this->fds_[i], i);
+			break;
     }
   }
 }

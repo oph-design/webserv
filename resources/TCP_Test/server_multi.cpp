@@ -61,7 +61,7 @@ int main(void){
 			break;
 		}
 		
-		for(int i = 0; i < nfds; i++){
+		for(int i = 0; i < nfds; ++i){
 			std::cout << "fds[" << i << "].revents: " << fds[i].revents << std::endl;
 			if(fds[i].revents & POLLHUP)
 				std::cout << "HANGUP "  << i << " " << std::endl;
