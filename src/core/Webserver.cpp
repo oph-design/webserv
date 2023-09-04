@@ -111,6 +111,7 @@ void Webserver::startServerRoutine_() {
     int ret = poll(this->fds_, this->socketNum_, 10000);
     if (ret == -1) error_("poll error");
     checkPending_();
+    checkTimeoutClients();
     for (size_t i = 0; i < socketNum_; i++) {
       if (this->fds_[i].revents == POLLIN) {
         if (Sockets_[i].socketType_ == SERVER)
@@ -120,7 +121,6 @@ void Webserver::startServerRoutine_() {
         }
       }
     }
-    checkTimeoutClients();
   }
 }
 
@@ -131,7 +131,6 @@ std::string Webserver::createResponse_(Socket &socket) {
   std::string response = resobj.getHeader() + resobj.getBody();
   return response;
 }
-int fd_is_valid(int fd) { return fcntl(fd, F_GETFD) != -1 || errno != EBADF; }
 
 void Webserver::sendResponse_(Socket &socket, pollfd &pollfd, size_t &i) {
   socket.dataSend_ =
