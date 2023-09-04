@@ -31,7 +31,8 @@ jobs:
 
     - name: curl large.jpg
       run: |
-        curl localhost:1234/large.jpg
+        curl localhost:1234/large.jpg > test.jpg
+        diff test.jpg html/large.jpg
 
     - name: curl with space
       run: |
