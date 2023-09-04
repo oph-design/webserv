@@ -38,6 +38,12 @@ void Webserver::createServerSocket_(Socket &serverSocket, int port) {
     error_("Error: Socket creation failed");
   }
 
+  if (setsockopt(serverSocket.listeningSocket_, SOL_SOCKET, SO_NOSIGPIPE,
+                 &serverSocket.socketOpt_,
+                 sizeof(serverSocket.socketOpt_)) == -1) {
+    error_("Error: Setting SO_NOSIGPIPE");
+  }
+
   if (setsockopt(serverSocket.listeningSocket_, SOL_SOCKET, SO_REUSEADDR,
                  &serverSocket.socketOpt_,
                  sizeof(serverSocket.socketOpt_)) == -1) {
@@ -103,7 +109,6 @@ void Webserver::startServerRoutine_() {
     int ret = poll(this->fds_, this->socketNum_, 10000);
     if (ret == -1) error_("poll error");
     checkPending_();
-    checkTimeoutClients();
     for (size_t i = 0; i < socketNum_; i++) {
       if (this->fds_[i].revents == POLLIN) {
         if (Sockets_[i].socketType_ == SERVER)
@@ -113,6 +118,7 @@ void Webserver::startServerRoutine_() {
         }
       }
     }
+    checkTimeoutClients();
   }
 }
 
@@ -123,11 +129,16 @@ std::string Webserver::createResponse_(Socket &socket) {
   std::string response = resobj.getHeader() + resobj.getBody();
   return response;
 }
+int fd_is_valid(int fd) { return fcntl(fd, F_GETFD) != -1 || errno != EBADF; }
 
 void Webserver::sendResponse_(Socket &socket, pollfd &pollfd, size_t &i) {
   socket.dataSend_ =
       send(socket.fd_, socket.response_.c_str(), socket.response_.size(), 0);
-  if (socket.dataSend_ < socket.response_.size()) {
+
+  if (socket.dataSend_ == static_cast<std::size_t>(-1)) {
+    std::cout << "send failed" << std::endl;
+    closeConnection_(socket, pollfd, i);
+  } else if (socket.dataSend_ < socket.response_.size()) {
     socket.pendingSend_ = true;
     socket.response_ = socket.response_.substr(socket.dataSend_);
     socket.setTimestamp();
