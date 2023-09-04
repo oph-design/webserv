@@ -24,7 +24,7 @@ Webserver::Webserver(ConfigVector &configs)
 }
 
 Webserver &Webserver::operator=(const Webserver &rhs) {
-  (void)rhs;
+  (void) rhs;
   return *this;
 }
 
@@ -51,7 +51,7 @@ void Webserver::createServerSocket_(Socket &serverSocket, int port) {
   }
 
   if (bind(serverSocket.listeningSocket_,
-           (struct sockaddr *)&serverSocket.socketaddr_,
+           (struct sockaddr *) &serverSocket.socketaddr_,
            sizeof(serverSocket.socketaddr_)) != 0) {
     error_("Error: Could not bind socket");
   }
@@ -77,7 +77,7 @@ void Webserver::createClientSocket_(Socket &serverSocket) {
   socklen_t boundServerAdress_len = sizeof(serverSocket.socketaddr_);
   int new_client_sock;
   if ((new_client_sock = accept(serverSocket.fd_,
-                                (struct sockaddr *)&serverSocket.socketaddr_,
+                                (struct sockaddr *) &serverSocket.socketaddr_,
                                 &boundServerAdress_len)) == -1)
     error_("Accept Error");
   std::cout << "opened new Socket " << new_client_sock << std::endl;
@@ -103,7 +103,6 @@ void Webserver::startServerRoutine_() {
     int ret = poll(this->fds_, this->socketNum_, 10000);
     if (ret == -1) error_("poll error");
     checkPending_();
-    checkTimeoutClients();
     for (size_t i = 0; i < socketNum_; i++) {
       if (this->fds_[i].revents == POLLIN) {
         if (Sockets_[i].socketType_ == SERVER)
@@ -113,6 +112,7 @@ void Webserver::startServerRoutine_() {
         }
       }
     }
+    checkTimeoutClients();
   }
 }
 
