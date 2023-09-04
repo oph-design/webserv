@@ -4,6 +4,9 @@
 #include "Webserver.hpp"
 
 int main(int argc, char *argv[]) {
+#ifdef __linux__
+  signal(SIGPIPE, SIG_IGN);
+#endif
   ConfigFile configFile;
   if (!configFile.openFile(argc, argv)) return EXIT_FAILURE;
   ConfigVector configs = configFile.createConfig();
