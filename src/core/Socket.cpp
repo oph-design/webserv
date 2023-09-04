@@ -6,14 +6,14 @@ Socket::Socket()
       socketIndex_(-1),
       inUse_(false),
       socketType_(UNUSED),
+      boundServerPort_(8080),
       socketOpt_(1),
       listeningSocket_(-1),
       dataSend_(0),
       pendingSend_(false),
       keepAlive_(true),
       timeout_(5),
-			configId_(-1)
-			 {}
+      configId_(-1) {}
 
 Socket::~Socket() {}
 
@@ -24,10 +24,10 @@ Socket &Socket::operator=(const Socket &rhs) {
   this->socketIndex_ = rhs.socketIndex_;
   this->inUse_ = rhs.inUse_;
   this->socketType_ = rhs.socketType_;
-  this->boundServerAdress_ = rhs.boundServerAdress_;
+  this->boundServerPort_ = rhs.boundServerPort_;
   this->socketOpt_ = rhs.socketOpt_;
   this->listeningSocket_ = rhs.listeningSocket_;
-  this->servaddr_ = rhs.servaddr_;
+  this->socketaddr_ = rhs.socketaddr_;
   this->dataSend_ = rhs.dataSend_;
   this->response_ = rhs.response_;
   this->pendingSend_ = rhs.pendingSend_;
@@ -45,10 +45,9 @@ void Socket::setIdle() {
   socketIndex_ = -1;
   inUse_ = false;
   socketType_ = UNUSED;
-  memset(&boundServerAdress_, 0, sizeof(boundServerAdress_));
   socketOpt_ = 1;
   listeningSocket_ = -1;
-  memset(&servaddr_, 0, sizeof(servaddr_));
+  memset(&socketaddr_, 0, sizeof(socketaddr_));
   dataSend_ = 0;
   response_.clear();
   pendingSend_ = false;

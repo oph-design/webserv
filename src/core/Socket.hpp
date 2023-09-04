@@ -30,11 +30,8 @@ class Socket {
 
  public:
   Socket();
-
   ~Socket();
-
   Socket(const Socket &);
-
   Socket &operator=(const Socket &);
 
   // getter
@@ -43,9 +40,7 @@ class Socket {
 
   // setter
   void setReqStatus();
-
   void setIdle();
-
   void setTimestamp();
 
   // other functions
@@ -59,17 +54,17 @@ class Socket {
   int socketIndex_;
   bool inUse_;
   SocketType socketType_;
-  sockaddr_in boundServerAdress_;
+  int boundServerPort_;
   int socketOpt_;
   int listeningSocket_;
-  sockaddr_in servaddr_;
+  sockaddr_in socketaddr_;
   unsigned long dataSend_;
   std::string response_;
   bool pendingSend_;
   bool keepAlive_;
   time_t timestamp_;
   double timeout_;
-	int configId_;
+  int configId_;
 };
 
 bool receiveRequest(Socket &socket, size_t &bytes);

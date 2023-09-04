@@ -23,43 +23,33 @@
 
 class Webserver {
  public:
-  Webserver(ConfigVector&);
-
+  Webserver(ConfigVector &);
   Webserver(const Webserver &);
-
   ~Webserver();
-
   Webserver &operator=(const Webserver &);
 
   void boot();
 
  private:
+  void createServerSocket_(Socket &, int);
+  void createClientSocket_(Socket &);
+  void startServerRoutine_();
+  void error_(std::string);
+  void sendResponse_(Socket &socket, pollfd &fd, size_t &i);
+  bool existingConnection_(Socket &socket, pollfd &fd, size_t &i);
+  std::string createResponse_(Socket &socket);
+  void closeConnection_(Socket &socket, pollfd &fd, size_t &i);
+  void checkPending_();
+  void checkTimeoutClients();
+  int getConfigId_(int tofind);
+
   size_t socketNum_;
   size_t serverSocketNum_;
   size_t clientSocketNum_;
   int socketOpt_;
+  ConfigVector &configs_;
   struct pollfd fds_[MAX_CLIENTS];
   Socket Sockets_[MAX_CLIENTS];
-
-  void createServerSocket_(Socket &, int);
-
-  void createClientSocket_(Socket &);
-
-  void startServerRoutine_();
-
-  void error_(std::string);
-
-  void sendResponse_(Socket &socket, pollfd &fd, size_t &i);
-
-  bool existingConnection_(Socket &socket, pollfd &fd, size_t &i);
-
-  std::string createResponse_(std::string buffer);
-
-  void closeConnection_(Socket &socket, pollfd &fd, size_t &i);
-
-  void checkPending_();
-
-  void checkTimeoutClients();
 };
 
 #endif  // WEBSERVER_HPP

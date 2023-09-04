@@ -1,19 +1,33 @@
 #include "Webserver.hpp"
 
-Webserver::Webserver(const Webserver &rhs) { *this = rhs; }
+#include <arpa/inet.h>
+#include <netinet/in.h>
+#include <sys/_types/_in_addr_t.h>
+#include <sys/socket.h>
+
+#include "Types.hpp"
+#include "colors.hpp"
+
+Webserver::Webserver(const Webserver &rhs) : configs_(rhs.configs_) {
+  *this = rhs;
+}
 
 Webserver::~Webserver() {}
 
 Webserver::Webserver(ConfigVector &configs)
-    : socketNum_(0), serverSocketNum_(0), clientSocketNum_(0), socketOpt_(1) {
+    : socketNum_(0),
+      serverSocketNum_(0),
+      clientSocketNum_(0),
+      socketOpt_(1),
+      configs_(configs) {
   for (size_t i = 0; i < MAX_CLIENTS; i++) {
     fds_[i].fd = -1;
     fds_[i].events = POLLIN;
     fds_[i].revents = 0;
   }
-	for(ConfigVector::iterator it = configs.begin(); it != configs.end(); ++it){
-  	createServerSocket_(Sockets_[socketNum_], it->getPort());
-	}
+  for (ConfigVector::iterator it = configs.begin(); it != configs.end(); ++it) {
+    createServerSocket_(Sockets_[socketNum_], it->getPort());
+  }
   startServerRoutine_();
 }
 
@@ -23,11 +37,10 @@ Webserver &Webserver::operator=(const Webserver &rhs) {
 }
 
 void Webserver::createServerSocket_(Socket &serverSocket, int port) {
-  memset(&serverSocket.servaddr_, 0, sizeof(serverSocket.servaddr_));
-  serverSocket.servaddr_.sin_family = AF_INET;
-  serverSocket.servaddr_.sin_addr.s_addr = htonl(INADDR_ANY);
-  serverSocket.servaddr_.sin_port = htons(port);
-
+  memset(&serverSocket.socketaddr_, 0, sizeof(serverSocket.socketaddr_));
+  serverSocket.socketaddr_.sin_family = AF_INET;
+  serverSocket.socketaddr_.sin_addr.s_addr = htonl(INADDR_ANY);
+  serverSocket.socketaddr_.sin_port = htons(port);
   serverSocket.listeningSocket_ = socket(AF_INET, SOCK_STREAM, 0);
   if (serverSocket.listeningSocket_ == -1) {
     error_("Error: Socket creation failed");
@@ -46,8 +59,8 @@ void Webserver::createServerSocket_(Socket &serverSocket, int port) {
   }
 
   if (bind(serverSocket.listeningSocket_,
-           (struct sockaddr *)&serverSocket.servaddr_,
-           sizeof(serverSocket.servaddr_)) != 0) {
+           (struct sockaddr *)&serverSocket.socketaddr_,
+           sizeof(serverSocket.socketaddr_)) != 0) {
     error_("Error: Could not bind socket");
   }
 
@@ -59,24 +72,23 @@ void Webserver::createServerSocket_(Socket &serverSocket, int port) {
       -1) {
     error_("Error: Setting socket to nonblocking");
   }
-
   this->fds_[socketNum_].fd = serverSocket.listeningSocket_;
   serverSocket.fd_ = serverSocket.listeningSocket_;
   serverSocket.socketIndex_ = socketNum_;
   serverSocket.socketType_ = SERVER;
+  serverSocket.configId_ = this->socketNum_;
   this->socketNum_++;
   this->serverSocketNum_++;
 }
 
-void Webserver::createClientSocket_(Socket &clientSocket) {
-  socklen_t boundServerAdress_len = sizeof(clientSocket.boundServerAdress_);
+void Webserver::createClientSocket_(Socket &serverSocket) {
+  socklen_t boundServerAdress_len = sizeof(serverSocket.socketaddr_);
   int new_client_sock;
-  if ((new_client_sock =
-           accept(clientSocket.fd_,
-                  (struct sockaddr *)&clientSocket.boundServerAdress_,
-                  &boundServerAdress_len)) == -1)
+  if ((new_client_sock = accept(serverSocket.fd_,
+                                (struct sockaddr *)&serverSocket.socketaddr_,
+                                &boundServerAdress_len)) == -1)
     error_("Accept Error");
-  std::cout << new_client_sock << std::endl;
+  std::cout << "opened new Socket " << new_client_sock << std::endl;
   if (fcntl(new_client_sock, F_SETFL, O_NONBLOCK, FD_CLOEXEC) == -1) {
     error_("Error: Setting socket to nonblocking");
   }
@@ -85,10 +97,11 @@ void Webserver::createClientSocket_(Socket &clientSocket) {
   this->Sockets_[socketNum_].inUse_ = true;
   this->Sockets_[socketNum_].socketIndex_ = socketNum_;
   this->Sockets_[socketNum_].socketType_ = CLIENT;
+  this->Sockets_[socketNum_].boundServerPort_ =
+      ntohs(serverSocket.socketaddr_.sin_port);
   this->Sockets_[socketNum_].setTimestamp();
   socketNum_++;
   clientSocketNum_++;
-
   std::cout << "Connection Established with "
             << this->Sockets_[socketNum_ - 1].fd_ << std::endl;
 }
@@ -111,9 +124,10 @@ void Webserver::startServerRoutine_() {
   }
 }
 
-std::string Webserver::createResponse_(std::string buffer) {
-  Request request(buffer);
-  Response resobj(request);
+std::string Webserver::createResponse_(Socket &socket) {
+  Request request(socket.reqStatus.buffer);
+  Config &conf = this->configs_[this->getConfigId_(socket.boundServerPort_)];
+  Response resobj(request, conf);
   std::string response = resobj.getHeader() + resobj.getBody();
   return response;
 }
@@ -140,7 +154,7 @@ bool Webserver::existingConnection_(Socket &socket, pollfd &pollfd, size_t &i) {
     std::cout << "connection on socket " << socket.fd_ << std::endl;
     socket.setTimestamp();
     if (socket.pendingSend_ == false)
-      socket.response_ = this->createResponse_(socket.reqStatus.buffer);
+      socket.response_ = this->createResponse_(socket);
     this->sendResponse_(socket, pollfd, i);
   }
   if (currentBytes == static_cast<std::size_t>(-1) &&
@@ -185,6 +199,15 @@ void Webserver::checkTimeoutClients() {
       closeConnection_(this->Sockets_[i], this->fds_[i], i);
     }
   }
+}
+
+int Webserver::getConfigId_(int toFind) {
+  for (int i = 0; i < MAX_CLIENTS; ++i) {
+    if (ntohs(this->Sockets_[i].socketaddr_.sin_port) == toFind) {
+      return (this->Sockets_[i].configId_);
+    }
+  }
+  return (0);
 }
 
 void Webserver::error_(std::string error) {

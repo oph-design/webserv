@@ -17,19 +17,17 @@
 #include <string>
 
 #include "CgiConnector.hpp"
+#include "Config.hpp"
 #include "Request.hpp"
 #include "Status.hpp"
 #include "Utils.hpp"
-
-#define CHUNKSIZE 1024
 
 typedef std::pair<std::string, std::string> contentField;
 typedef std::map<std::string, std::string> contentMap;
 
 class Response {
  public:
-  Response();
-  Response(Request &request);
+  Response(Request &request, Config &config);
   Response(const Response &rhs);
   Response &operator=(const Response &rhs);
   ~Response();
@@ -62,6 +60,7 @@ class Response {
   contentMap header_;
   Status status_;
   std::string body_;
+  Config &config_;
 };
 
 #endif  // !RESPONSE_HPP
