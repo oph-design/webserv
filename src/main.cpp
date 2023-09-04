@@ -3,10 +3,10 @@
 #include "ConfigFile.hpp"
 #include "Webserver.hpp"
 
+void signalHandling();
+
 int main(int argc, char *argv[]) {
-#ifdef __linux__
-  signal(SIGPIPE, SIG_IGN);
-#endif
+  signalHandling();
   ConfigFile configFile;
   if (!configFile.openFile(argc, argv)) return EXIT_FAILURE;
   ConfigVector configs = configFile.createConfig();
@@ -17,4 +17,10 @@ int main(int argc, char *argv[]) {
     Webserver Server(configs);
   }
   return EXIT_SUCCESS;
+}
+
+void signalHandling() {
+#ifdef __linux__
+  signal(SIGPIPE, SIG_IGN);
+#endif
 }
