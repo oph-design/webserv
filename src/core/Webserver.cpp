@@ -1,13 +1,5 @@
 #include "Webserver.hpp"
 
-#include <arpa/inet.h>
-#include <netinet/in.h>
-#include <sys/_types/_in_addr_t.h>
-#include <sys/socket.h>
-
-#include "Types.hpp"
-#include "colors.hpp"
-
 Webserver::Webserver(const Webserver &rhs) : configs_(rhs.configs_) {
   *this = rhs;
 }

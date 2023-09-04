@@ -1,7 +1,5 @@
 #include "Response.hpp"
 
-#include "colors.hpp"
-
 contentMap Response::fileTypes_ = Response::createTypeMap();
 
 /*            constructors                  */
