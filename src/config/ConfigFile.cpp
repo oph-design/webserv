@@ -161,15 +161,3 @@ std::ostream& operator<<(std::ostream& stream, ConfigFile& config) {
   stream << std::flush;
   return stream;
 }
-
-Location Config::getLocationByPath(std::string index) const {
-  for (LocationVector::const_iterator it = locations_.begin();
-       it < locations_.end(); ++it) {
-    if (it->getIndex() == index) return (*it);
-  }
-  Location location;
-  location.index_ = index;
-  location.root_ = index;
-  location.uploadPass_ = index;
-  return (location);
-}

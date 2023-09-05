@@ -5,6 +5,7 @@ Config::Config() {
   this->serverName_ = FALLBACK_SERVERNAME;
   this->index_ = FALLBACK_INDEX;
   this->root_ = FALLBACK_ROOT;
+  this->locations_.push_back(Location());
 }
 
 Config::~Config() {}

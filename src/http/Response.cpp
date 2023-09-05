@@ -6,7 +6,7 @@ contentMap Response::fileTypes_ = Response::createTypeMap();
 
 /*            constructors                  */
 
-Response::Response(Request &request, Config &config, Location location)
+Response::Response(Request &request, Config &config, const Location &location)
     : config_(config), location_(location) {
   this->parseConfig(request.getPath());
   switch (request.getRequestMethodType()) {
@@ -20,7 +20,7 @@ Response::Response(Request &request, Config &config, Location location)
       handleDeleteRequest_(request);
       break;
     default:
-      this->status_ = 405;
+      this->status_ = 501;
       this->status_ >> this->body_;
   }
 }
@@ -267,8 +267,6 @@ bool Response::isFolder_(std::string uri) {
   }
   return false;
 }
-
-void Response::parseConfig(std::string path) { (void)path; }
 
 /*            global functions                  */
 

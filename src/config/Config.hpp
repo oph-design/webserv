@@ -38,7 +38,7 @@ class Config {
   const std::string& getIndex() const;
   const std::string& getRoot() const;
   const LocationVector& getLocations() const;
-  Location getLocationByPath(std::string index) const;
+  const Location& getLocationByPath(std::string index);
   const ErrorMap& getErrorPage() const;
   const int& getPort() const;
 
