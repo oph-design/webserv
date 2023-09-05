@@ -58,7 +58,7 @@ std::string& Status::operator>>(std::string& str) {
 }
 
 statusMap Status::createStatusMap() {
-  std::ifstream data("./resources/statuscodes.csv");
+  std::ifstream data("./data/statuscodes.csv");
   std::string field;
   std::string key;
   std::string value;
