@@ -31,7 +31,7 @@ class Webserver {
   void boot();
 
  private:
-  void createServerSocket_(Socket &, int);
+  void createServerSocket_(Socket &, int, double);
   void createClientSocket_(Socket &);
   void startServerRoutine_();
   void error_(std::string);
