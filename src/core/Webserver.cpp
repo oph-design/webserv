@@ -18,7 +18,7 @@ Webserver::Webserver(ConfigVector &configs)
     fds_[i].revents = 0;
   }
   for (ConfigVector::iterator it = configs.begin(); it != configs.end(); ++it) {
-    createServerSocket_(Sockets_[socketNum_], it->getPort());
+    createServerSocket_(Sockets_[socketNum_], it->getPort(), it->getTimeout());
   }
   startServerRoutine_();
 }
@@ -28,7 +28,7 @@ Webserver &Webserver::operator=(const Webserver &rhs) {
   return *this;
 }
 
-void Webserver::createServerSocket_(Socket &serverSocket, int port) {
+void Webserver::createServerSocket_(Socket &serverSocket, int port, double timeout) {
   memset(&serverSocket.socketaddr_, 0, sizeof(serverSocket.socketaddr_));
   serverSocket.socketaddr_.sin_family = AF_INET;
   serverSocket.socketaddr_.sin_addr.s_addr = htonl(INADDR_ANY);
@@ -77,6 +77,7 @@ void Webserver::createServerSocket_(Socket &serverSocket, int port) {
   serverSocket.socketIndex_ = socketNum_;
   serverSocket.socketType_ = SERVER;
   serverSocket.configId_ = this->socketNum_;
+  serverSocket.timeout_ = timeout;
   this->socketNum_++;
   this->serverSocketNum_++;
 }
@@ -100,6 +101,7 @@ void Webserver::createClientSocket_(Socket &serverSocket) {
   this->Sockets_[socketNum_].boundServerPort_ =
       ntohs(serverSocket.socketaddr_.sin_port);
   this->Sockets_[socketNum_].setTimestamp();
+  this->Sockets_[socketNum_].timeout_ = serverSocket.timeout_;
   socketNum_++;
   clientSocketNum_++;
   std::cout << "Connection Established with "
