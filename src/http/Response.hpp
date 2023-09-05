@@ -27,7 +27,7 @@ typedef std::map<std::string, std::string> contentMap;
 
 class Response {
  public:
-  Response(Request &request, Config &config);
+  Response(Request &request, Config &config, Location location);
   Response(const Response &rhs);
   Response &operator=(const Response &rhs);
   ~Response();
@@ -49,6 +49,7 @@ class Response {
                    std::string path);
   void buildJsonBody_();
   void serveCgi_(const Request &request);
+  void parseConfig(std::string path);
 
   static bool isFolder_(std::string uri);
   void serveFolder_(Request &request);
@@ -60,7 +61,11 @@ class Response {
   contentMap header_;
   Status status_;
   std::string body_;
+  std::string upload;
+  std::string cgipass;
+  std::string root;
   Config &config_;
+  Location location_;
 };
 
 #endif  // !RESPONSE_HPP

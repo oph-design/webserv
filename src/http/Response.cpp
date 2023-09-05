@@ -1,10 +1,14 @@
 #include "Response.hpp"
 
+#include "Types.hpp"
+
 contentMap Response::fileTypes_ = Response::createTypeMap();
 
 /*            constructors                  */
 
-Response::Response(Request &request, Config &config) : config_(config) {
+Response::Response(Request &request, Config &config, Location location)
+    : config_(config), location_(location) {
+  this->parseConfig(request.getPath());
   switch (request.getRequestMethodType()) {
     case 0:
       handleGetRequest_(request);
@@ -21,7 +25,10 @@ Response::Response(Request &request, Config &config) : config_(config) {
   }
 }
 
-Response::Response(const Response &rhs) : config_(rhs.config_) { *this = rhs; }
+Response::Response(const Response &rhs)
+    : config_(rhs.config_), location_(rhs.location_) {
+  *this = rhs;
+}
 
 Response &Response::operator=(const Response &rhs) {
   this->body_ = rhs.body_;
@@ -260,6 +267,8 @@ bool Response::isFolder_(std::string uri) {
   }
   return false;
 }
+
+void Response::parseConfig(std::string path) { (void)path; }
 
 /*            global functions                  */
 
