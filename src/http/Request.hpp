@@ -49,7 +49,7 @@ class Request {
   std::string getHTTPVersion() const;
   bool getRequestBodyExists() const;
   std::string getRequestBody() const;
-  void cutPathtoConfig(std::string index);
+  std::string cutPath(std::string index);
 
   void setPath(const std::string &path);
 

@@ -32,8 +32,10 @@ class Location {
   const std::string& getRoot() const;
   const std::string& getUploadPass() const;
   const StringSet& getMethods() const;
-  const std::map<std::string, std::string>& getFastcgiPass() const;
+  const std::string& getCgiPass() const;
   const ErrorMap& getErrorPage() const;
+  bool methodAllowed(std::string meth) const;
+  bool maxBodyReached(size_t clen) const;
 
  private:
   bool autoindex_;

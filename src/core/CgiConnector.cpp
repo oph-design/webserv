@@ -1,9 +1,14 @@
 #include "CgiConnector.hpp"
 
+#include "colors.hpp"
+
 CgiConnector::CgiConnector() {}
 
-CgiConnector::CgiConnector(const Request& request)
-    : reqBody_(request.getRequestBody()), env_(buildEnv_(request)) {}
+CgiConnector::CgiConnector(const Request& request, std::string path)
+    : reqBody_(request.getRequestBody()), env_(buildEnv_(request)) {
+  std::cout << YELLOW << path << COLOR_RESET << std::endl;
+  this->path_ = path;
+}
 
 CgiConnector::CgiConnector(const CgiConnector& rhs) { *this = rhs; }
 
@@ -38,16 +43,14 @@ std::map<std::string, std::string> CgiConnector::getHeader() const {
 
 std::string CgiConnector::getBody() const { return this->respBody_; }
 
-bool CgiConnector::isCgi(std::string uri) {
-  std::string name = uri.substr(uri.rfind("/") + 1, uri.size());
+bool CgiConnector::isCgi(std::string path) {
+  std::string name = path.substr(path.rfind("/") + 1, path.size());
   std::string extention = name.substr(name.rfind(".") + 1, name.length());
   if (extention != "py") return (false);
-  struct dirent* file;
-  DIR* bin = opendir("./cgi-bin");
-  while ((file = readdir(bin)) != NULL)
-    if (name == file->d_name) return (closedir(bin), true);
-  closedir(bin);
-  return (false);
+  std::ifstream testfile(path);
+  if (!testfile.is_open()) return (false);
+  testfile.close();
+  return (true);
 }
 
 envMap CgiConnector::buildEnv_(const Request& request) {
@@ -83,12 +86,6 @@ char** CgiConnector::envToString_() {
     ++i;
   }
   res[i] = NULL;
-  return (res);
-}
-
-std::string pathHelper(std::string name) {
-  char* root = getenv("PWD");
-  std::string res = std::string(root) + "/cgi-bin/" + name;
   return (res);
 }
 
@@ -159,7 +156,7 @@ void CgiConnector::makeConnection(Status& status) {
   int exitcode;
   pipe(pipes);
   pid_t pid = fork();
-  if (!pid) this->executeScript_(pathHelper(this->env_["SCRIPT_NAME"]), pipes);
+  if (!pid) this->executeScript_(this->path_, pipes);
   if (!waitTimeouted(pid, &exitcode)) std::cerr << "CGI Timeout" << std::endl;
   exitcode = WEXITSTATUS(exitcode);
   std::cout << RED << exitcode << COLOR_RESET << std::endl;

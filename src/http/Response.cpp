@@ -11,16 +11,15 @@ contentMap Response::fileTypes_ = Response::createTypeMap();
 Response::Response(Request &request, Config &config, const Location &location)
     : config_(config), location_(location) {
   std::cout << MAGENTA << location_ << COLOR_RESET << std::endl;
-  request.cutPathtoConfig(this->location_.getPath());
   switch (request.getRequestMethodType()) {
     case 0:
-      handleGetRequest_(request);
+      handleGetRequest_(request, request.cutPath(location_.getPath()));
       break;
     case 1:
-      handlePostRequest_(request);
+      handlePostRequest_(request, request.cutPath(location_.getPath()));
       break;
     case 2:
-      handleDeleteRequest_(request);
+      handleDeleteRequest_(request, request.cutPath(location_.getPath()));
       break;
     default:
       this->status_ = 501;
@@ -117,11 +116,10 @@ void Response::readBody_(std::string dir) {
   this->body_ = content.str();
 }
 
-void Response::handleGetRequest_(Request &request) {
-  std::string path = location_.getRoot() + request.getPath();
-  if (isForbiddenPath_(request.getPath()))
-    this->status_ = 400;
-  else if (CgiConnector::isCgi(path))
+void Response::handleGetRequest_(Request &request, std::string uri) {
+  std::string path = location_.getRoot() + uri;
+  this->prerequisits_("GET", request);
+  if (CgiConnector::isCgi(location_.getCgiPass() + uri))
     return (void)(serveCgi_(request));
   else if (this->isFolder_(path) && !this->location_.getAutoindex())
     path = path + this->location_.getIndex();
@@ -171,8 +169,10 @@ void Response::buildJsonBody_() {
       contentField("Content-Length", toString(this->body_.size())));
 }
 
-void Response::handlePostRequest_(const Request &request) {
-  if (CgiConnector::isCgi(request.getPath())) return (void)(serveCgi_(request));
+void Response::handlePostRequest_(const Request &request, std::string uri) {
+  this->prerequisits_("POST", request);
+  if (CgiConnector::isCgi(location_.getCgiPass() + uri))
+    return (void)(serveCgi_(request));
   std::string file = request.getPath();
   std::string ext;
   file = file.substr(file.rfind("/") + 1, file.length());
@@ -196,9 +196,11 @@ void Response::handlePostRequest_(const Request &request) {
 
 /*             Delete Request                  */
 
-void Response::handleDeleteRequest_(const Request &request) {
-  std::string path = location_.getRoot() + request.getPath();
-  if (CgiConnector::isCgi(request.getPath())) return (void)(serveCgi_(request));
+void Response::handleDeleteRequest_(const Request &request, std::string uri) {
+  std::string path = location_.getRoot() + uri;
+  this->prerequisits_("DELETE", request);
+  if (CgiConnector::isCgi(this->location_.getCgiPass() + uri))
+    return (void)(serveCgi_(request));
   if (access(path.c_str(), F_OK)) this->status_ = 403;
   if (this->status_ < 400 && remove(path.c_str())) this->status_ = 500;
   this->header_.insert(contentField("Connection", "keep-alive"));
@@ -206,10 +208,18 @@ void Response::handleDeleteRequest_(const Request &request) {
   buildJsonBody_();
 }
 
+void Response::prerequisits_(std::string meth, const Request &request) {
+  if (isForbiddenPath_(request.getPath()))
+    this->status_ = 400;
+  else if (this->location_.methodAllowed(meth))
+    this->status_ = 405;
+  else if (this->location_.maxBodyReached(request.getRequestBody().size()))
+    this->status_ = 413;
+}
 /*             Cgi Request                  */
 
 void Response::serveCgi_(const Request &request) {
-  CgiConnector cgi(request);
+  CgiConnector cgi(request, location_.getCgiPass() + request.getPath());
   cgi.makeConnection(this->status_);
   if (status_ > 399) {
     this->status_ >> this->body_;

@@ -45,12 +45,13 @@ class Response {
  private:
   void readBody_(std::string dir);
   void findType_(std::string url);
-  void handleGetRequest_(Request &request);
-  void handlePostRequest_(const Request &request);
-  void handleDeleteRequest_(const Request &request);
+  void handleGetRequest_(Request &request, std::string uri);
+  void handlePostRequest_(const Request &request, std::string uri);
+  void handleDeleteRequest_(const Request &request, std::string uri);
   void createFile_(std::string filename, std::string ext, std::string data);
   void buildJsonBody_();
   void serveCgi_(const Request &request);
+  void prerequisits_(std::string meth, const Request &request);
 
   static bool isForbiddenPath_(const std::string &dir);
   static bool isFolder_(std::string uri);

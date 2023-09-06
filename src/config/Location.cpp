@@ -1,5 +1,7 @@
 #include "Location.hpp"
 
+#include "Types.hpp"
+
 Location::Location() {
   this->autoindex_ = false;
   this->cgiProcessing_ = false;
@@ -31,6 +33,16 @@ Location& Location::operator=(const Location& obj) {
   this->errorPage_ = obj.errorPage_;
   this->duplicates_ = obj.duplicates_;
   return *this;
+}
+
+bool Location::methodAllowed(std::string meth) const {
+  StringSet::const_iterator it = this->limitExcept_.find(meth);
+  if (it != this->limitExcept_.end()) return true;
+  return false;
+}
+
+bool Location::maxBodyReached(size_t clen) const {
+  return ((size_t)clientMaxBodySize_ < clen);
 }
 
 std::ostream& operator<<(std::ostream& stream, const Location& location) {
