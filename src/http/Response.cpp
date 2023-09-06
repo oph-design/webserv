@@ -1,9 +1,5 @@
 #include "Response.hpp"
 
-#include "Request.hpp"
-#include "Types.hpp"
-#include "colors.hpp"
-
 contentMap Response::fileTypes_ = Response::createTypeMap();
 
 /*            constructors                  */
@@ -96,9 +92,13 @@ std::string Response::readBody_(std::string dir) {
   std::ifstream file(dir.c_str());
 
   if (file.is_open()) {
-    std::cout << "File opened successfully." << std::endl;
+    if (VERBOSE) {
+      std::cout << "File opened successfully." << std::endl;
+    }
   } else {
-    std::cerr << "Failed to open file." << std::endl;
+    if (VERBOSE) {
+      std::cerr << "Failed to open file." << std::endl;
+    }
     this->status_ = 404;
   }
   std::stringstream content;
@@ -269,7 +269,7 @@ bool Response::isFolder_(std::string uri) {
 /*            global functions                  */
 
 contentMap Response::createTypeMap() {
-  std::ifstream data("./resources/filetypes.csv");
+  std::ifstream data("./data/filetypes.csv");
   std::string field;
   std::string key;
   std::string value;

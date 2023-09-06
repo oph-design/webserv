@@ -1,23 +1,23 @@
 #include "Config.hpp"
 #include "colors.hpp"
 
-const int& Config::getClientMaxBodySize() const {
+const int &Config::getClientMaxBodySize() const {
   return this->clientMaxBodySize_;
 }
 
-const std::string& Config::getServerName() const { return this->serverName_; }
+const std::string &Config::getServerName() const { return this->serverName_; }
 
-const std::string& Config::getIndex() const { return this->index_; }
+const std::string &Config::getIndex() const { return this->index_; }
 
-const std::string& Config::getRoot() const { return this->root_; }
+const std::string &Config::getRoot() const { return this->root_; }
 
-const LocationVector& Config::getLocations() const { return this->locations_; }
+const LocationVector &Config::getLocations() const { return this->locations_; }
 
-const ErrorMap& Config::getErrorPage() const { return this->errorPage_; }
+const ErrorMap &Config::getErrorPage() const { return this->errorPage_; }
 
-const int& Config::getPort() const { return this->port_; }
+const int &Config::getPort() const { return this->port_; }
 
-const Location& Config::getLocationByPath(std::string index) {
+const Location &Config::getLocationByPath(std::string index) {
   std::string tmp;
   std::cout << GREEN << locations_.size() << COLOR_RESET << std::endl;
   for (LocationVector::const_iterator it = locations_.begin();
@@ -30,3 +30,5 @@ const Location& Config::getLocationByPath(std::string index) {
   }
   return (this->locations_[0]);
 }
+
+const int &Config::getTimeout() const { return this->timeout_; }

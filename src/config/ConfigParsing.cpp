@@ -20,7 +20,9 @@ Config ConfigParsing::parseServer_(LineIter &iter, const LineIter &end) {
       config.root_ = ConfigParsing::parseRoot(*iter, duplicates);
     else if (iter->firstWord() == "error_page")
       config.errorPage_.insert(ConfigParsing::parseErrorPage(*iter));
-    else if (iter->getLine() == "}")
+    else if (iter->firstWord() == "timeout") {
+      config.timeout_ = ConfigParsing::parseTimeout(*iter);
+    } else if (iter->getLine() == "}")
       break;
     else
       iter->addError("unknown option" + iter->firstWord());
@@ -88,6 +90,19 @@ int ConfigParsing::parseListen(Line &line) {
   }
   if (!isNumber(line[1])) {
     line.addError(parameter + " unexpected port");
+    return 0;
+  }
+  return std::atoi(line[1].c_str());
+}
+
+int ConfigParsing::parseTimeout(Line &line) {
+  std::string parameter = "timeout";
+  if (line.words() != 2) {
+    line.addError(parameter + " unexpected arguments");
+    return 0;
+  }
+  if (!isNumber(line[1])) {
+    line.addError(parameter + " unexpected timeout");
     return 0;
   }
   return std::atoi(line[1].c_str());

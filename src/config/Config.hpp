@@ -4,6 +4,7 @@
 #ifndef FALLBACK_VALUES
 #define FALLBACK_VALUES
 #define FALLBACK_PORT 1234
+#define FALLBACK_TIMEOUT 10
 #define FALLBACK_SERVERNAME "localhost"
 #define FALLBACK_INDEX "index.html"
 #define FALLBACK_ROOT "html/"
@@ -28,29 +29,30 @@ class Config {
  public:
   Config();
   ~Config();
-  Config(const Config& obj);
-  Config& operator=(const Config& obj);
+  Config(const Config &obj);
+  Config &operator=(const Config &obj);
 
-  friend std::ostream& operator<<(std::ostream& stream, const Config& config);
+  friend std::ostream &operator<<(std::ostream &stream, const Config &config);
 
-  const int& getClientMaxBodySize() const;
-  const std::string& getServerName() const;
-  const std::string& getIndex() const;
-  const std::string& getRoot() const;
-  const LocationVector& getLocations() const;
-  const Location& getLocationByPath(std::string index);
-  const ErrorMap& getErrorPage() const;
-  const int& getPort() const;
+  const int &getClientMaxBodySize() const;
+  const std::string &getServerName() const;
+  const std::string &getIndex() const;
+  const std::string &getRoot() const;
+  const LocationVector &getLocations() const;
+  const ErrorMap &getErrorPage() const;
+  const int &getPort() const;
+  const int &getTimeout() const;
+  const Location &getLocationByPath(std::string index);
 
  private:
-  static ConfigVector& handleDuplicates_(ConfigVector& configs);
+  static ConfigVector &handleDuplicates_(ConfigVector &configs);
   void fillLocations_();
-  static void fillAllLocations_(ConfigVector& configs);
+  static void fillAllLocations_(ConfigVector &configs);
 
-  static void fillHostPort_(ConfigVector& configs);
-  static void makeHostPortUnique_(ConfigVector& configs);
-  static void getPortsFromHostPort_(ConfigVector& configs);
-  static void deleteEmptyServer_(ConfigVector& configs);
+  static void fillHostPort_(ConfigVector &configs);
+  static void makeHostPortUnique_(ConfigVector &configs);
+  static void getPortsFromHostPort_(ConfigVector &configs);
+  static void deleteEmptyServer_(ConfigVector &configs);
 
   std::set<int> listen_;
   int port_;
@@ -58,6 +60,7 @@ class Config {
   std::string serverName_;
   std::string index_;
   std::string root_;
+  int timeout_;
   LocationVector locations_;
   ErrorMap errorPage_;
 

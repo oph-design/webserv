@@ -22,6 +22,8 @@
 #include "Status.hpp"
 #include "Utils.hpp"
 
+#define VERBOSE false
+
 typedef std::pair<std::string, std::string> contentField;
 typedef std::map<std::string, std::string> contentMap;
 
