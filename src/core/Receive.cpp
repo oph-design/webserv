@@ -3,7 +3,9 @@
 #include "Socket.hpp"
 
 int parseCl(std::string buffer) {
-  buffer = buffer.substr(buffer.find("Content-Length") + 16, buffer.length());
+  std::size_t position = buffer.find("Content-Length");
+  if (position == std::string::npos) return 0;
+  buffer = buffer.substr(position + 16, buffer.length());
   return (atoi(buffer.c_str()));
 }
 

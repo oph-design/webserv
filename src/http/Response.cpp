@@ -72,26 +72,33 @@ const std::string &Response::getBody() const { return (body_); }
 
 /*             Get Request                  */
 
-std::string Response::findType_(std::string url) {
+void Response::findType_(std::string url) {
   std::string extention;
   contentMap::iterator search;
-  std::string type;
 
   extention = url.substr(url.rfind(".") + 1, url.length());
   search = Response::fileTypes_.find(extention);
-  if (!isFolder_(url) && search != Response::fileTypes_.end()) {
-    type = Response::fileTypes_[extention];
+  if (search != Response::fileTypes_.end()) {
+    this->type_ = Response::fileTypes_[extention] + "; charset=UTF-8";
   } else {
-    this->status_ = 415;
-    type = "text/html";
+    this->type_ = "application/octet-stream; charset=UTF-8";
   }
-  type.append("; charset=UTF-8");
-  return (type);
 }
 
-std::string Response::readBody_(std::string dir) {
-  std::ifstream file(dir.c_str());
+bool Response::isForbiddenPath_(const std::string &dir) {
+  std::stringstream ss(dir);
+  int counter = 0;
+  std::string buffer;
+  while (std::getline(ss, buffer, '/')) {
+    if (buffer.empty()) continue;
+    (buffer == "..") ? ++counter : --counter;
+    if (counter > 0) return true;
+  }
+  return false;
+}
 
+void Response::readBody_(std::string dir) {
+  std::ifstream file(dir.c_str());
   if (file.is_open()) {
     if (VERBOSE) {
       std::cout << "File opened successfully." << std::endl;
@@ -105,27 +112,31 @@ std::string Response::readBody_(std::string dir) {
   std::stringstream content;
   content << file.rdbuf();
   file.close();
-  return (content.str());
+  this->body_ = content.str();
 }
 
 void Response::handleGetRequest_(Request &request) {
   std::string path = location_.getRoot() + request.getPath();
-  if (CgiConnector::isCgi(path)) return (void)(serveCgi_(request));
-  if ((path == this->location_.getRoot() ||
-       path == this->location_.getRoot() + "/") &&
-      !this->location_.getAutoindex())
+  if (isForbiddenPath_(request.getPath()))
+    this->status_ = 400;
+  else if (CgiConnector::isCgi(path))
+    return (void)(serveCgi_(request));
+  else if (this->isFolder_(path) && !this->location_.getAutoindex())
     path = path + this->location_.getIndex();
-  else if (Response::isFolder_(path) && this->location_.getAutoindex())
+  else if (Response::isFolder_(path) && !this->location_.getAutoindex())
     return (void)(serveFolder_(path));
 
   std::cout << RED << path << COLOR_RESET << std::endl;
-  this->body_ = readBody_(path);
-  std::string type = findType_(path);
-  if (this->status_ > 399) this->status_ >> this->body_;
+  if (this->status_ == 200) readBody_(path);
+  if (this->status_ == 200) findType_(path);
+  if (this->status_ > 399) {
+    this->status_ >> this->body_;
+    this->type_ = "text/html; charset=UTF-8";
+  }
   std::cout << BLUE << this->status_ << COLOR_RESET << std::endl;
   std::string length = toString<std::size_t>(this->body_.length());
 
-  this->header_.insert(contentField("Content-Type", type));
+  this->header_.insert(contentField("Content-Type", this->type_));
   this->header_.insert(contentField("Connection", "keep-alive"));
   this->header_.insert(contentField("Content-Length", length));
 }
