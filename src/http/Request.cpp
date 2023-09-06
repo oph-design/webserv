@@ -200,4 +200,12 @@ std::ostream &operator<<(std::ostream &stream, const Request &header) {
   }
   return stream;
 }
+
 void Request::setPath(const std::string &path) { this->path_ = path; }
+
+void Request::cutPathtoConfig(std::string index) {
+  std::cout << "index: " << index << std::endl;
+  std::cout << "path: " << this->path_ << std::endl;
+  if (!index.empty())
+    this->path_ = this->path_.substr(index.length(), this->path_.length());
+}

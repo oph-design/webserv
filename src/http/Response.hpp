@@ -45,17 +45,14 @@ class Response {
   void handleGetRequest_(Request &request);
   void handlePostRequest_(const Request &request);
   void handleDeleteRequest_(const Request &request);
-  void createFile_(std::string filename, std::string ext, std::string data,
-                   std::string path);
+  void createFile_(std::string filename, std::string ext, std::string data);
   void buildJsonBody_();
   void serveCgi_(const Request &request);
-  void parseConfig(std::string path);
 
   static bool isFolder_(std::string uri);
-  void serveFolder_(Request &request);
-  static std::string createFolderBody_(const Request &request);
-  static std::deque<std::string> getFilesInFolder_(
-      const std::string &root, const std::string &folderPath);
+  void serveFolder_(std::string path);
+  static std::string createFolderBody_(std::string path);
+  static std::deque<std::string> getFilesInFolder_(std::string path);
 
   static contentMap fileTypes_;
   contentMap header_;

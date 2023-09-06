@@ -1,6 +1,8 @@
 #include "Response.hpp"
 
+#include "Request.hpp"
 #include "Types.hpp"
+#include "colors.hpp"
 
 contentMap Response::fileTypes_ = Response::createTypeMap();
 
@@ -8,7 +10,9 @@ contentMap Response::fileTypes_ = Response::createTypeMap();
 
 Response::Response(Request &request, Config &config, const Location &location)
     : config_(config), location_(location) {
-  this->parseConfig(request.getPath());
+  std::cout << MAGENTA << request.getPath() << std::endl;
+  std::cout << location_ << COLOR_RESET << std::endl;
+  request.cutPathtoConfig(this->location_.getPath());
   switch (request.getRequestMethodType()) {
     case 0:
       handleGetRequest_(request);
@@ -89,7 +93,7 @@ std::string Response::findType_(std::string url) {
 }
 
 std::string Response::readBody_(std::string dir) {
-  std::ifstream file(("./html" + dir).c_str());
+  std::ifstream file(dir.c_str());
 
   if (file.is_open()) {
     std::cout << "File opened successfully." << std::endl;
@@ -104,17 +108,20 @@ std::string Response::readBody_(std::string dir) {
 }
 
 void Response::handleGetRequest_(Request &request) {
-  if (CgiConnector::isCgi(request.getPath())) return (void)(serveCgi_(request));
+  std::string path = location_.getRoot() + request.getPath();
+  if (CgiConnector::isCgi(path)) return (void)(serveCgi_(request));
   bool indexSet = true;
   std::string index = "index.html";
-  if (indexSet == true && request.getPath() == "/")
-    request.setPath(request.getPath() + '/' + index);
-  else if (Response::isFolder_(request.getPath()))
-    return (void)(serveFolder_(request));
+  if (indexSet == true && path == this->location_.getRoot() + "/")
+    path = path + index;
+  else if (Response::isFolder_(path))
+    return (void)(serveFolder_(path));
 
-  this->body_ = readBody_(request.getPath());
-  std::string type = findType_(request.getPath());
+  std::cout << RED << path << COLOR_RESET << std::endl;
+  this->body_ = readBody_(path);
+  std::string type = findType_(path);
   if (this->status_ > 399) this->status_ >> this->body_;
+  std::cout << BLUE << this->status_ << COLOR_RESET << std::endl;
   std::string length = toString<std::size_t>(this->body_.length());
 
   this->header_.insert(contentField("Content-Type", type));
@@ -125,13 +132,10 @@ void Response::handleGetRequest_(Request &request) {
 /*             Post Request                  */
 
 void Response::createFile_(std::string filename, std::string ext,
-                           std::string data, std::string path) {
-  path = "./html" + path.substr(0, path.rfind("/") + 1);
+                           std::string data) {
+  std::string path = this->location_.getUploadPass();
   std::string file = filename + "." + ext;
-  if (findFile(file, path))
-    this->status_ = 200;
-  else
-    this->status_ = 201;
+  this->status_ = 201;
   std::ofstream outfile((path + file).c_str());
   if (!outfile.is_open()) this->status_ = 500;
   outfile.write(data.c_str(), data.length());
@@ -166,7 +170,7 @@ void Response::handlePostRequest_(const Request &request) {
   if (!request.getRequestBodyExists() || !file.length() || !ext.length())
     this->status_ = 400;
   if (this->status_ < 400)
-    this->createFile_(file, ext, request.getRequestBody(), request.getPath());
+    this->createFile_(file, ext, request.getRequestBody());
   this->header_.insert(contentField("Connection", "keep-alive"));
   this->header_.insert(contentField("Content-Type", "application/json"));
   buildJsonBody_();
@@ -175,12 +179,9 @@ void Response::handlePostRequest_(const Request &request) {
 /*             Delete Request                  */
 
 void Response::handleDeleteRequest_(const Request &request) {
+  std::string path = location_.getRoot() + request.getPath();
   if (CgiConnector::isCgi(request.getPath())) return (void)(serveCgi_(request));
-  std::string path = "./html" + request.getPath();
   if (access(path.c_str(), F_OK)) this->status_ = 403;
-  if (!findFile(path.substr(path.rfind("/") + 1, path.length()),
-                path.substr(0, path.rfind("/"))))
-    this->status_ = 404;
   if (this->status_ < 400 && remove(path.c_str())) this->status_ = 500;
   this->header_.insert(contentField("Connection", "keep-alive"));
   this->header_.insert(contentField("Content-Type", "application/json"));
@@ -205,19 +206,18 @@ void Response::serveCgi_(const Request &request) {
 }
 
 /*                Folder Request                  */
-void Response::serveFolder_(Request &request) {
+void Response::serveFolder_(std::string path) {
   bool autoindex = true;
-  if (autoindex) this->body_ = createFolderBody_(request);
+  if (autoindex) this->body_ = createFolderBody_(path);
   this->header_.insert(contentField("Content-Type", "text/html"));
   this->header_.insert(contentField("Connection", "keep-alive"));
   this->header_.insert(
       contentField("Content-Length", toString(this->body_.length())));
-  (void)request;
 }
 
-std::deque<std::string> Response::getFilesInFolder_(
-    const std::string &root, const std::string &folderPath) {
-  DIR *dir = opendir((root + folderPath).c_str());
+std::deque<std::string> Response::getFilesInFolder_(std::string path) {
+  std::string folderPath = path.substr(path.rfind("/") + 1, path.size());
+  DIR *dir = opendir(path.c_str());
   std::deque<std::string> names;
   if (dir) {
     struct dirent *entry;
@@ -226,7 +226,7 @@ std::deque<std::string> Response::getFilesInFolder_(
       if (fileName == "." || (folderPath == "/" && fileName == "..")) continue;
       struct stat fileStat;
       if (folderPath[folderPath.length() - 1] != '/') fileName = '/' + fileName;
-      std::string filePath(root + folderPath + fileName);
+      std::string filePath(path);
       if (stat(filePath.c_str(), &fileStat) == 0) names.push_back(fileName);
     }
     closedir(dir);
@@ -234,19 +234,17 @@ std::deque<std::string> Response::getFilesInFolder_(
   return names;
 }
 
-std::string Response::createFolderBody_(const Request &request) {
+std::string Response::createFolderBody_(std::string path) {
   std::string body;
-  std::deque<std::string> names =
-      Response::getFilesInFolder_("./html", request.getPath());
+  std::deque<std::string> names = Response::getFilesInFolder_(path);
 
   body.append("<html>\n");
-  body.append("<head><title>Index of" + request.getPath() +
-              " </title></head>\n");
+  body.append("<head><title>Index of" + path + " </title></head>\n");
   body.append("<body>\n");
-  body.append("<h1>Index of " + request.getPath() + " </h1><hr><pre>\n");
+  body.append("<h1>Index of " + path + " </h1><hr><pre>\n");
   for (std::deque<std::string>::iterator iter = names.begin();
        iter != names.end(); ++iter) {
-    body.append("<a href=\"" + request.getPath() + *iter + "\">");
+    body.append("<a href=\"" + path + *iter + "\">");
     if ((*iter)[0] == '/')
       body.append(iter->substr(1));
     else

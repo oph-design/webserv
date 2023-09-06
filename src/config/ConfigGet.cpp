@@ -1,4 +1,5 @@
 #include "Config.hpp"
+#include "colors.hpp"
 
 const int& Config::getClientMaxBodySize() const {
   return this->clientMaxBodySize_;
@@ -17,12 +18,15 @@ const ErrorMap& Config::getErrorPage() const { return this->errorPage_; }
 const int& Config::getPort() const { return this->port_; }
 
 const Location& Config::getLocationByPath(std::string index) {
+  std::string tmp;
+  std::cout << GREEN << locations_.size() << COLOR_RESET << std::endl;
   for (LocationVector::const_iterator it = locations_.begin();
        it < locations_.end(); ++it) {
-    if (it->getIndex() == index) return (*it);
+    if (it->getPath().empty()) continue;
+    std::cout << GREEN << "path: " << it->getPath() << COLOR_RESET << std::endl;
+    tmp = index.substr(0, it->getPath().size());
+    std::cout << GREEN << "tmp: " << tmp << COLOR_RESET << std::endl;
+    if (it->getPath() == tmp) return (*it);
   }
-  this->locations_[0].index_ = index;
-  this->locations_[0].uploadPass_ = index;
-  this->locations_[0].root_ = index;
   return (this->locations_[0]);
 }
