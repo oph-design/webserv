@@ -10,7 +10,7 @@ Socket::Socket()
       listeningSocket_(-1),
       dataSend_(0),
       pendingSend_(false),
-      keepAlive_(true),
+      keepAlive_(false),
       timeout_(5),
       configId_(-1) {}
 
