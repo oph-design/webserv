@@ -20,7 +20,7 @@
 
 #define MAX_CLIENTS 1024
 #define BUFFER_SIZE 131072
-#define VERBOSE true;
+#define VERBOSE false
 
 class Webserver {
  public:
