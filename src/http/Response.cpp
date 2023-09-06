@@ -79,7 +79,7 @@ std::string Response::findType_(std::string url) {
 
   extention = url.substr(url.rfind(".") + 1, url.length());
   search = Response::fileTypes_.find(extention);
-  if (search != Response::fileTypes_.end()) {
+  if (!isFolder_(url) && search != Response::fileTypes_.end()) {
     type = Response::fileTypes_[extention];
   } else {
     this->status_ = 415;
@@ -111,9 +111,11 @@ std::string Response::readBody_(std::string dir) {
 void Response::handleGetRequest_(Request &request) {
   std::string path = location_.getRoot() + request.getPath();
   if (CgiConnector::isCgi(path)) return (void)(serveCgi_(request));
-  if (!this->location_.getIndex().empty() && path == this->location_.getRoot())
+  if ((path == this->location_.getRoot() ||
+       path == this->location_.getRoot() + "/") &&
+      !this->location_.getAutoindex())
     path = path + this->location_.getIndex();
-  else if (Response::isFolder_(path))
+  else if (Response::isFolder_(path) && this->location_.getAutoindex())
     return (void)(serveFolder_(path));
 
   std::cout << RED << path << COLOR_RESET << std::endl;
