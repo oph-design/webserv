@@ -211,7 +211,6 @@ void Response::serveFolder_(Request &request) {
   this->header_.insert(contentField("Connection", "keep-alive"));
   this->header_.insert(
       contentField("Content-Length", toString(this->body_.length())));
-  (void)request;
 }
 
 std::deque<std::string> Response::getFilesInFolder_(
@@ -226,6 +225,8 @@ std::deque<std::string> Response::getFilesInFolder_(
       struct stat fileStat;
       if (folderPath[folderPath.length() - 1] != '/') fileName = '/' + fileName;
       std::string filePath(root + folderPath + fileName);
+      if (last(fileName) == '/')
+        fileName = fileName.substr(0, fileName.length() - 2);
       if (stat(filePath.c_str(), &fileStat) == 0) names.push_back(fileName);
     }
     closedir(dir);
