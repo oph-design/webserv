@@ -1,5 +1,7 @@
 #include "Response.hpp"
 
+#include "Webserver.hpp"
+
 contentMap Response::fileTypes_ = Response::createTypeMap();
 
 /*            constructors                  */
@@ -85,9 +87,13 @@ std::string Response::readBody_(std::string dir) {
   std::ifstream file(("./html" + dir).c_str());
 
   if (file.is_open()) {
-    std::cout << "File opened successfully." << std::endl;
+    if (VERBOSE) {
+      std::cout << "File opened successfully." << std::endl;
+    }
   } else {
-    std::cerr << "Failed to open file." << std::endl;
+    if (VERBOSE) {
+      std::cerr << "Failed to open file." << std::endl;
+    }
     this->status_ = 404;
   }
   std::stringstream content;

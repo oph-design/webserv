@@ -20,6 +20,7 @@
 
 #define MAX_CLIENTS 1024
 #define BUFFER_SIZE 131072
+#define VERBOSE false
 
 class Webserver {
  public:
@@ -31,7 +32,7 @@ class Webserver {
   void boot();
 
  private:
-  void createServerSocket_(Socket &, int);
+  void createServerSocket_(Socket &, int, double);
   void createClientSocket_(Socket &);
   void startServerRoutine_();
   void error_(std::string);
