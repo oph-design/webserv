@@ -109,7 +109,7 @@ void Webserver::startServerRoutine_() {
     int ret = poll(this->fds_, this->socketNum_, 10000);
     if (ret == -1) error_("poll error");
     checkPending_();
-    for (size_t i = 0; i < socketNum_; i++) {
+    for (size_t i = 0; i < socketNum_; ++i) {
       if (this->fds_[i].revents == POLLIN) {
         if (Sockets_[i].socketType_ == SERVER)
           createClientSocket_(Sockets_[i]);
