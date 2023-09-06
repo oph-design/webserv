@@ -37,13 +37,14 @@ class Location {
 
  private:
   bool autoindex_;
+  bool cgiProcessing_;
   int clientMaxBodySize_;
   std::string index_;
   std::string path_;
   std::string root_;
+  std::string cgiPass_;
   std::string uploadPass_;
   StringSet limitExcept_;
-  std::map<std::string, std::string> fastcgiPass_;
   ErrorMap errorPage_;
 
   Duplicates duplicates_;

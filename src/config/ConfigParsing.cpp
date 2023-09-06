@@ -40,6 +40,8 @@ Location ConfigParsing::parseLocation_(LineIter &iter, const LineIter &end) {
       location.limitExcept_ = ConfigParsing::parseLimitExcept_(iter, end);
     else if (iter->firstWord() == "autoindex")
       location.autoindex_ = ConfigParsing::parseAutoindex(*iter);
+    else if (iter->firstWord() == "autoindex")
+      location.autoindex_ = ConfigParsing::parseCgiProcessing(*iter);
     else if (iter->firstWord() == "client_max_body_size")
       location.clientMaxBodySize_ =
           ConfigParsing::parseCientMaxBodySize(*iter, duplicates);
@@ -50,7 +52,7 @@ Location ConfigParsing::parseLocation_(LineIter &iter, const LineIter &end) {
     else if (iter->firstWord() == "upload_pass")
       location.uploadPass_ = ConfigParsing::parseUpload(*iter, duplicates);
     else if (iter->firstWord() == "fastcgi_pass")
-      location.fastcgiPass_.insert(ConfigParsing::parseFastcgiPass(*iter));
+      location.cgiPass_ = ConfigParsing::parseCgiPass(*iter, duplicates);
     else if (iter->firstWord() == "error_page")
       location.errorPage_.insert(ConfigParsing::parseErrorPage(*iter));
     else if (iter->getLine() == "}")
@@ -194,6 +196,22 @@ bool ConfigParsing::parseAutoindex(Line &line) {
   return false;
 }
 
+bool ConfigParsing::parseCgiProcessing(Line &line) {
+  std::string parameter = "cgi_processing";
+  if (line.words() != 2) {
+    line.addError(parameter + " unexpected arguments");
+    return 0;
+  }
+  if (line[1] == "on") {
+    return true;
+  } else if (line[1] == "off") {
+    return false;
+  } else {
+    line.addError(parameter + " unexpected option");
+  }
+  return false;
+}
+
 std::string ConfigParsing::parsePath(Line &line) {
   std::string parameter = "location path";
   if (line.words() != 3) {
@@ -206,12 +224,12 @@ std::string ConfigParsing::parsePath(Line &line) {
   return str;
 }
 
-std::pair<std::string, std::string> ConfigParsing::parseFastcgiPass(
-    Line &line) {
-  std::string parameter = "error_page";
-  if (line.words() != 3) {
+std::string ConfigParsing::parseCgiPass(Line &line, Duplicates &duplicates) {
+  std::string parameter = "cgi_pass";
+  if (line.words() != 2) {
     line.addError(parameter + " unexpected arguments");
-    return std::make_pair("", "");
+    return 0;
   }
-  return std::make_pair(line[1], line[2]);
+  duplicates.cgi_pass = true;
+  return line[1];
 }
