@@ -61,11 +61,11 @@ void Config::fillHostPort_(ConfigVector &configs) {
     for (std::set<int>::iterator listenIter = configIter->listen_.begin();
          listenIter != configIter->listen_.end(); ++listenIter) {
       configIter->hostPort_.insert(configIter->serverName_ + ":" +
-          toString(*listenIter));
+                                   toString(*listenIter));
     }
     if (configIter->hostPort_.size() == 0)
       configIter->hostPort_.insert(configIter->serverName_ + ":" +
-          toString(FALLBACK_PORT));
+                                   toString(FALLBACK_PORT));
   }
 }
 
@@ -96,7 +96,7 @@ void Config::getPortsFromHostPort_(ConfigVector &configs) {
     }
     if (configIter->hostPort_.size() == 0)
       configIter->hostPort_.insert(configIter->serverName_ + ":" +
-          toString(FALLBACK_PORT));
+                                   toString(FALLBACK_PORT));
   }
 }
 
