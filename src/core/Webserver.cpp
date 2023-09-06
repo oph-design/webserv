@@ -24,11 +24,16 @@ Webserver::Webserver(ConfigVector &configs)
 }
 
 Webserver &Webserver::operator=(const Webserver &rhs) {
-  (void) rhs;
+  this->socketNum_ = rhs.socketNum_;
+  this->serverSocketNum_ = rhs.serverSocketNum_;
+  this->clientSocketNum_ = rhs.clientSocketNum_;
+  this->socketOpt_ = rhs.socketOpt_;
+  this->configs_ = rhs.configs_;
   return *this;
 }
 
-void Webserver::createServerSocket_(Socket &serverSocket, int port, double timeout) {
+void Webserver::createServerSocket_(Socket &serverSocket, int port,
+                                    double timeout) {
   memset(&serverSocket.socketaddr_, 0, sizeof(serverSocket.socketaddr_));
   serverSocket.socketaddr_.sin_family = AF_INET;
   serverSocket.socketaddr_.sin_addr.s_addr = htonl(INADDR_ANY);
@@ -59,7 +64,7 @@ void Webserver::createServerSocket_(Socket &serverSocket, int port, double timeo
   }
 
   if (bind(serverSocket.listeningSocket_,
-           (struct sockaddr *) &serverSocket.socketaddr_,
+           (struct sockaddr *)&serverSocket.socketaddr_,
            sizeof(serverSocket.socketaddr_)) != 0) {
     error_("Error: Could not bind socket");
   }
@@ -86,7 +91,7 @@ void Webserver::createClientSocket_(Socket &serverSocket) {
   socklen_t boundServerAdress_len = sizeof(serverSocket.socketaddr_);
   int new_client_sock;
   if ((new_client_sock = accept(serverSocket.fd_,
-                                (struct sockaddr *) &serverSocket.socketaddr_,
+                                (struct sockaddr *)&serverSocket.socketaddr_,
                                 &boundServerAdress_len)) == -1)
     error_("Accept Error");
   std::cout << "opened new Socket " << new_client_sock << std::endl;
@@ -202,7 +207,7 @@ void Webserver::checkTimeoutClients() {
       std::cout << "Timeout of Client Socket: " << this->Sockets_[i].fd_
                 << std::endl;
       closeConnection_(this->Sockets_[i], this->fds_[i], i);
-			break;
+      break;
     }
   }
 }
