@@ -49,7 +49,7 @@ class Request {
   std::string getHTTPVersion() const;
   bool getRequestBodyExists() const;
   std::string getRequestBody() const;
-	bool isKeepAlive() const;
+  bool isKeepAlive() const;
 
   void setPath(const std::string &path);
 
