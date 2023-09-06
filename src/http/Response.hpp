@@ -40,8 +40,8 @@ class Response {
   static contentMap createTypeMap();
 
  private:
-  std::string readBody_(std::string dir);
-  std::string findType_(std::string url);
+  void readBody_(std::string dir);
+  void findType_(std::string url);
   void handleGetRequest_(Request &request);
   void handlePostRequest_(const Request &request);
   void handleDeleteRequest_(const Request &request);
@@ -50,6 +50,7 @@ class Response {
   void buildJsonBody_();
   void serveCgi_(const Request &request);
 
+  static bool isForbiddenPath_(const std::string &dir);
   static bool isFolder_(std::string uri);
   void serveFolder_(Request &request);
   static std::string createFolderBody_(const Request &request);
@@ -61,6 +62,7 @@ class Response {
   Status status_;
   std::string body_;
   Config &config_;
+  std::string type_;
 };
 
 #endif  // !RESPONSE_HPP
