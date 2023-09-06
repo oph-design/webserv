@@ -95,7 +95,6 @@ void Webserver::createClientSocket_(Socket &serverSocket) {
   }
   this->Sockets_[socketNum_].fd_ = new_client_sock;
   this->fds_[socketNum_].fd = new_client_sock;
-  this->Sockets_[socketNum_].inUse_ = true;
   this->Sockets_[socketNum_].socketIndex_ = socketNum_;
   this->Sockets_[socketNum_].socketType_ = CLIENT;
   this->Sockets_[socketNum_].boundServerPort_ =
@@ -176,7 +175,7 @@ bool Webserver::existingConnection_(Socket &socket, pollfd &pollfd, size_t &i) {
 void Webserver::closeConnection_(Socket &socket, pollfd &pollfd, size_t &i) {
   std::cout << "Connection closing on Socket " << socket.fd_ << std::endl;
   close(pollfd.fd);
-  socket.inUse_ = false;
+  socket.socketType_ = UNUSED;
   for (size_t j = i; j < MAX_CLIENTS - 1; ++j) {
     this->fds_[j] = this->fds_[j + 1];
     this->Sockets_[j] = this->Sockets_[j + 1];

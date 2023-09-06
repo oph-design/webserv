@@ -52,7 +52,6 @@ class Socket {
  private:
   int fd_;
   int socketIndex_;
-  bool inUse_;
   SocketType socketType_;
   int boundServerPort_;
   int socketOpt_;
