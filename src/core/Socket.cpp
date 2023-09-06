@@ -4,7 +4,6 @@
 Socket::Socket()
     : fd_(-1),
       socketIndex_(-1),
-      inUse_(false),
       socketType_(UNUSED),
       boundServerPort_(8080),
       socketOpt_(1),
@@ -22,7 +21,6 @@ Socket::Socket(const Socket &rhs) { *this = rhs; }
 Socket &Socket::operator=(const Socket &rhs) {
   this->fd_ = rhs.fd_;
   this->socketIndex_ = rhs.socketIndex_;
-  this->inUse_ = rhs.inUse_;
   this->socketType_ = rhs.socketType_;
   this->boundServerPort_ = rhs.boundServerPort_;
   this->socketOpt_ = rhs.socketOpt_;
@@ -46,7 +44,6 @@ bool Socket::getKeepAlive() const { return this->keepAlive_; }
 void Socket::setIdle() {
   fd_ = -1;
   socketIndex_ = -1;
-  inUse_ = false;
   socketType_ = UNUSED;
   socketOpt_ = 1;
   listeningSocket_ = -1;
@@ -68,7 +65,7 @@ void Socket::setReqStatus() {
 void Socket::setTimestamp() { this->timestamp_ = std::time(NULL); }
 
 bool Socket::checkTimeout() {
-  if (this->inUse_) {
+  if (this->socketType_ == CLIENT) {
     time_t current = std::time(NULL);
     if ((current - this->timestamp_) >= this->timeout_) return true;
   }
