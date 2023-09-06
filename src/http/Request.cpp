@@ -1,5 +1,7 @@
 #include "Request.hpp"
 
+#include "Utils.hpp"
+
 Request::Request() {
   this->requestMethodType_ = INVALID;
   this->requestBodyExists_ = false;
@@ -159,6 +161,8 @@ void Request::splitURI_() {
   } else {
     this->path_ = this->URI_;
   }
+  if (last(this->path_) == '/' && this->path_.size() > 1)
+    this->path_ = this->path_.substr(0, this->path_.size() - 1);
 }
 
 void Request::splitQuery_() {

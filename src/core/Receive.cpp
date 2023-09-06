@@ -31,6 +31,8 @@ bool receiveRequest(Socket &socket, size_t &bytes) {
   } else {
     reqstatus.buffer.append(std::string(buffer, bytes));
   }
+  std::cout << reqstatus.readBytes << std::endl;
+  std::cout << reqstatus.clen << std::endl;
   if (reqstatus.readBytes == reqstatus.clen ||
       (reqstatus.readBytes > reqstatus.clen && reqstatus.chunked)) {
     socket.setReqStatus();

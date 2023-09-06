@@ -53,8 +53,8 @@ class Response {
 
   static bool isFolder_(std::string uri);
   void serveFolder_(std::string path);
-  static std::string createFolderBody_(std::string path);
-  static std::deque<std::string> getFilesInFolder_(std::string path);
+  std::string createFolderBody_(std::string path);
+  std::deque<std::string> getFilesInFolder_(std::string path);
 
   static contentMap fileTypes_;
   contentMap header_;

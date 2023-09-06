@@ -1,13 +1,14 @@
 #include "Response.hpp"
 
+#include "colors.hpp"
+
 contentMap Response::fileTypes_ = Response::createTypeMap();
 
 /*            constructors                  */
 
 Response::Response(Request &request, Config &config, const Location &location)
     : config_(config), location_(location) {
-  std::cout << MAGENTA << request.getPath() << std::endl;
-  std::cout << location_ << COLOR_RESET << std::endl;
+  std::cout << MAGENTA << location_ << COLOR_RESET << std::endl;
   request.cutPathtoConfig(this->location_.getPath());
   switch (request.getRequestMethodType()) {
     case 0:
@@ -110,10 +111,8 @@ std::string Response::readBody_(std::string dir) {
 void Response::handleGetRequest_(Request &request) {
   std::string path = location_.getRoot() + request.getPath();
   if (CgiConnector::isCgi(path)) return (void)(serveCgi_(request));
-  bool indexSet = true;
-  std::string index = "index.html";
-  if (indexSet == true && path == this->location_.getRoot() + "/")
-    path = path + index;
+  if (!this->location_.getIndex().empty() && path == this->location_.getRoot())
+    path = path + this->location_.getIndex();
   else if (Response::isFolder_(path))
     return (void)(serveFolder_(path));
 
@@ -238,13 +237,15 @@ std::string Response::createFolderBody_(std::string path) {
   std::string body;
   std::deque<std::string> names = Response::getFilesInFolder_(path);
 
+  std::string uri = path.substr(this->location_.getRoot().size());
   body.append("<html>\n");
-  body.append("<head><title>Index of" + path + " </title></head>\n");
+  body.append("<head><title>Index of" + uri + " </title></head>\n");
   body.append("<body>\n");
-  body.append("<h1>Index of " + path + " </h1><hr><pre>\n");
+  body.append("<h1>Index of " + uri + " </h1><hr><pre>\n");
+  if (last(uri) == '/') uri = uri.substr(0, uri.size() - 1);
   for (std::deque<std::string>::iterator iter = names.begin();
        iter != names.end(); ++iter) {
-    body.append("<a href=\"" + path + *iter + "\">");
+    body.append("<a href=\"" + uri + *iter + "\">");
     if ((*iter)[0] == '/')
       body.append(iter->substr(1));
     else
@@ -258,7 +259,6 @@ std::string Response::createFolderBody_(std::string path) {
 }
 
 bool Response::isFolder_(std::string uri) {
-  uri = "./html" + uri;
   struct stat st;
   if (stat(uri.c_str(), &st) == 0 && S_ISDIR(st.st_mode)) {
     return true;
