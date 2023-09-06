@@ -1,6 +1,7 @@
 #ifndef RESPONSE_HPP
 #define RESPONSE_HPP
 
+#include <sys/stat.h>
 #include <unistd.h>
 
 #include <algorithm>
