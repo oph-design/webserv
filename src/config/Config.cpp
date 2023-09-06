@@ -43,6 +43,7 @@ void Config::fillLocations_() {
       iter->clientMaxBodySize_ = this->clientMaxBodySize_;
     if (iter->duplicates_.index == false) iter->index_ = this->index_;
     if (iter->duplicates_.root == false) iter->root_ = this->root_;
+    if (iter->duplicates_.upload_pass == false) iter->uploadPass_ = this->root_;
     ErrorMap newErrorPage = this->errorPage_;
     newErrorPage.insert(iter->errorPage_.begin(), iter->errorPage_.end());
     iter->errorPage_ = newErrorPage;

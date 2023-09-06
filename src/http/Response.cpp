@@ -1,5 +1,7 @@
 #include "Response.hpp"
 
+#include <fstream>
+
 #include "colors.hpp"
 
 contentMap Response::fileTypes_ = Response::createTypeMap();
@@ -146,11 +148,15 @@ void Response::handleGetRequest_(Request &request) {
 void Response::createFile_(std::string filename, std::string ext,
                            std::string data) {
   std::string path = this->location_.getUploadPass();
-  std::string file = filename + "." + ext;
+  path = path + "/" + filename + "." + ext;
+  std::ifstream testfile(path);
   this->status_ = 201;
-  std::ofstream outfile((path + file).c_str());
-  if (!outfile.is_open()) this->status_ = 500;
+  if (testfile.is_open()) this->status_ = 200;
+  testfile.close();
+  std::ofstream outfile((path).c_str());
+  if (!outfile.is_open()) this->status_ = 403;
   outfile.write(data.c_str(), data.length());
+  outfile.close();
 }
 
 void Response::buildJsonBody_() {
