@@ -43,6 +43,14 @@ void Webserver::createServerSocket_(Socket &serverSocket, int port,
     error_("Error: Socket creation failed");
   }
 
+#ifdef __APPLE__
+  if (setsockopt(serverSocket.listeningSocket_, SOL_SOCKET, SO_NOSIGPIPE,
+                 &serverSocket.socketOpt_,
+                 sizeof(serverSocket.socketOpt_)) == -1) {
+    error_("Error: Setting SO_NOSIGPIPE");
+  }
+#endif
+
   if (setsockopt(serverSocket.listeningSocket_, SOL_SOCKET, SO_REUSEADDR,
                  &serverSocket.socketOpt_,
                  sizeof(serverSocket.socketOpt_)) == -1) {
@@ -137,7 +145,11 @@ std::string Webserver::createResponse_(Socket &socket) {
 void Webserver::sendResponse_(Socket &socket, pollfd &pollfd, size_t &i) {
   socket.dataSend_ =
       send(socket.fd_, socket.response_.c_str(), socket.response_.size(), 0);
-  if (socket.dataSend_ < socket.response_.size()) {
+
+  if (socket.dataSend_ == static_cast<std::size_t>(-1)) {
+    std::cout << "send failed" << std::endl;
+    closeConnection_(socket, pollfd, i);
+  } else if (socket.dataSend_ < socket.response_.size()) {
     socket.pendingSend_ = true;
     socket.response_ = socket.response_.substr(socket.dataSend_);
     socket.setTimestamp();

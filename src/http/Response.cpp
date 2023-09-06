@@ -270,7 +270,7 @@ bool Response::isFolder_(std::string uri) {
 /*            global functions                  */
 
 contentMap Response::createTypeMap() {
-  std::ifstream data("./resources/filetypes.csv");
+  std::ifstream data("./data/filetypes.csv");
   std::string field;
   std::string key;
   std::string value;
