@@ -1,7 +1,5 @@
 #include "Webserver.hpp"
 
-#include <exception>
-
 Webserver::Webserver(const Webserver &rhs) : configs_(rhs.configs_) {
   *this = rhs;
 }
