@@ -16,8 +16,6 @@ const std::string& Location::getUploadPass() const { return this->uploadPass_; }
 
 const StringSet& Location::getMethods() const { return this->limitExcept_; }
 
-const std::map<std::string, std::string>& Location::getFastcgiPass() const {
-  return this->fastcgiPass_;
-}
+const std::string& Location::getCgiPass() const { return this->cgiPass_; }
 
 const ErrorMap& Location::getErrorPage() const { return this->errorPage_; }

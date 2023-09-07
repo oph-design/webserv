@@ -32,6 +32,7 @@ typedef struct s_duplicates {
   bool index;
   bool root;
   bool upload_pass;
+  bool cgi_pass;
   bool clientMaxBodySize;
 } Duplicates;
 

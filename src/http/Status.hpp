@@ -8,7 +8,9 @@
 #include <sstream>
 #include <string>
 
+#include "Location.hpp"
 #include "ToString.hpp"
+#include "Types.hpp"
 
 typedef std::pair<int, std::string> statusPair;
 typedef std::map<int, std::string> statusMap;
@@ -31,7 +33,12 @@ class Status {
   friend std::ostream& operator<<(std::ostream& stream, const Status& status);
 
  private:
+  void setErrors(const Location& location);
+  std::string getStdError();
+
   int code_;
+  ErrorMap errors_;
+  std::string root_;
   static statusMap stats_;
 };
 

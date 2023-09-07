@@ -32,18 +32,21 @@ class Location {
   const std::string& getRoot() const;
   const std::string& getUploadPass() const;
   const StringSet& getMethods() const;
-  const std::map<std::string, std::string>& getFastcgiPass() const;
+  const std::string& getCgiPass() const;
   const ErrorMap& getErrorPage() const;
+  bool methodAllowed(std::string meth) const;
+  bool maxBodyReached(size_t clen) const;
 
  private:
   bool autoindex_;
+  bool cgiProcessing_;
   int clientMaxBodySize_;
   std::string index_;
   std::string path_;
   std::string root_;
+  std::string cgiPass_;
   std::string uploadPass_;
   StringSet limitExcept_;
-  std::map<std::string, std::string> fastcgiPass_;
   ErrorMap errorPage_;
 
   Duplicates duplicates_;

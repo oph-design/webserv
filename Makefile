@@ -31,7 +31,7 @@ CONFIG_FILES			=	ConfigFile.cpp Line.cpp Location.cpp Config.cpp \
 
 UTILS							=	$(addprefix $(UTILS_DIR), $(UTILS_FILES))
 UTILS_DIR					=	src/utils/
-UTILS_FILES				= GetContentDisposition.cpp Trim.cpp FindFile.cpp Last.cpp
+UTILS_FILES				= GetContentDisposition.cpp Trim.cpp Last.cpp
 
 ALL_SRC						=	$(SRC) $(CORE) $(UTILS) $(HTTP) $(CONFIG)
 
