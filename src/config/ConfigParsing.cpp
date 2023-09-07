@@ -143,8 +143,7 @@ std::string ConfigParsing::parseIndex(Line &line, Duplicates &duplicates) {
   }
   duplicates.index = true;
   std::string str = line[1];
-  if (line[1][0] != '/')
-    str = "/" + str;
+  if (line[1][0] != '/') str = "/" + str;
   return str;
 }
 
@@ -156,8 +155,7 @@ std::string ConfigParsing::parseRoot(Line &line, Duplicates &duplicates) {
   }
   duplicates.root = true;
   std::string str = line[1];
-  if (last(line[1]) == '/')
-    str = str.substr(0, str.size() - 1);
+  if (last(line[1]) == '/') str = str.substr(0, str.size() - 1);
   return str;
 }
 
@@ -169,8 +167,7 @@ std::string ConfigParsing::parseUpload(Line &line, Duplicates &duplicates) {
   }
   duplicates.upload_pass = true;
   std::string str = line[1];
-  if (last(line[1]) == '/')
-    str = str.substr(0, str.size() - 1);
+  if (last(line[1]) == '/') str = str.substr(0, str.size() - 1);
   return str;
 }
 
@@ -226,10 +223,8 @@ std::string ConfigParsing::parsePath(Line &line) {
     return "";
   }
   std::string str = line[1];
-  if (last(line[1]) == '/')
-    str = str.substr(0, str.size() - 1);
-  if (line[1][0] != '/')
-    str = "/" + str;
+  if (last(line[1]) == '/') str = str.substr(0, str.size() - 1);
+  if (line[1][0] != '/') str = "/" + str;
   return str;
 }
 
@@ -250,7 +245,6 @@ std::string ConfigParsing::parseCgiPass(Line &line, Duplicates &duplicates) {
   }
   duplicates.cgi_pass = true;
   std::string str = line[1];
-  if (last(line[1]) == '/')
-    str = str.substr(0, str.size() - 1);
+  if (last(line[1]) == '/') str = str.substr(0, str.size() - 1);
   return str;
 }

@@ -15,7 +15,7 @@ class Location {
   friend class ConfigFile;
   friend class ConfigParsing;
 
-public:
+ public:
   Location();
   ~Location();
   Location(const Location &obj);
@@ -37,7 +37,7 @@ public:
   bool methodAllowed(const std::string &method) const;
   bool maxBodyReached(const std::size_t &contentLength) const;
 
-private:
+ private:
   bool autoindex_;
   bool cgiProcessing_;
   int clientMaxBodySize_;
@@ -53,4 +53,4 @@ private:
   Duplicates duplicates_;
 };
 
-#endif // LOCATION_HPP_
+#endif  // LOCATION_HPP_

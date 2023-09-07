@@ -40,8 +40,7 @@ Location &Location::operator=(const Location &obj) {
 
 bool Location::methodAllowed(const std::string &method) const {
   StringSet::const_iterator it = this->limitExcept_.find(method);
-  if (it != this->limitExcept_.end())
-    return true;
+  if (it != this->limitExcept_.end()) return true;
   return false;
 }
 

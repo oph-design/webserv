@@ -10,7 +10,7 @@
 #include "colors.hpp"
 
 class Line {
-public:
+ public:
   Line();
   ~Line();
   Line(const Line &obj);
@@ -37,11 +37,11 @@ public:
 
   void copyAllButContent(const Line &line);
 
-private:
+ private:
   std::string content_;
   std::string errorMessage_;
   std::size_t lineNumber_;
   bool error_;
 };
 
-#endif // LINE_HPP_
+#endif  // LINE_HPP_
