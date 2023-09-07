@@ -297,6 +297,7 @@ bool Response::redirect() {
   this->status_ = 301;
   this->header_.insert(contentField("Location", this->location_.getRewrite()));
   this->header_.insert(contentField("Connection", "Keep-alive"));
+  this->body_ = "";
   return (true);
 }
 
