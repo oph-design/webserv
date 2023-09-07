@@ -1,7 +1,7 @@
 NAME							=	webserv
 
 CC								=	c++
-LCFLAGS						=	#-fsanitize=address
+LCFLAGS						=	-fsanitize=address
 HEADERFLAGS				=	-I src/core -I include -I src/utils -I src/http \
 										-I src/config -I src/misc
 CFLAGS						=	$(LCFLAGS) $(HEADERFLAGS) \
