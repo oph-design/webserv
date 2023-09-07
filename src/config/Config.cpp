@@ -45,6 +45,7 @@ void Config::fillLocations_() {
     if (iter->duplicates_.root == false) iter->root_ = this->root_;
     if (iter->duplicates_.upload_pass == false) iter->uploadPass_ = this->root_;
     if (iter->duplicates_.cgi_pass == false) iter->cgiPass_ = this->root_;
+    if (iter->limitExcept_.empty()) iter->limitExcept_.insert("GET");
     ErrorMap newErrorPage = this->errorPage_;
     newErrorPage.insert(iter->errorPage_.begin(), iter->errorPage_.end());
     iter->errorPage_ = newErrorPage;

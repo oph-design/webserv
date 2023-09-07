@@ -2,6 +2,7 @@
 
 #include <fstream>
 
+#include "PrintVerbose.hpp"
 #include "colors.hpp"
 
 contentMap Response::fileTypes_ = Response::createTypeMap();
@@ -101,13 +102,9 @@ bool Response::isForbiddenPath_(const std::string &dir) {
 void Response::readBody_(std::string dir) {
   std::ifstream file(dir.c_str());
   if (file.is_open()) {
-    if (VERBOSE) {
-      std::cout << "File opened successfully." << std::endl;
-    }
+    printVerbose("File opened successfully.", "");
   } else {
-    if (VERBOSE) {
-      std::cerr << "Failed to open file." << std::endl;
-    }
+    printVerbose("Failed to open file.", "");
     this->status_ = 404;
   }
   std::stringstream content;
@@ -118,10 +115,10 @@ void Response::readBody_(std::string dir) {
 
 void Response::handleGetRequest_(Request &request, std::string uri) {
   std::string path = location_.getRoot() + uri;
-  this->prerequisits_("GET", request);
+  if (!this->prerequisits_("POST", request)) return;
   if (CgiConnector::isCgi(location_.getCgiPass() + uri))
     return (void)(serveCgi_(request));
-  else if (this->isFolder_(path) && !this->location_.getAutoindex())
+  if (this->isFolder_(path) && !this->location_.getAutoindex())
     path = path + this->location_.getIndex();
   else if (Response::isFolder_(path) && !this->location_.getAutoindex())
     return (void)(serveFolder_(path));
@@ -147,10 +144,8 @@ void Response::createFile_(std::string filename, std::string ext,
                            std::string data) {
   std::string path = this->location_.getUploadPass();
   path = path + "/" + filename + "." + ext;
-  std::ifstream testfile(path);
   this->status_ = 201;
-  if (testfile.is_open()) this->status_ = 200;
-  testfile.close();
+  if (!access(path.c_str(), F_OK)) this->status_ = 200;
   std::ofstream outfile((path).c_str());
   if (!outfile.is_open()) this->status_ = 403;
   outfile.write(data.c_str(), data.length());
@@ -170,7 +165,7 @@ void Response::buildJsonBody_() {
 }
 
 void Response::handlePostRequest_(const Request &request, std::string uri) {
-  this->prerequisits_("POST", request);
+  if (!this->prerequisits_("POST", request)) return;
   if (CgiConnector::isCgi(location_.getCgiPass() + uri))
     return (void)(serveCgi_(request));
   std::string file = request.getPath();
@@ -198,7 +193,7 @@ void Response::handlePostRequest_(const Request &request, std::string uri) {
 
 void Response::handleDeleteRequest_(const Request &request, std::string uri) {
   std::string path = location_.getRoot() + uri;
-  this->prerequisits_("DELETE", request);
+  if (!this->prerequisits_("DELETE", request)) return;
   if (CgiConnector::isCgi(this->location_.getCgiPass() + uri))
     return (void)(serveCgi_(request));
   if (access(path.c_str(), F_OK)) this->status_ = 403;
@@ -208,13 +203,21 @@ void Response::handleDeleteRequest_(const Request &request, std::string uri) {
   buildJsonBody_();
 }
 
-void Response::prerequisits_(std::string meth, const Request &request) {
+bool Response::prerequisits_(std::string meth, const Request &request) {
   if (isForbiddenPath_(request.getPath()))
     this->status_ = 400;
   else if (this->location_.methodAllowed(meth))
     this->status_ = 405;
   else if (this->location_.maxBodyReached(request.getRequestBody().size()))
     this->status_ = 413;
+  if (this->status_ < 400) return (true);
+  std::string length = toString<std::size_t>(this->body_.length());
+  this->status_ >> this->body_;
+  this->type_ = "text/html; charset=UTF-8";
+  this->header_.insert(contentField("Content-Type", this->type_));
+  this->header_.insert(contentField("Connection", "keep-alive"));
+  this->header_.insert(contentField("Content-Length", length));
+  return (false);
 }
 /*             Cgi Request                  */
 

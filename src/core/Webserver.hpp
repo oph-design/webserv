@@ -14,13 +14,13 @@
 #include <string>
 
 #include "Config.hpp"
+#include "PrintVerbose.hpp"
 #include "Request.hpp"
 #include "Response.hpp"
 #include "Socket.hpp"
 
 #define MAX_CLIENTS 1024
 #define BUFFER_SIZE 131072
-#define VERBOSE false
 
 class Webserver {
  public:

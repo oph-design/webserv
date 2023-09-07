@@ -164,7 +164,9 @@ std::string ConfigParsing::parseUpload(Line &line, Duplicates &duplicates) {
     return 0;
   }
   duplicates.upload_pass = true;
-  return line[1];
+  std::string str = line[1];
+  if (last(line[1]) == '/') str = str.substr(0, str.size() - 1);
+  return str;
 }
 
 ErrorPage ConfigParsing::parseErrorPage(Line &line) {
@@ -231,5 +233,7 @@ std::string ConfigParsing::parseCgiPass(Line &line, Duplicates &duplicates) {
     return 0;
   }
   duplicates.cgi_pass = true;
-  return line[1];
+  std::string str = line[1];
+  if (last(line[1]) == '/') str = str.substr(0, str.size() - 1);
+  return str;
 }
