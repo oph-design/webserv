@@ -45,9 +45,7 @@ bool CgiConnector::isCgi(std::string path) {
   std::string name = path.substr(path.rfind("/") + 1, path.size());
   std::string extention = name.substr(name.rfind(".") + 1, name.length());
   if (extention != "py") return (false);
-  std::ifstream testfile(path);
-  if (!testfile.is_open()) return (false);
-  testfile.close();
+  if (access(path.c_str(), F_OK | X_OK) == -1) return (false);
   return (true);
 }
 

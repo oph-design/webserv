@@ -39,7 +39,8 @@ bool Status::operator>(int rhs) const { return (this->code_ > rhs); }
 bool Status::operator<(int rhs) const { return (this->code_ < rhs); }
 
 std::string Status::getStdError() {
-  std::ifstream error(this->root_ + "/" + this->errors_[this->code_]);
+  std::string path = this->root_ + "/" + this->errors_[this->code_];
+  std::ifstream error(path.c_str());
   if (!error.is_open()) return "";
   std::stringstream content;
   content << error.rdbuf();
