@@ -20,9 +20,9 @@ Config ConfigParsing::parseServer_(LineIter &iter, const LineIter &end) {
       config.root_ = ConfigParsing::parseRoot(*iter, duplicates);
     else if (iter->firstWord() == "error_page")
       config.errorPage_.insert(ConfigParsing::parseErrorPage(*iter));
-    else if (iter->firstWord() == "timeout") {
+    else if (iter->firstWord() == "timeout")
       config.timeout_ = ConfigParsing::parseTimeout(*iter);
-    } else if (iter->getLine() == "}")
+    else if (iter->getLine() == "}")
       break;
     else
       iter->addError("unknown option" + iter->firstWord());
@@ -40,6 +40,8 @@ Location ConfigParsing::parseLocation_(LineIter &iter, const LineIter &end) {
       location.limitExcept_ = ConfigParsing::parseLimitExcept_(iter, end);
     else if (iter->firstWord() == "autoindex")
       location.autoindex_ = ConfigParsing::parseAutoindex(*iter);
+    else if (iter->firstWord() == "cgi_processing")
+      location.cgiProcessing_ = ConfigParsing::parseCgiProcessing(*iter);
     else if (iter->firstWord() == "client_max_body_size")
       location.clientMaxBodySize_ =
           ConfigParsing::parseCientMaxBodySize(*iter, duplicates);
@@ -50,7 +52,7 @@ Location ConfigParsing::parseLocation_(LineIter &iter, const LineIter &end) {
     else if (iter->firstWord() == "upload_pass")
       location.uploadPass_ = ConfigParsing::parseUpload(*iter, duplicates);
     else if (iter->firstWord() == "fastcgi_pass")
-      location.fastcgiPass_.insert(ConfigParsing::parseFastcgiPass(*iter));
+      location.cgiPass_ = ConfigParsing::parseCgiPass(*iter, duplicates);
     else if (iter->firstWord() == "error_page")
       location.errorPage_.insert(ConfigParsing::parseErrorPage(*iter));
     else if (iter->getLine() == "}")
@@ -138,7 +140,9 @@ std::string ConfigParsing::parseIndex(Line &line, Duplicates &duplicates) {
     return 0;
   }
   duplicates.index = true;
-  return line[1];
+  std::string str = line[1];
+  if (line[1][0] != '/') str = "/" + str;
+  return str;
 }
 
 std::string ConfigParsing::parseRoot(Line &line, Duplicates &duplicates) {
@@ -148,7 +152,9 @@ std::string ConfigParsing::parseRoot(Line &line, Duplicates &duplicates) {
     return 0;
   }
   duplicates.root = true;
-  return line[1];
+  std::string str = line[1];
+  if (last(line[1]) == '/') str = str.substr(0, str.size() - 1);
+  return str;
 }
 
 std::string ConfigParsing::parseUpload(Line &line, Duplicates &duplicates) {
@@ -158,7 +164,9 @@ std::string ConfigParsing::parseUpload(Line &line, Duplicates &duplicates) {
     return 0;
   }
   duplicates.upload_pass = true;
-  return line[1];
+  std::string str = line[1];
+  if (last(line[1]) == '/') str = str.substr(0, str.size() - 1);
+  return str;
 }
 
 ErrorPage ConfigParsing::parseErrorPage(Line &line) {
@@ -190,21 +198,42 @@ bool ConfigParsing::parseAutoindex(Line &line) {
   return false;
 }
 
+bool ConfigParsing::parseCgiProcessing(Line &line) {
+  std::string parameter = "cgi_processing";
+  if (line.words() != 2) {
+    line.addError(parameter + " unexpected arguments");
+    return 0;
+  }
+  if (line[1] == "on") {
+    return true;
+  } else if (line[1] == "off") {
+    return false;
+  } else {
+    line.addError(parameter + " unexpected option");
+  }
+  return false;
+}
+
 std::string ConfigParsing::parsePath(Line &line) {
   std::string parameter = "location path";
   if (line.words() != 3) {
     line.addError(parameter + " unexpected arguments");
-    return 0;
+    return "";
   }
-  return line[1];
+  std::string str = line[1];
+  if (last(line[1]) == '/') str = str.substr(0, str.size() - 1);
+  if (line[1][0] != '/') str = "/" + str;
+  return str;
 }
 
-std::pair<std::string, std::string> ConfigParsing::parseFastcgiPass(
-    Line &line) {
-  std::string parameter = "error_page";
-  if (line.words() != 3) {
+std::string ConfigParsing::parseCgiPass(Line &line, Duplicates &duplicates) {
+  std::string parameter = "cgi_pass";
+  if (line.words() != 2) {
     line.addError(parameter + " unexpected arguments");
-    return std::make_pair("", "");
+    return 0;
   }
-  return std::make_pair(line[1], line[2]);
+  duplicates.cgi_pass = true;
+  std::string str = line[1];
+  if (last(line[1]) == '/') str = str.substr(0, str.size() - 1);
+  return str;
 }

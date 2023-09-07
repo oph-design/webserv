@@ -18,6 +18,11 @@ Status& Status::operator=(int newCode) {
 
 Status::~Status() {}
 
+void Status::setErrors(const Location& location) {
+  this->root_ = location.getRoot();
+  this->errors_ = location.getErrorPage();
+}
+
 std::ostream& operator<<(std::ostream& stream, const Status& status) {
   stream << toString<int>(status.code_) << " " << status.stats_[status.code_];
   return (stream);
@@ -33,8 +38,20 @@ bool Status::operator>(int rhs) const { return (this->code_ > rhs); }
 
 bool Status::operator<(int rhs) const { return (this->code_ < rhs); }
 
+std::string Status::getStdError() {
+  std::string path = this->root_ + "/" + this->errors_[this->code_];
+  std::ifstream error(path.c_str());
+  if (!error.is_open()) return "";
+  std::stringstream content;
+  content << error.rdbuf();
+  error.close();
+  return (content.str());
+}
+
 std::string& Status::operator>>(std::string& str) {
   std::stringstream body;
+  str = this->getStdError();
+  if (!str.empty()) return (str);
   body << "<!DOCTYPE html>\n";
   body << "<html lang=\"en\">\n";
   body << "<head>\n";
