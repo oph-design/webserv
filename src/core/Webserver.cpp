@@ -136,6 +136,7 @@ void Webserver::startServerRoutine_() {
 
 std::string Webserver::createResponse_(Socket &socket) {
   Request request(socket.reqStatus.buffer);
+  if (request.isKeepAlive()) socket.keepAlive_ = true;
   Config &conf = this->configs_[this->getConfigId_(socket.boundServerPort_)];
   Response resobj(request, conf, conf.getLocationByPath(request.getPath()));
   std::string response = resobj.getHeader() + resobj.getBody();
