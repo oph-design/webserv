@@ -21,6 +21,7 @@ const Location &Config::getLocationByPath(std::string index) {
   for (LocationVector::const_iterator it = locations_.begin();
        it < locations_.end(); ++it) {
     if (it->getPath().empty()) continue;
+    if (index.size() < it->getPath().size()) continue;
     tmp = index.substr(0, it->getPath().size());
     if (it->getPath() == tmp) return (*it);
   }
