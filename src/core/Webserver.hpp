@@ -17,6 +17,7 @@
 #include "PrintVerbose.hpp"
 #include "Request.hpp"
 #include "Response.hpp"
+#include "Signals.hpp"
 #include "Socket.hpp"
 
 #define MAX_CLIENTS 1024

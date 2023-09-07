@@ -122,9 +122,12 @@ void Webserver::createClientSocket_(Socket &serverSocket) {
 }
 
 void Webserver::startServerRoutine_() {
-  while (true) {
+  while (serverRunning) {
     int ret = poll(this->fds_, this->socketNum_, 10000);
-    if (ret == -1) error_("poll error");
+    if (ret == -1) {
+      if (serverRunning) printVerbose("poll error", "");
+      break;
+    }
     checkPending_();
     for (size_t i = 0; i < socketNum_; ++i) {
       if (this->fds_[i].revents == POLLIN) {
