@@ -25,6 +25,7 @@ class Location {
   friend std::ostream& operator<<(std::ostream& stream,
                                   const Location& location);
 
+  const std::string& getRewrite() const;
   const bool& getAutoindex() const;
   const int& getClientMaxBodySize() const;
   const std::string& getIndex() const;
@@ -48,6 +49,7 @@ class Location {
   std::string uploadPass_;
   StringSet limitExcept_;
   ErrorMap errorPage_;
+  std::string rewrite_;
 
   Duplicates duplicates_;
 };
