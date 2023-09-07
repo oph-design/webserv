@@ -18,7 +18,13 @@ Webserver::Webserver(ConfigVector &configs)
     fds_[i].revents = 0;
   }
   for (ConfigVector::iterator it = configs.begin(); it != configs.end(); ++it) {
-    createServerSocket_(Sockets_[socketNum_], it->getPort(), it->getTimeout());
+    if (socketNum_ < MAX_CLIENTS) {
+      createServerSocket_(Sockets_[socketNum_], it->getPort(),
+                          it->getTimeout());
+
+    } else {
+      error_("Too many Server Sockets, no client connection will be possible");
+    }
   }
   startServerRoutine_();
 }
@@ -88,6 +94,7 @@ void Webserver::createServerSocket_(Socket &serverSocket, int port,
 }
 
 void Webserver::createClientSocket_(Socket &serverSocket) {
+  if (socketNum_ >= MAX_CLIENTS) return;
   socklen_t boundServerAdress_len = sizeof(serverSocket.socketaddr_);
   int new_client_sock;
   if ((new_client_sock = accept(serverSocket.fd_,
@@ -115,19 +122,23 @@ void Webserver::createClientSocket_(Socket &serverSocket) {
 }
 
 void Webserver::startServerRoutine_() {
-  while (true) {
+  while (serverRunning) {
     int ret = poll(this->fds_, this->socketNum_, 10000);
-    if (ret == -1) error_("poll error");
+    if (ret == -1) {
+      if (serverRunning) printVerbose("poll error", "");
+      break;
+    }
     checkPending_();
     for (size_t i = 0; i < socketNum_; ++i) {
       if (this->fds_[i].revents == POLLIN) {
-        if (Sockets_[i].socketType_ == SERVER)
+        if (Sockets_[i].socketType_ == SERVER) {
           createClientSocket_(Sockets_[i]);
-        else
+        } else {
           existingConnection_(Sockets_[i], fds_[i], i);
+        }
       }
+      checkTimeoutClients();
     }
-    checkTimeoutClients();
   }
 }
 
