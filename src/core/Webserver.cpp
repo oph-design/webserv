@@ -125,7 +125,7 @@ void Webserver::startServerRoutine_() {
   while (serverRunning) {
     int ret = poll(this->fds_, this->socketNum_, 10000);
     if (ret == -1) {
-      if (serverRunning) std::cout << "poll error" << std::endl;
+      if (serverRunning) printVerbose("poll error", "");
       break;
     }
     checkPending_();
