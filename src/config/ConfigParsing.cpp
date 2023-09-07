@@ -51,6 +51,8 @@ Location ConfigParsing::parseLocation_(LineIter &iter, const LineIter &end) {
       location.root_ = ConfigParsing::parseRoot(*iter, duplicates);
     else if (iter->firstWord() == "upload_pass")
       location.uploadPass_ = ConfigParsing::parseUpload(*iter, duplicates);
+    else if (iter->firstWord() == "rewrite")
+      location.rewrite_ = ConfigParsing::parseRewrite(*iter);
     else if (iter->firstWord() == "fastcgi_pass")
       location.cgiPass_ = ConfigParsing::parseCgiPass(*iter, duplicates);
     else if (iter->firstWord() == "error_page")
@@ -225,6 +227,16 @@ std::string ConfigParsing::parsePath(Line &line) {
   if (line[1][0] != '/') str = "/" + str;
   return str;
 }
+
+std::string ConfigParsing::parseRewrite(Line &line) {
+  std::string parameter = "rewrite";
+  if (line.words() != 2) {
+    line.addError(parameter + " unexpected arguments");
+    return "";
+  }
+  return line[1];
+}
+
 
 std::string ConfigParsing::parseCgiPass(Line &line, Duplicates &duplicates) {
   std::string parameter = "cgi_pass";
