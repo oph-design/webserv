@@ -237,7 +237,6 @@ std::string ConfigParsing::parseRewrite(Line &line) {
   return line[1];
 }
 
-
 std::string ConfigParsing::parseCgiPass(Line &line, Duplicates &duplicates) {
   std::string parameter = "cgi_pass";
   if (line.words() != 2) {
