@@ -36,14 +36,14 @@ Location& Location::operator=(const Location& obj) {
   return *this;
 }
 
-bool Location::methodAllowed(std::string meth) const {
-  StringSet::const_iterator it = this->limitExcept_.find(meth);
+bool Location::methodAllowed(const std::string& method) const {
+  StringSet::const_iterator it = this->limitExcept_.find(method);
   if (it != this->limitExcept_.end()) return true;
   return false;
 }
 
-bool Location::maxBodyReached(size_t clen) const {
-  return (static_cast<size_t>(this->clientMaxBodySize_) < clen);
+bool Location::maxBodyReached(const std::size_t& contentLength) const {
+  return (static_cast<size_t>(this->clientMaxBodySize_) < contentLength);
 }
 
 std::ostream& operator<<(std::ostream& stream, const Location& location) {

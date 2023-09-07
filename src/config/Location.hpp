@@ -35,8 +35,8 @@ class Location {
   const StringSet& getMethods() const;
   const std::string& getCgiPass() const;
   const ErrorMap& getErrorPage() const;
-  bool methodAllowed(std::string meth) const;
-  bool maxBodyReached(size_t clen) const;
+  bool methodAllowed(const std::string& method) const;
+  bool maxBodyReached(const std::size_t& contentLength) const;
 
  private:
   bool autoindex_;
