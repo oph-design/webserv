@@ -137,6 +137,7 @@ void Webserver::startServerRoutine_() {
       checkTimeoutClients();
     }
   }
+}
 
   std::string Webserver::createResponse_(Socket & socket) {
     Request request(socket.reqStatus.buffer);
@@ -235,3 +236,4 @@ void Webserver::startServerRoutine_() {
     printVerbose(error, "");
     exit(EXIT_FAILURE);
   }
+
