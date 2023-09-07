@@ -1,5 +1,7 @@
 #include "ConfigFile.hpp"
 
+#include "Types.hpp"
+
 ConfigFile::ConfigFile() {}
 
 ConfigFile::~ConfigFile() {}

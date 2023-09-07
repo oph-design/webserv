@@ -35,7 +35,8 @@ class ConfigParsing {
   // in Location
   static std::string parsePath(Line &line);
   static bool parseAutoindex(Line &line);
-  static std::pair<std::string, std::string> parseFastcgiPass(Line &line);
+  static bool parseCgiProcessing(Line &line);
+  static std::string parseCgiPass(Line &line, Duplicates &duplicates);
 
  private:
   ConfigParsing();

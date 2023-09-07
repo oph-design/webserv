@@ -1,6 +1,7 @@
 #ifndef RESPONSE_HPP
 #define RESPONSE_HPP
 
+#include <sys/stat.h>
 #include <unistd.h>
 
 #include <algorithm>
@@ -18,16 +19,18 @@
 
 #include "CgiConnector.hpp"
 #include "Config.hpp"
+#include "PrintVerbose.hpp"
 #include "Request.hpp"
 #include "Status.hpp"
 #include "Utils.hpp"
+#include "colors.hpp"
 
 typedef std::pair<std::string, std::string> contentField;
 typedef std::map<std::string, std::string> contentMap;
 
 class Response {
  public:
-  Response(Request &request, Config &config);
+  Response(Request &request, Config &config, const Location &location);
   Response(const Response &rhs);
   Response &operator=(const Response &rhs);
   ~Response();
@@ -42,26 +45,26 @@ class Response {
  private:
   void readBody_(std::string dir);
   void findType_(std::string url);
-  void handleGetRequest_(Request &request);
-  void handlePostRequest_(const Request &request);
-  void handleDeleteRequest_(const Request &request);
-  void createFile_(std::string filename, std::string ext, std::string data,
-                   std::string path);
+  void handleGetRequest_(Request &request, std::string uri);
+  void handlePostRequest_(const Request &request, std::string uri);
+  void handleDeleteRequest_(const Request &request, std::string uri);
+  void createFile_(std::string filename, std::string ext, std::string data);
   void buildJsonBody_();
   void serveCgi_(const Request &request);
+  bool prerequisits_(std::string meth, const Request &request);
 
   static bool isForbiddenPath_(const std::string &dir);
   static bool isFolder_(std::string uri);
-  void serveFolder_(Request &request);
-  static std::string createFolderBody_(const Request &request);
-  static std::deque<std::string> getFilesInFolder_(
-      const std::string &root, const std::string &folderPath);
+  void serveFolder_(std::string path);
+  std::string createFolderBody_(std::string path);
+  std::deque<std::string> getFilesInFolder_(std::string path);
 
   static contentMap fileTypes_;
   contentMap header_;
   Status status_;
   std::string body_;
   Config &config_;
+  const Location &location_;
   std::string type_;
 };
 

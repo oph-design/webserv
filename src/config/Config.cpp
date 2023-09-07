@@ -5,6 +5,7 @@ Config::Config() {
   this->serverName_ = FALLBACK_SERVERNAME;
   this->index_ = FALLBACK_INDEX;
   this->root_ = FALLBACK_ROOT;
+  this->locations_.push_back(Location());
   this->timeout_ = FALLBACK_TIMEOUT;
 }
 
@@ -42,6 +43,9 @@ void Config::fillLocations_() {
       iter->clientMaxBodySize_ = this->clientMaxBodySize_;
     if (iter->duplicates_.index == false) iter->index_ = this->index_;
     if (iter->duplicates_.root == false) iter->root_ = this->root_;
+    if (iter->duplicates_.upload_pass == false) iter->uploadPass_ = this->root_;
+    if (iter->duplicates_.cgi_pass == false) iter->cgiPass_ = this->root_;
+    if (iter->limitExcept_.empty()) iter->limitExcept_.insert("GET");
     ErrorMap newErrorPage = this->errorPage_;
     newErrorPage.insert(iter->errorPage_.begin(), iter->errorPage_.end());
     iter->errorPage_ = newErrorPage;

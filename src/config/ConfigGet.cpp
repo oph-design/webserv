@@ -16,4 +16,15 @@ const ErrorMap &Config::getErrorPage() const { return this->errorPage_; }
 
 const int &Config::getPort() const { return this->port_; }
 
+const Location &Config::getLocationByPath(std::string index) {
+  std::string tmp;
+  for (LocationVector::const_iterator it = locations_.begin();
+       it < locations_.end(); ++it) {
+    if (it->getPath().empty()) continue;
+    tmp = index.substr(0, it->getPath().size());
+    if (it->getPath() == tmp) return (*it);
+  }
+  return (this->locations_[0]);
+}
+
 const int &Config::getTimeout() const { return this->timeout_; }
