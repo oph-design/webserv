@@ -9,7 +9,7 @@
 #define FALLBACK_INDEX "index.html"
 #define FALLBACK_ROOT "html/"
 #define FALLBACK_CLIENTMAXBODYSIZE 10000
-#endif  // FALLBACK_VALUES
+#endif // FALLBACK_VALUES
 
 #include <algorithm>
 #include <map>
@@ -26,7 +26,7 @@ class Config {
   friend class Location;
   friend class ConfigParsing;
 
- public:
+public:
   Config();
   ~Config();
   Config(const Config &obj);
@@ -42,9 +42,9 @@ class Config {
   const ErrorMap &getErrorPage() const;
   const int &getPort() const;
   const int &getTimeout() const;
-  const Location &getLocationByPath(std::string index);
+  const Location &getLocationByPath(const std::string &index);
 
- private:
+private:
   static ConfigVector &handleDuplicates_(ConfigVector &configs);
   void fillLocations_();
   static void fillAllLocations_(ConfigVector &configs);
@@ -67,4 +67,4 @@ class Config {
   StringSet hostPort_;
 };
 
-#endif  // CONFIG_HPP_
+#endif // CONFIG_HPP_

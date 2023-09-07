@@ -12,7 +12,7 @@
 #include "Utils.hpp"
 
 class ConfigParsing {
- public:
+public:
   // Blocks
   static std::set<std::string> parseLimitExcept_(LineIter &iter,
                                                  const LineIter &end);
@@ -20,7 +20,7 @@ class ConfigParsing {
   static Config parseServer_(LineIter &iter, const LineIter &end);
 
   // in Location and Server
-  static int parseCientMaxBodySize(Line &line, Duplicates &duplicates);
+  static int parseClientMaxBodySize(Line &line, Duplicates &duplicates);
   static std::string parseIndex(Line &line, Duplicates &duplicates);
   static std::string parseRoot(Line &line, Duplicates &duplicates);
   static std::string parseUpload(Line &line, Duplicates &duplicates);
@@ -29,7 +29,6 @@ class ConfigParsing {
   // in Server
   static int parseListen(Line &line);
   static std::string parseServerName(Line &line);
-  static Location parseLocation(Line &line);
   static int parseTimeout(Line &line);
 
   // in Location
@@ -39,9 +38,9 @@ class ConfigParsing {
   static bool parseCgiProcessing(Line &line);
   static std::string parseCgiPass(Line &line, Duplicates &duplicates);
 
- private:
+private:
   ConfigParsing();
   ~ConfigParsing();
 };
 
-#endif  // CONFIGPARSING_HPP_
+#endif // CONFIGPARSING_HPP_
