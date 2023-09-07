@@ -132,104 +132,106 @@ void Webserver::startServerRoutine_() {
           createClientSocket_(Sockets_[i]);
         } else {
           existingConnection_(Sockets_[i], fds_[i], i);
+        }
+      }
+      checkTimeoutClients();
+    }
+  }
+
+  std::string Webserver::createResponse_(Socket & socket) {
+    Request request(socket.reqStatus.buffer);
+    if (request.isKeepAlive()) socket.keepAlive_ = true;
+    Config &conf = this->configs_[this->getConfigId_(socket.boundServerPort_)];
+    Response resobj(request, conf, conf.getLocationByPath(request.getPath()));
+    std::string response = resobj.getHeader() + resobj.getBody();
+    return response;
+  }
+
+  void Webserver::sendResponse_(Socket & socket, pollfd & pollfd, size_t & i) {
+    socket.dataSend_ =
+        send(socket.fd_, socket.response_.c_str(), socket.response_.size(), 0);
+
+    if (socket.dataSend_ == static_cast<std::size_t>(-1)) {
+      std::cout << "send failed" << std::endl;
+      closeConnection_(socket, pollfd, i);
+    } else if (socket.dataSend_ < socket.response_.size()) {
+      socket.pendingSend_ = true;
+      socket.response_ = socket.response_.substr(socket.dataSend_);
+      socket.setTimestamp();
+      pollfd.events = POLLOUT;
+    } else {
+      socket.pendingSend_ = false;
+      socket.setTimestamp();
+      pollfd.events = POLLIN;
+      if (socket.getKeepAlive() == false) closeConnection_(socket, pollfd, i);
+    }
+  }
+
+  bool Webserver::existingConnection_(Socket & socket, pollfd & pollfd,
+                                      size_t & i) {
+    size_t currentBytes;
+    if (receiveRequest(socket, currentBytes) || socket.pendingSend_) {
+      printVerbose("connection on socket ", socket.fd_);
+      socket.setTimestamp();
+      if (socket.pendingSend_ == false)
+        socket.response_ = this->createResponse_(socket);
+      this->sendResponse_(socket, pollfd, i);
+    }
+    if (currentBytes == static_cast<std::size_t>(-1) &&
+        (errno == EWOULDBLOCK || errno == EAGAIN) && VERBOSE) {
+      std::cout << "BLOCKER: " << socket.fd_ << std::endl;
+    } else if (currentBytes == 0 && socket.reqStatus.pendingReceive == false) {
+      if (socket.getKeepAlive() == false) closeConnection_(socket, pollfd, i);
+      return false;
+    }
+    return true;
+  }
+
+  void Webserver::closeConnection_(Socket & socket, pollfd & pollfd,
+                                   size_t & i) {
+    printVerbose("Connection closing on Socket ", socket.fd_);
+    close(pollfd.fd);
+    socket.socketType_ = UNUSED;
+    for (size_t j = i; j < MAX_CLIENTS - 1; ++j) {
+      this->fds_[j] = this->fds_[j + 1];
+      this->Sockets_[j] = this->Sockets_[j + 1];
+    }
+    this->fds_[MAX_CLIENTS - 1].fd = -1;
+    this->Sockets_[MAX_CLIENTS - 1].setIdle();
+    socketNum_--;
+    clientSocketNum_--;
+  }
+
+  void Webserver::checkPending_() {
+    for (size_t i = 0; i < socketNum_; ++i) {
+      if (this->Sockets_[i].pendingSend_ == true) {
+        this->sendResponse_(this->Sockets_[i], fds_[i], i);
+        return;
       }
     }
-    checkTimeoutClients();
   }
-}
 
-std::string Webserver::createResponse_(Socket &socket) {
-  Request request(socket.reqStatus.buffer);
-  if (request.isKeepAlive()) socket.keepAlive_ = true;
-  Config &conf = this->configs_[this->getConfigId_(socket.boundServerPort_)];
-  Response resobj(request, conf, conf.getLocationByPath(request.getPath()));
-  std::string response = resobj.getHeader() + resobj.getBody();
-  return response;
-}
-
-void Webserver::sendResponse_(Socket &socket, pollfd &pollfd, size_t &i) {
-  socket.dataSend_ =
-      send(socket.fd_, socket.response_.c_str(), socket.response_.size(), 0);
-
-  if (socket.dataSend_ == static_cast<std::size_t>(-1)) {
-    std::cout << "send failed" << std::endl;
-    closeConnection_(socket, pollfd, i);
-  } else if (socket.dataSend_ < socket.response_.size()) {
-    socket.pendingSend_ = true;
-    socket.response_ = socket.response_.substr(socket.dataSend_);
-    socket.setTimestamp();
-    pollfd.events = POLLOUT;
-  } else {
-    socket.pendingSend_ = false;
-    socket.setTimestamp();
-    pollfd.events = POLLIN;
-    if (socket.getKeepAlive() == false) closeConnection_(socket, pollfd, i);
-  }
-}
-
-bool Webserver::existingConnection_(Socket &socket, pollfd &pollfd, size_t &i) {
-  size_t currentBytes;
-  if (receiveRequest(socket, currentBytes) || socket.pendingSend_) {
-    printVerbose("connection on socket ", socket.fd_);
-    socket.setTimestamp();
-    if (socket.pendingSend_ == false)
-      socket.response_ = this->createResponse_(socket);
-    this->sendResponse_(socket, pollfd, i);
-  }
-  if (currentBytes == static_cast<std::size_t>(-1) &&
-      (errno == EWOULDBLOCK || errno == EAGAIN) && VERBOSE) {
-    std::cout << "BLOCKER: " << socket.fd_ << std::endl;
-  } else if (currentBytes == 0 && socket.reqStatus.pendingReceive == false) {
-    if (socket.getKeepAlive() == false) closeConnection_(socket, pollfd, i);
-    return false;
-  }
-  return true;
-}
-
-void Webserver::closeConnection_(Socket &socket, pollfd &pollfd, size_t &i) {
-  printVerbose("Connection closing on Socket ", socket.fd_);
-  close(pollfd.fd);
-  socket.socketType_ = UNUSED;
-  for (size_t j = i; j < MAX_CLIENTS - 1; ++j) {
-    this->fds_[j] = this->fds_[j + 1];
-    this->Sockets_[j] = this->Sockets_[j + 1];
-  }
-  this->fds_[MAX_CLIENTS - 1].fd = -1;
-  this->Sockets_[MAX_CLIENTS - 1].setIdle();
-  socketNum_--;
-  clientSocketNum_--;
-}
-
-void Webserver::checkPending_() {
-  for (size_t i = 0; i < socketNum_; ++i) {
-    if (this->Sockets_[i].pendingSend_ == true) {
-      this->sendResponse_(this->Sockets_[i], fds_[i], i);
-      return;
+  void Webserver::checkTimeoutClients() {
+    for (size_t i = 0; i < socketNum_; ++i) {
+      if (this->Sockets_[i].socketType_ == CLIENT &&
+          this->Sockets_[i].checkTimeout() == true) {
+        printVerbose("Timeout of Client Socket: ", this->Sockets_[i].fd_);
+        closeConnection_(this->Sockets_[i], this->fds_[i], i);
+        break;
+      }
     }
   }
-}
 
-void Webserver::checkTimeoutClients() {
-  for (size_t i = 0; i < socketNum_; ++i) {
-    if (this->Sockets_[i].socketType_ == CLIENT &&
-        this->Sockets_[i].checkTimeout() == true) {
-      printVerbose("Timeout of Client Socket: ", this->Sockets_[i].fd_);
-      closeConnection_(this->Sockets_[i], this->fds_[i], i);
-      break;
+  int Webserver::getConfigId_(int toFind) {
+    for (int i = 0; i < MAX_CLIENTS; ++i) {
+      if (ntohs(this->Sockets_[i].socketaddr_.sin_port) == toFind) {
+        return (this->Sockets_[i].configId_);
+      }
     }
+    return (0);
   }
-}
 
-int Webserver::getConfigId_(int toFind) {
-  for (int i = 0; i < MAX_CLIENTS; ++i) {
-    if (ntohs(this->Sockets_[i].socketaddr_.sin_port) == toFind) {
-      return (this->Sockets_[i].configId_);
-    }
+  void Webserver::error_(std::string error) {
+    printVerbose(error, "");
+    exit(EXIT_FAILURE);
   }
-  return (0);
-}
-
-void Webserver::error_(std::string error) {
-  printVerbose(error, "");
-  exit(EXIT_FAILURE);
-}
