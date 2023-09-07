@@ -1,5 +1,7 @@
 #include "Webserver.hpp"
 
+#include <exception>
+
 Webserver::Webserver(const Webserver &rhs) : configs_(rhs.configs_) {
   *this = rhs;
 }
@@ -85,6 +87,8 @@ void Webserver::createServerSocket_(Socket &serverSocket, int port,
   }
   this->fds_[socketNum_].fd = serverSocket.listeningSocket_;
   serverSocket.fd_ = serverSocket.listeningSocket_;
+  std::string servername = this->configs_[this->socketNum_].getServerName();
+  serverSocket.setServerAddress(servername);
   serverSocket.socketIndex_ = socketNum_;
   serverSocket.socketType_ = SERVER;
   serverSocket.configId_ = this->socketNum_;
@@ -109,8 +113,6 @@ void Webserver::createClientSocket_(Socket &serverSocket) {
   this->fds_[socketNum_].fd = new_client_sock;
   this->Sockets_[socketNum_].socketIndex_ = socketNum_;
   this->Sockets_[socketNum_].socketType_ = CLIENT;
-  this->Sockets_[socketNum_].boundServerPort_ =
-      ntohs(serverSocket.socketaddr_.sin_port);
   this->Sockets_[socketNum_].setTimestamp();
   this->Sockets_[socketNum_].timeout_ = serverSocket.timeout_;
   socketNum_++;
@@ -145,8 +147,9 @@ void Webserver::startServerRoutine_() {
 std::string Webserver::createResponse_(Socket &socket) {
   Request request(socket.reqStatus.buffer);
   if (request.isKeepAlive()) socket.keepAlive_ = true;
-  Config &conf = this->configs_[this->getConfigId_(socket.boundServerPort_)];
-  Response resobj(request, conf, conf.getLocationByPath(request.getPath()));
+  int conf = this->getConfigId_(request);
+  Location loc = this->configs_[conf].getLocationByPath(request.getPath());
+  Response resobj(request, loc);
   std::string response = resobj.getHeader() + resobj.getBody();
   return response;
 }
@@ -224,11 +227,16 @@ void Webserver::checkTimeoutClients() {
   }
 }
 
-int Webserver::getConfigId_(int toFind) {
+int Webserver::getConfigId_(const Request &request) {
+  std::string toFind;
+  try {
+    toFind = request["Host"];
+  } catch (std::exception &) {
+    return (0);
+  }
   for (int i = 0; i < MAX_CLIENTS; ++i) {
-    if (ntohs(this->Sockets_[i].socketaddr_.sin_port) == toFind) {
+    if (toFind == this->Sockets_[i].serverAddress_)
       return (this->Sockets_[i].configId_);
-    }
   }
   return (0);
 }

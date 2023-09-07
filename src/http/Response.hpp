@@ -30,7 +30,7 @@ typedef std::map<std::string, std::string> contentMap;
 
 class Response {
  public:
-  Response(Request &request, Config &config, const Location &location);
+  Response(Request &request, const Location &location);
   Response(const Response &rhs);
   Response &operator=(const Response &rhs);
   ~Response();
@@ -64,7 +64,6 @@ class Response {
   contentMap header_;
   Status status_;
   std::string body_;
-  Config &config_;
   const Location &location_;
   std::string type_;
 };

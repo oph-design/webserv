@@ -1,11 +1,13 @@
 #include "Socket.hpp"
 
+#include "ToString.hpp"
+
 // public
 Socket::Socket()
     : fd_(-1),
       socketIndex_(-1),
       socketType_(UNUSED),
-      boundServerPort_(8080),
+      serverAddress_(""),
       socketOpt_(1),
       listeningSocket_(-1),
       dataSend_(0),
@@ -22,7 +24,7 @@ Socket &Socket::operator=(const Socket &rhs) {
   this->fd_ = rhs.fd_;
   this->socketIndex_ = rhs.socketIndex_;
   this->socketType_ = rhs.socketType_;
-  this->boundServerPort_ = rhs.boundServerPort_;
+  this->serverAddress_ = rhs.serverAddress_;
   this->socketOpt_ = rhs.socketOpt_;
   this->listeningSocket_ = rhs.listeningSocket_;
   this->socketaddr_ = rhs.socketaddr_;
@@ -37,9 +39,16 @@ Socket &Socket::operator=(const Socket &rhs) {
 }
 
 // getter
+
 int Socket::getFd() { return this->fd_; }
 bool Socket::getKeepAlive() const { return this->keepAlive_; }
+
 // setter
+
+void Socket::setServerAddress(std::string name) {
+  std::string port = toString<int>(ntohs(this->socketaddr_.sin_port));
+  this->serverAddress_ = name + ":" + port;
+}
 
 void Socket::setIdle() {
   fd_ = -1;
