@@ -18,7 +18,12 @@ Webserver::Webserver(ConfigVector &configs)
     fds_[i].revents = 0;
   }
   for (ConfigVector::iterator it = configs.begin(); it != configs.end(); ++it) {
-    createServerSocket_(Sockets_[socketNum_], it->getPort(), it->getTimeout());
+    if (socketNum_ < MAX_CLIENTS)
+      createServerSocket_(Sockets_[socketNum_], it->getPort(),
+                          it->getTimeout());
+    else {
+      error_("Too many Server Sockets, no client connection will be possible");
+    }
   }
   startServerRoutine_();
 }
@@ -88,6 +93,7 @@ void Webserver::createServerSocket_(Socket &serverSocket, int port,
 }
 
 void Webserver::createClientSocket_(Socket &serverSocket) {
+  if (socketNum_ >= MAX_CLIENTS) return;
   socklen_t boundServerAdress_len = sizeof(serverSocket.socketaddr_);
   int new_client_sock;
   if ((new_client_sock = accept(serverSocket.fd_,
