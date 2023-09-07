@@ -1,12 +1,10 @@
 #include "CgiConnector.hpp"
 
-#include "colors.hpp"
-
 CgiConnector::CgiConnector() {}
 
 CgiConnector::CgiConnector(const Request& request, std::string path)
     : reqBody_(request.getRequestBody()), env_(buildEnv_(request)) {
-  std::cout << YELLOW << path << COLOR_RESET << std::endl;
+  printVerbose(YELLOW, path);
   this->path_ = path;
 }
 

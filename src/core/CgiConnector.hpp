@@ -18,8 +18,10 @@
 #include <string>
 
 #include "Location.hpp"
+#include "PrintVerbose.hpp"
 #include "Request.hpp"
 #include "Status.hpp"
+#include "colors.hpp"
 
 #define TIMEOUT 1
 

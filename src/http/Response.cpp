@@ -1,17 +1,12 @@
 #include "Response.hpp"
 
-#include <fstream>
-
-#include "PrintVerbose.hpp"
-#include "colors.hpp"
-
 contentMap Response::fileTypes_ = Response::createTypeMap();
 
 /*            constructors                  */
 
 Response::Response(Request &request, Config &config, const Location &location)
     : config_(config), location_(location) {
-  std::cout << MAGENTA << location_ << COLOR_RESET << std::endl;
+  printVerbose(MAGENTA, this->location_);
   switch (request.getRequestMethodType()) {
     case 0:
       handleGetRequest_(request, request.cutPath(location_.getPath()));
@@ -123,14 +118,13 @@ void Response::handleGetRequest_(Request &request, std::string uri) {
   else if (Response::isFolder_(path) && !this->location_.getAutoindex())
     return (void)(serveFolder_(path));
 
-  std::cout << RED << path << COLOR_RESET << std::endl;
   if (this->status_ == 200) readBody_(path);
   if (this->status_ == 200) findType_(path);
   if (this->status_ > 399) {
     this->status_ >> this->body_;
     this->type_ = "text/html; charset=UTF-8";
   }
-  std::cout << BLUE << this->status_ << COLOR_RESET << std::endl;
+  printVerbose(BLUE, this->status_);
   std::string length = toString<std::size_t>(this->body_.length());
 
   this->header_.insert(contentField("Content-Type", this->type_));
@@ -179,7 +173,6 @@ void Response::handlePostRequest_(const Request &request, std::string uri) {
   } catch (std::exception &e) {
     std::cout << e.what() << std::endl;
   }
-  std::cout << file << std::endl;
   if (!request.getRequestBodyExists() || !file.length() || !ext.length())
     this->status_ = 400;
   if (this->status_ < 400)
@@ -211,8 +204,8 @@ bool Response::prerequisits_(std::string meth, const Request &request) {
   else if (this->location_.maxBodyReached(request.getRequestBody().size()))
     this->status_ = 413;
   if (this->status_ < 400) return (true);
-  std::string length = toString<std::size_t>(this->body_.length());
   this->status_ >> this->body_;
+  std::string length = toString<std::size_t>(this->body_.length());
   this->type_ = "text/html; charset=UTF-8";
   this->header_.insert(contentField("Content-Type", this->type_));
   this->header_.insert(contentField("Connection", "keep-alive"));

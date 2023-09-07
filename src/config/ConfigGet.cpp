@@ -1,5 +1,4 @@
 #include "Config.hpp"
-#include "colors.hpp"
 
 const int &Config::getClientMaxBodySize() const {
   return this->clientMaxBodySize_;
@@ -19,7 +18,6 @@ const int &Config::getPort() const { return this->port_; }
 
 const Location &Config::getLocationByPath(std::string index) {
   std::string tmp;
-  std::cout << GREEN << locations_.size() << COLOR_RESET << std::endl;
   for (LocationVector::const_iterator it = locations_.begin();
        it < locations_.end(); ++it) {
     if (it->getPath().empty()) continue;
