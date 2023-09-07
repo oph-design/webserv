@@ -36,8 +36,7 @@ void Line::trimWhitespace() {
   std::string word;
   bool firstWord = true;
   while (iss >> word) {
-    if (!firstWord)
-      oss << ' ';
+    if (!firstWord) oss << ' ';
     oss << word;
     firstWord = false;
   }
@@ -46,8 +45,7 @@ void Line::trimWhitespace() {
 
 void Line::removeComment() {
   std::size_t pos = this->content_.find('#');
-  if (pos != std::string::npos)
-    this->content_ = this->content_.substr(0, pos);
+  if (pos != std::string::npos) this->content_ = this->content_.substr(0, pos);
 }
 
 bool Line::isEmpty() const {
@@ -94,8 +92,7 @@ int Line::words() const {
   int wordCount = 0;
   std::stringstream ss(this->content_);
   std::string buffer;
-  while (std::getline(ss, buffer, ' '))
-    ++wordCount;
+  while (std::getline(ss, buffer, ' ')) ++wordCount;
   return wordCount;
 }
 
@@ -111,14 +108,12 @@ void Line::copyAllButContent(const Line &obj) {
 }
 
 std::string Line::lastWord() const {
-  if (this->words() == 1)
-    return this->firstWord();
+  if (this->words() == 1) return this->firstWord();
   std::stringstream ss(this->content_);
   std::string buffer;
   std::string prior;
   while (std::getline(ss, buffer, ' ')) {
-    if (buffer.empty())
-      break;
+    if (buffer.empty()) break;
     prior = buffer;
   }
   return buffer;

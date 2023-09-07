@@ -48,8 +48,7 @@ void ConfigFile::cleanContent_() {
        ++iter) {
     iter->trimWhitespace();
     iter->removeComment();
-    if (!iter->isEmpty())
-      newContent.push_back(*iter);
+    if (!iter->isEmpty()) newContent.push_back(*iter);
   }
   this->content_ = newContent;
 }
@@ -62,8 +61,7 @@ void ConfigFile::validateConfigFile_() {
 bool ConfigFile::isValid() {
   for (LineIter iter = this->content_.begin(); iter != this->content_.end();
        ++iter) {
-    if (!iter->isValid())
-      return false;
+    if (!iter->isValid()) return false;
   }
   return true;
 }
@@ -107,8 +105,7 @@ void ConfigFile::updateBackup() {
 void ConfigFile::removeSemiColon_() {
   for (LineIter iter = this->content_.begin(); iter != this->content_.end();
        ++iter) {
-    if (iter->last() == ';')
-      iter->removeSemiColon();
+    if (iter->last() == ';') iter->removeSemiColon();
   }
 }
 
@@ -116,11 +113,9 @@ ConfigVector ConfigFile::createConfig() {
   this->cleanContent_();
   this->validateConfigFile_();
   this->removeSemiColon_();
-  if (!this->isValid())
-    return ConfigVector();
+  if (!this->isValid()) return ConfigVector();
   ConfigVector configVector = ConfigFile::createConfigVector_();
-  if (!this->isValid())
-    return ConfigVector();
+  if (!this->isValid()) return ConfigVector();
   configVector = Config::handleDuplicates_(configVector);
   configVector = ConfigFile::splitUpListens_(configVector);
   return configVector;

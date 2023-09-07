@@ -12,7 +12,7 @@
 #include "Utils.hpp"
 
 class ConfigParsing {
-public:
+ public:
   // Blocks
   static std::set<std::string> parseLimitExcept_(LineIter &iter,
                                                  const LineIter &end);
@@ -38,9 +38,9 @@ public:
   static bool parseCgiProcessing(Line &line);
   static std::string parseCgiPass(Line &line, Duplicates &duplicates);
 
-private:
+ private:
   ConfigParsing();
   ~ConfigParsing();
 };
 
-#endif // CONFIGPARSING_HPP_
+#endif  // CONFIGPARSING_HPP_

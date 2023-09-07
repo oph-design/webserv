@@ -3,7 +3,7 @@
 
 #ifndef STD_CONF_PATH
 #define STD_CONF_PATH "./conf/webserv.conf"
-#endif // STD_CONF_PATH
+#endif  // STD_CONF_PATH
 
 #include <fstream>
 #include <iostream>
@@ -20,7 +20,7 @@
 #include "colors.hpp"
 
 class ConfigFile {
-public:
+ public:
   ~ConfigFile();
   ConfigFile();
   ConfigFile(const ConfigFile &obj);
@@ -34,7 +34,7 @@ public:
 
   friend std::ostream &operator<<(std::ostream &stream, ConfigFile &config);
 
-private:
+ private:
   static ConfigVector splitUpListens_(ConfigVector &configvector);
   void cleanContent_();
   void validateConfigFile_();
@@ -49,4 +49,4 @@ private:
   LineVector backup_;
 };
 
-#endif // CONFIGFILE_HPP_
+#endif  // CONFIGFILE_HPP_
