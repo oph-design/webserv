@@ -5,7 +5,7 @@
 #include "Webserver.hpp"
 
 int main(int argc, char *argv[]) {
-  signalHandling();
+  implementSignalHandling();
   ConfigFile configFile;
   if (!configFile.openFile(argc, argv)) return EXIT_FAILURE;
   ConfigVector configs = configFile.createConfig();
