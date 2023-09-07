@@ -1,8 +1,7 @@
 #ifndef LOCATION_HPP_
 #define LOCATION_HPP_
 
-#include <stdlib.h>
-
+#include <cstdlib>
 #include <iostream>
 #include <map>
 #include <string>
@@ -16,29 +15,29 @@ class Location {
   friend class ConfigFile;
   friend class ConfigParsing;
 
- public:
+public:
   Location();
   ~Location();
-  Location(const Location& obj);
-  Location& operator=(const Location& obj);
+  Location(const Location &obj);
+  Location &operator=(const Location &obj);
 
-  friend std::ostream& operator<<(std::ostream& stream,
-                                  const Location& location);
+  friend std::ostream &operator<<(std::ostream &stream,
+                                  const Location &location);
 
-  const std::string& getRewrite() const;
-  const bool& getAutoindex() const;
-  const int& getClientMaxBodySize() const;
-  const std::string& getIndex() const;
-  const std::string& getPath() const;
-  const std::string& getRoot() const;
-  const std::string& getUploadPass() const;
-  const StringSet& getMethods() const;
-  const std::string& getCgiPass() const;
-  const ErrorMap& getErrorPage() const;
-  bool methodAllowed(const std::string& method) const;
-  bool maxBodyReached(const std::size_t& contentLength) const;
+  const std::string &getRewrite() const;
+  const bool &getAutoindex() const;
+  const int &getClientMaxBodySize() const;
+  const std::string &getIndex() const;
+  const std::string &getPath() const;
+  const std::string &getRoot() const;
+  const std::string &getUploadPass() const;
+  const StringSet &getMethods() const;
+  const std::string &getCgiPass() const;
+  const ErrorMap &getErrorPage() const;
+  bool methodAllowed(const std::string &method) const;
+  bool maxBodyReached(const std::size_t &contentLength) const;
 
- private:
+private:
   bool autoindex_;
   bool cgiProcessing_;
   int clientMaxBodySize_;
@@ -54,4 +53,4 @@ class Location {
   Duplicates duplicates_;
 };
 
-#endif  // LOCATION_HPP_
+#endif // LOCATION_HPP_

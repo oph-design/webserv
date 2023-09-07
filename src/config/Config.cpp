@@ -40,13 +40,18 @@ ConfigVector &Config::handleDuplicates_(ConfigVector &configs) {
 void Config::fillLocations_() {
   for (LocationVector::iterator iter = this->locations_.begin();
        iter != this->locations_.end(); ++iter) {
-    if (iter->duplicates_.clientMaxBodySize == false)
+    if (!iter->duplicates_.clientMaxBodySize)
       iter->clientMaxBodySize_ = this->clientMaxBodySize_;
-    if (iter->duplicates_.index == false) iter->index_ = this->index_;
-    if (iter->duplicates_.root == false) iter->root_ = this->root_;
-    if (iter->duplicates_.upload_pass == false) iter->uploadPass_ = this->root_;
-    if (iter->duplicates_.cgi_pass == false) iter->cgiPass_ = this->root_;
-    if (iter->limitExcept_.empty()) iter->limitExcept_.insert("GET");
+    if (!iter->duplicates_.index)
+      iter->index_ = this->index_;
+    if (!iter->duplicates_.root)
+      iter->root_ = this->root_;
+    if (!iter->duplicates_.upload_pass)
+      iter->uploadPass_ = this->root_;
+    if (!iter->duplicates_.cgi_pass)
+      iter->cgiPass_ = this->root_;
+    if (iter->limitExcept_.empty())
+      iter->limitExcept_.insert("GET");
     ErrorMap newErrorPage = this->errorPage_;
     newErrorPage.insert(iter->errorPage_.begin(), iter->errorPage_.end());
     iter->errorPage_ = newErrorPage;
@@ -68,7 +73,7 @@ void Config::fillHostPort_(ConfigVector &configs) {
       configIter->hostPort_.insert(configIter->serverName_ + ":" +
                                    toString(*listenIter));
     }
-    if (configIter->hostPort_.size() == 0)
+    if (configIter->hostPort_.empty())
       configIter->hostPort_.insert(configIter->serverName_ + ":" +
                                    toString(FALLBACK_PORT));
   }
@@ -99,7 +104,7 @@ void Config::getPortsFromHostPort_(ConfigVector &configs) {
       configIter->listen_.insert(std::atoi(
           listenIter->substr(listenIter->find_last_of(':') + 1).c_str()));
     }
-    if (configIter->hostPort_.size() == 0)
+    if (configIter->hostPort_.empty())
       configIter->hostPort_.insert(configIter->serverName_ + ":" +
                                    toString(FALLBACK_PORT));
   }
@@ -109,7 +114,8 @@ void Config::deleteEmptyServer_(ConfigVector &configs) {
   ConfigVector newVector;
   for (ConfigVector::iterator configIter = configs.begin();
        configIter != configs.end(); ++configIter) {
-    if (configIter->listen_.size() != 0) newVector.push_back(*configIter);
+    if (!configIter->listen_.empty())
+      newVector.push_back(*configIter);
   }
   configs = newVector;
 }
