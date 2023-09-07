@@ -5,7 +5,8 @@ Config::Config() {
   this->serverName_ = FALLBACK_SERVERNAME;
   this->index_ = FALLBACK_INDEX;
   this->root_ = FALLBACK_ROOT;
-  this->locations_.push_back(Location());
+  Location location;
+  this->locations_.push_back(location);
   this->timeout_ = FALLBACK_TIMEOUT;
 }
 
