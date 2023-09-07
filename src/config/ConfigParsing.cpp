@@ -40,8 +40,8 @@ Location ConfigParsing::parseLocation_(LineIter &iter, const LineIter &end) {
       location.limitExcept_ = ConfigParsing::parseLimitExcept_(iter, end);
     else if (iter->firstWord() == "autoindex")
       location.autoindex_ = ConfigParsing::parseAutoindex(*iter);
-    else if (iter->firstWord() == "autoindex")
-      location.autoindex_ = ConfigParsing::parseCgiProcessing(*iter);
+    else if (iter->firstWord() == "cgi_processing")
+      location.cgiProcessing_ = ConfigParsing::parseCgiProcessing(*iter);
     else if (iter->firstWord() == "client_max_body_size")
       location.clientMaxBodySize_ =
           ConfigParsing::parseCientMaxBodySize(*iter, duplicates);
