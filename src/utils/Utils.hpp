@@ -4,6 +4,7 @@
 #include "FindFile.hpp"
 #include "GetContentDisposition.hpp"
 #include "IsNumber.hpp"
+#include "Last.hpp"
 #include "StreamOperators.hpp"
 #include "SwapColumns.hpp"
 #include "ToString.hpp"
