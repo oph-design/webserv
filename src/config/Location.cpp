@@ -31,6 +31,7 @@ Location& Location::operator=(const Location& obj) {
   this->limitExcept_ = obj.limitExcept_;
   this->cgiPass_ = obj.cgiPass_;
   this->errorPage_ = obj.errorPage_;
+  this->rewrite_ = obj.rewrite_;
   this->duplicates_ = obj.duplicates_;
   return *this;
 }
@@ -52,6 +53,7 @@ std::ostream& operator<<(std::ostream& stream, const Location& location) {
   stream << "index: " << location.index_ << "\n";
   stream << "root: " << location.root_ << "\n";
   stream << "upload_pass: " << location.uploadPass_ << "\n";
+  stream << "rewrite: " << location.rewrite_ << "\n";
   stream << "limit_except:\n" << location.limitExcept_;
   stream << "fastcgi_pass:\n" << location.cgiPass_;
   stream << "error_page:\n" << location.errorPage_;
