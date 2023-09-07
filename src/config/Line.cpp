@@ -48,12 +48,7 @@ void Line::removeComment() {
   if (pos != std::string::npos) this->content_ = this->content_.substr(0, pos);
 }
 
-bool Line::isEmpty() const {
-  if (this->content_.empty())
-    return true;
-  else
-    return false;
-}
+bool Line::isEmpty() const { return this->content_.empty() ? true : false; }
 
 bool Line::isValid() const { return !this->error_; }
 
