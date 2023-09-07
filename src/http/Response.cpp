@@ -4,8 +4,8 @@ contentMap Response::fileTypes_ = Response::createTypeMap();
 
 /*            constructors                  */
 
-Response::Response(Request &request, Config &config, const Location &location)
-    : config_(config), location_(location) {
+Response::Response(Request &request, const Location &location)
+    : location_(location) {
   printVerbose(MAGENTA, this->location_);
   if (this->redirect()) return;
   switch (request.getRequestMethodType()) {
@@ -24,8 +24,7 @@ Response::Response(Request &request, Config &config, const Location &location)
   }
 }
 
-Response::Response(const Response &rhs)
-    : config_(rhs.config_), location_(rhs.location_) {
+Response::Response(const Response &rhs) : location_(rhs.location_) {
   *this = rhs;
 }
 

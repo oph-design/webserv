@@ -23,6 +23,7 @@ bool receiveRequest(Socket &socket, size_t &bytes) {
   t_reqStatus &reqstatus = socket.reqStatus;
 
   bytes = recv(socket.getFd(), buffer, sizeof(buffer), O_NONBLOCK);
+  std::cout << buffer << std::endl;
   reqstatus.readBytes += bytes;
   if (bytes == 0) return (false);
   if (reqstatus.pendingReceive == false) {
