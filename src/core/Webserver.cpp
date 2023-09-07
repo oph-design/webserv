@@ -18,10 +18,11 @@ Webserver::Webserver(ConfigVector &configs)
     fds_[i].revents = 0;
   }
   for (ConfigVector::iterator it = configs.begin(); it != configs.end(); ++it) {
-    if (socketNum_ < MAX_CLIENTS)
+    if (socketNum_ < MAX_CLIENTS) {
       createServerSocket_(Sockets_[socketNum_], it->getPort(),
                           it->getTimeout());
-    else {
+
+    } else {
       error_("Too many Server Sockets, no client connection will be possible");
     }
   }
@@ -129,9 +130,9 @@ void Webserver::startServerRoutine_() {
     checkPending_();
     for (size_t i = 0; i < socketNum_; ++i) {
       if (this->fds_[i].revents == POLLIN) {
-        if (Sockets_[i].socketType_ == SERVER)
+        if (Sockets_[i].socketType_ == SERVER) {
           createClientSocket_(Sockets_[i]);
-        else {
+        } else {
           existingConnection_(Sockets_[i], fds_[i], i);
         }
       }
