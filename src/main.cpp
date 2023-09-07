@@ -1,9 +1,8 @@
 #include <iostream>
 
 #include "ConfigFile.hpp"
+#include "Signals.hpp"
 #include "Webserver.hpp"
-
-void signalHandling();
 
 int main(int argc, char *argv[]) {
   signalHandling();
@@ -17,10 +16,4 @@ int main(int argc, char *argv[]) {
     Webserver Server(configs);
   }
   return EXIT_SUCCESS;
-}
-
-void signalHandling() {
-#ifdef __linux__
-  signal(SIGPIPE, SIG_IGN);
-#endif
 }
