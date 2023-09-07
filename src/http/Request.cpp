@@ -94,6 +94,15 @@ std::string Request::getQueryString() const { return this->queryString_; }
 
 std::string Request::getRequestBody() const { return this->requestBody_; }
 
+bool Request::isKeepAlive() const {
+  try {
+    if ((*this)["Connection"] == "keep-alive") return true;
+    return false;
+  } catch (std::exception &) {
+    return false;
+  }
+}
+
 std::string Request::getRequestMethodString() const {
   return this->requestMethodString_;
 }
