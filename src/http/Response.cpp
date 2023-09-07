@@ -7,6 +7,7 @@ contentMap Response::fileTypes_ = Response::createTypeMap();
 Response::Response(Request &request, Config &config, const Location &location)
     : config_(config), location_(location) {
   printVerbose(MAGENTA, this->location_);
+  if (this->redirect()) return;
   switch (request.getRequestMethodType()) {
     case 0:
       handleGetRequest_(request, request.cutPath(location_.getPath()));
@@ -289,6 +290,14 @@ bool Response::isFolder_(std::string uri) {
     return true;
   }
   return false;
+}
+
+bool Response::redirect() {
+  if (this->location_.getRewrite().empty()) return (false);
+  this->status_ = 301;
+  this->header_.insert(contentField("Location", this->location_.getRewrite()));
+  this->header_.insert(contentField("Connection", "Keep-alive"));
+  return (true);
 }
 
 /*            global functions                  */

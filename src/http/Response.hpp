@@ -52,6 +52,7 @@ class Response {
   void buildJsonBody_();
   void serveCgi_(const Request &request);
   bool prerequisits_(std::string meth, const Request &request);
+  bool redirect();
 
   static bool isForbiddenPath_(const std::string &dir);
   static bool isFolder_(std::string uri);
