@@ -24,7 +24,7 @@ class Line {
   void removeComment();
   bool isEmpty() const;
   bool isValid() const;
-  void addError(std::string errorMessage);
+  void addError(const std::string& errorMessage);
   const std::string& getLine() const;
 
   const std::size_t& getLineNumber() const;

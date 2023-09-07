@@ -68,7 +68,7 @@ std::ostream& operator<<(std::ostream& stream, const Line& line) {
   return stream;
 }
 
-void Line::addError(std::string errorMessage) {
+void Line::addError(const std::string& errorMessage) {
   this->error_ = true;
   this->errorMessage_.append(errorMessage + "\n");
 }
