@@ -42,7 +42,7 @@ bool Location::methodAllowed(std::string meth) const {
 }
 
 bool Location::maxBodyReached(size_t clen) const {
-  return ((size_t)clientMaxBodySize_ < clen);
+  return (static_cast<size_t>(this->clientMaxBodySize_) < clen);
 }
 
 std::ostream& operator<<(std::ostream& stream, const Location& location) {

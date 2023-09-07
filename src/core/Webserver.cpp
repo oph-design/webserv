@@ -123,9 +123,8 @@ void Webserver::startServerRoutine_() {
       if (this->fds_[i].revents == POLLIN) {
         if (Sockets_[i].socketType_ == SERVER)
           createClientSocket_(Sockets_[i]);
-        else {
+        else
           existingConnection_(Sockets_[i], fds_[i], i);
-        }
       }
     }
     checkTimeoutClients();

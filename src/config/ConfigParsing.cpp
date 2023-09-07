@@ -20,9 +20,9 @@ Config ConfigParsing::parseServer_(LineIter &iter, const LineIter &end) {
       config.root_ = ConfigParsing::parseRoot(*iter, duplicates);
     else if (iter->firstWord() == "error_page")
       config.errorPage_.insert(ConfigParsing::parseErrorPage(*iter));
-    else if (iter->firstWord() == "timeout") {
+    else if (iter->firstWord() == "timeout")
       config.timeout_ = ConfigParsing::parseTimeout(*iter);
-    } else if (iter->getLine() == "}")
+    else if (iter->getLine() == "}")
       break;
     else
       iter->addError("unknown option" + iter->firstWord());
