@@ -128,7 +128,7 @@ std::string ConfigParsing::parseServerName(Line &line) {
   std::string parameter = "server_name";
   if (line.words() != 2) {
     line.addError(parameter + " unexpected arguments");
-    return 0;
+    return "";
   }
   return line[1];
 }
@@ -137,7 +137,7 @@ std::string ConfigParsing::parseIndex(Line &line, Duplicates &duplicates) {
   std::string parameter = "index";
   if (line.words() != 2) {
     line.addError(parameter + " unexpected arguments");
-    return 0;
+    return "";
   }
   duplicates.index = true;
   std::string str = line[1];
@@ -149,7 +149,7 @@ std::string ConfigParsing::parseRoot(Line &line, Duplicates &duplicates) {
   std::string parameter = "root";
   if (line.words() != 2) {
     line.addError(parameter + " unexpected arguments");
-    return 0;
+    return "";
   }
   duplicates.root = true;
   std::string str = line[1];
@@ -161,7 +161,7 @@ std::string ConfigParsing::parseUpload(Line &line, Duplicates &duplicates) {
   std::string parameter = "upload_pass";
   if (line.words() != 2) {
     line.addError(parameter + " unexpected arguments");
-    return 0;
+    return "";
   }
   duplicates.upload_pass = true;
   std::string str = line[1];
@@ -186,7 +186,7 @@ bool ConfigParsing::parseAutoindex(Line &line) {
   std::string parameter = "autoindex";
   if (line.words() != 2) {
     line.addError(parameter + " unexpected arguments");
-    return 0;
+    return false;
   }
   if (line[1] == "on") {
     return true;
@@ -202,7 +202,7 @@ bool ConfigParsing::parseCgiProcessing(Line &line) {
   std::string parameter = "cgi_processing";
   if (line.words() != 2) {
     line.addError(parameter + " unexpected arguments");
-    return 0;
+    return false;
   }
   if (line[1] == "on") {
     return true;
@@ -230,7 +230,7 @@ std::string ConfigParsing::parseCgiPass(Line &line, Duplicates &duplicates) {
   std::string parameter = "cgi_pass";
   if (line.words() != 2) {
     line.addError(parameter + " unexpected arguments");
-    return 0;
+    return "";
   }
   duplicates.cgi_pass = true;
   std::string str = line[1];
