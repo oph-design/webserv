@@ -24,13 +24,13 @@
 #define BUFFER_SIZE 131072
 
 class Webserver {
-public:
+ public:
   Webserver(ConfigVector &);
   Webserver(const Webserver &);
   ~Webserver();
   Webserver &operator=(const Webserver &);
 
-private:
+ private:
   void createServerSocket_(Socket &, int, double);
   void createClientSocket_(Socket &);
   void startServerRoutine_();
@@ -52,4 +52,4 @@ private:
   Socket Sockets_[MAX_CLIENTS];
 };
 
-#endif // WEBSERVER_HPP
+#endif  // WEBSERVER_HPP

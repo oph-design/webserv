@@ -44,10 +44,8 @@ std::string CgiConnector::getBody() const { return this->respBody_; }
 bool CgiConnector::isCgi(const std::string &path) {
   std::string name = path.substr(path.rfind('/') + 1, path.size());
   std::string extension = name.substr(name.rfind('.') + 1, name.length());
-  if (extension != "py")
-    return (false);
-  if (access(path.c_str(), F_OK | X_OK) == -1)
-    return (false);
+  if (extension != "py") return (false);
+  if (access(path.c_str(), F_OK | X_OK) == -1) return (false);
   return (true);
 }
 
@@ -95,8 +93,7 @@ bool CgiConnector::waitTimeouted(pid_t pid, int *exitcode) {
     sleep(TIMEOUT);
     std::exit(112);
   }
-  while (tmp == 0)
-    tmp = waitpid(WAIT_ANY, exitcode, WNOHANG);
+  while (tmp == 0) tmp = waitpid(WAIT_ANY, exitcode, WNOHANG);
   if (tmp == timer) {
     kill(pid, SIGTERM);
     res = false;
@@ -134,8 +131,7 @@ void CgiConnector::writeReqBody() {
 }
 
 void CgiConnector::executeScript_(const std::string &path, int pipes[2]) {
-  if (this->env_["REQUEST_METHOD"] == "POST")
-    this->writeReqBody();
+  if (this->env_["REQUEST_METHOD"] == "POST") this->writeReqBody();
   dup2(pipes[1], 1);
   close(pipes[0]);
   close(pipes[1]);
@@ -145,8 +141,7 @@ void CgiConnector::executeScript_(const std::string &path, int pipes[2]) {
   args[1] = NULL;
   execve(path.c_str(), args, env);
   size_t i = 0;
-  while (env[i])
-    delete env[i++];
+  while (env[i]) delete env[i++];
   delete[] env;
   delete[] args;
   std::exit(1);
@@ -157,10 +152,8 @@ void CgiConnector::makeConnection(Status &status) {
   int exitcode;
   pipe(pipes);
   pid_t pid = fork();
-  if (!pid)
-    this->executeScript_(this->path_, pipes);
-  if (!waitTimeouted(pid, &exitcode))
-    std::cerr << "CGI Timeout" << std::endl;
+  if (!pid) this->executeScript_(this->path_, pipes);
+  if (!waitTimeouted(pid, &exitcode)) std::cerr << "CGI Timeout" << std::endl;
   exitcode = WEXITSTATUS(exitcode);
   std::cout << RED << exitcode << COLOR_RESET << std::endl;
   if (exitcode > 0) {
