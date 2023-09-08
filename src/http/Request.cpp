@@ -20,8 +20,7 @@ Request::Request(const std::string &bufferString) {
     std::getline(ss, line);
     line.erase(std::remove(line.begin(), line.end(), '\r'), line.end());
     line.erase(std::remove(line.begin(), line.end(), '\n'), line.end());
-    if (line.empty())
-      break;
+    if (line.empty()) break;
     std::pair<std::string, std::string> keyPair;
     keyPair.first = line.substr(0, line.find(": "));
     keyPair.second =
@@ -40,8 +39,7 @@ void Request::unchunkBody_() {
   try {
     std::string newBody = "";
     size_t clen = atoi((*this)["Content-Length"].c_str());
-    if (!((*this)["Transfer-Encoding"] == "chunked"))
-      return;
+    if (!((*this)["Transfer-Encoding"] == "chunked")) return;
     while (newBody.length() < clen) {
       int position = requestBody_.find("\r\n");
       int len = std::strtol(requestBody_.substr(0, position).c_str(), NULL, 16);
@@ -95,8 +93,7 @@ std::string Request::getRequestBody() const { return this->requestBody_; }
 
 bool Request::isKeepAlive() const {
   try {
-    if ((*this)["Connection"] == "keep-alive")
-      return true;
+    if ((*this)["Connection"] == "keep-alive") return true;
     return false;
   } catch (std::exception &) {
     return false;
@@ -176,8 +173,7 @@ void Request::splitQuery_() {
   std::stringstream ss(this->queryString_);
   std::string queryLine;
   while (std::getline(ss, queryLine, '&')) {
-    if (queryLine.empty())
-      continue;
+    if (queryLine.empty()) continue;
     std::size_t equalPosition = queryLine.find('=');
     if (equalPosition != std::string::npos &&
         equalPosition + 1 != std::string::npos)
@@ -202,8 +198,7 @@ std::ostream &operator<<(std::ostream &stream, const Request &header) {
     stream << "[" << iter->first << "=" << iter->second << "]";
     stream << "\n";
   }
-  if (header.requestBodyExists_)
-    stream << header.requestBody_;
+  if (header.requestBodyExists_) stream << header.requestBody_;
   stream << "QUERY=" << header.queryString_ << "\n";
   for (std::map<std::string, std::string>::const_iterator iter =
            header.queryTable_.begin();
