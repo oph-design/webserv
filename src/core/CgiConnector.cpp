@@ -2,15 +2,15 @@
 
 CgiConnector::CgiConnector() {}
 
-CgiConnector::CgiConnector(const Request& request, std::string path)
+CgiConnector::CgiConnector(const Request &request, const std::string &path)
     : reqBody_(request.getRequestBody()), env_(buildEnv_(request)) {
   printVerbose(YELLOW, path);
   this->path_ = path;
 }
 
-CgiConnector::CgiConnector(const CgiConnector& rhs) { *this = rhs; }
+CgiConnector::CgiConnector(const CgiConnector &rhs) { *this = rhs; }
 
-CgiConnector& CgiConnector::operator=(const CgiConnector& rhs) {
+CgiConnector &CgiConnector::operator=(const CgiConnector &rhs) {
   this->respBody_ = rhs.respBody_;
   this->respHeader_ = rhs.respHeader_;
   this->env_ = rhs.env_;
@@ -28,9 +28,9 @@ std::map<std::string, std::string> CgiConnector::getHeader() const {
 
   while (std::getline(iss, buffer)) {
     try {
-      key = buffer.substr(0, buffer.find(":"));
-      value = buffer.substr(buffer.find(":") + 2, buffer.length());
-    } catch (std::exception& e) {
+      key = buffer.substr(0, buffer.find(':'));
+      value = buffer.substr(buffer.find(':') + 2, buffer.length());
+    } catch (std::exception &e) {
       std::cout << e.what() << std::endl;
       continue;
     }
@@ -41,39 +41,41 @@ std::map<std::string, std::string> CgiConnector::getHeader() const {
 
 std::string CgiConnector::getBody() const { return this->respBody_; }
 
-bool CgiConnector::isCgi(std::string path) {
-  std::string name = path.substr(path.rfind("/") + 1, path.size());
-  std::string extention = name.substr(name.rfind(".") + 1, name.length());
-  if (extention != "py") return (false);
-  if (access(path.c_str(), F_OK | X_OK) == -1) return (false);
+bool CgiConnector::isCgi(const std::string &path) {
+  std::string name = path.substr(path.rfind('/') + 1, path.size());
+  std::string extension = name.substr(name.rfind('.') + 1, name.length());
+  if (extension != "py")
+    return (false);
+  if (access(path.c_str(), F_OK | X_OK) == -1)
+    return (false);
   return (true);
 }
 
-envMap CgiConnector::buildEnv_(const Request& request) {
+envMap CgiConnector::buildEnv_(const Request &request) {
   envMap res;
   std::string uri = request.getPath();
   res.insert(envVar("REQUEST_METHOD", request.getRequestMethodString()));
   res.insert(envVar("QUERY_STRING", request.getQueryString()));
   res.insert(envVar("REQUEST_URI", uri));
-  res.insert(envVar("SCRIPT_NAME", uri.substr(uri.rfind("/") + 1, uri.size())));
+  res.insert(envVar("SCRIPT_NAME", uri.substr(uri.rfind('/') + 1, uri.size())));
   res.insert(envVar("SERVER_PROTOCOL", request.getHTTPVersion()));
   try {
     res.insert(envVar("CONTENT_TYPE", request["Content-Type"]));
-  } catch (std::exception& e) {
-    std::cout << e.what() << std::endl;
+  } catch (std::exception &e) {
+    printVerbose(RED, e.what());
   }
   try {
     res.insert(envVar("CONTENT_LENGTH", request["Content-Length"]));
-  } catch (std::exception& e) {
-    std::cout << e.what() << std::endl;
+  } catch (std::exception &e) {
+    printVerbose(RED, e.what());
   }
   return (res);
 }
 
-char** CgiConnector::envToString_() {
+char **CgiConnector::envToString_() {
   size_t i = 0;
   std::string variable;
-  char** res = new char*[this->env_.size() + 1];
+  char **res = new char *[this->env_.size() + 1];
   for (envMap::iterator it = env_.begin(); it != env_.end(); ++it) {
     variable = it->first + "=" + it->second;
     res[i] = new char[variable.length() + 1];
@@ -85,7 +87,7 @@ char** CgiConnector::envToString_() {
   return (res);
 }
 
-bool CgiConnector::waitTimeouted(pid_t pid, int* exitcode) {
+bool CgiConnector::waitTimeouted(pid_t pid, int *exitcode) {
   pid_t timer = fork();
   pid_t tmp = 0;
   bool res = true;
@@ -93,7 +95,8 @@ bool CgiConnector::waitTimeouted(pid_t pid, int* exitcode) {
     sleep(TIMEOUT);
     std::exit(112);
   }
-  while (tmp == 0) tmp = waitpid(WAIT_ANY, exitcode, WNOHANG);
+  while (tmp == 0)
+    tmp = waitpid(WAIT_ANY, exitcode, WNOHANG);
   if (tmp == timer) {
     kill(pid, SIGTERM);
     res = false;
@@ -130,30 +133,34 @@ void CgiConnector::writeReqBody() {
   close(script_input[1]);
 }
 
-void CgiConnector::executeScript_(std::string path, int pipes[2]) {
-  if (this->env_["REQUEST_METHOD"] == "POST") this->writeReqBody();
+void CgiConnector::executeScript_(const std::string &path, int pipes[2]) {
+  if (this->env_["REQUEST_METHOD"] == "POST")
+    this->writeReqBody();
   dup2(pipes[1], 1);
   close(pipes[0]);
   close(pipes[1]);
-  char** env = this->envToString_();
-  char** args = new char*[2];
-  args[0] = const_cast<char*>(path.c_str());
+  char **env = this->envToString_();
+  char **args = new char *[2];
+  args[0] = const_cast<char *>(path.c_str());
   args[1] = NULL;
   execve(path.c_str(), args, env);
   size_t i = 0;
-  while (env[i] != NULL) delete env[i++];
+  while (env[i])
+    delete env[i++];
   delete[] env;
   delete[] args;
   std::exit(1);
 }
 
-void CgiConnector::makeConnection(Status& status) {
+void CgiConnector::makeConnection(Status &status) {
   int pipes[2];
   int exitcode;
   pipe(pipes);
   pid_t pid = fork();
-  if (!pid) this->executeScript_(this->path_, pipes);
-  if (!waitTimeouted(pid, &exitcode)) std::cerr << "CGI Timeout" << std::endl;
+  if (!pid)
+    this->executeScript_(this->path_, pipes);
+  if (!waitTimeouted(pid, &exitcode))
+    std::cerr << "CGI Timeout" << std::endl;
   exitcode = WEXITSTATUS(exitcode);
   std::cout << RED << exitcode << COLOR_RESET << std::endl;
   if (exitcode > 0) {
