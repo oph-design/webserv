@@ -159,7 +159,7 @@ void Request::decodeURI_() {
 
 void Request::splitURI_() {
   std::size_t queryBegin = this->URI_.find('?');
-  if (queryBegin != this->URI_.npos && queryBegin + 1 != this->URI_.npos) {
+  if (queryBegin != std::string::npos && queryBegin + 1 != std::string::npos) {
     this->path_ = this->URI_.substr(0, queryBegin);
     this->queryString_ = this->URI_.substr(queryBegin + 1);
   } else {
