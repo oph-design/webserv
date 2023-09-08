@@ -8,10 +8,10 @@
 
 #define VERBOSE false
 
-template <typename Type>
-void printVerbose(std::string call, Type val) {
-  if (!VERBOSE) return;
+template <typename Type> void printVerbose(const std::string &call, Type val) {
+  if (!VERBOSE)
+    return;
   std::cout << call << val << COLOR_RESET << std::endl;
 }
 
-#endif  // PRINTVERBOSE_HPP_
+#endif // PRINTVERBOSE_HPP_
