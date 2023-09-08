@@ -193,7 +193,7 @@ bool Webserver::existingConnection_(Socket &socket, pollfd &pollfd, size_t &i) {
 
 void Webserver::closeConnection_(Socket &socket, pollfd &pollfd, size_t &i) {
   printVerbose("Connection closing on Socket ", socket.fd_);
-  close(pollfd.fd);
+/*   close(pollfd.fd);
   socket.socketType_ = UNUSED;
   for (size_t j = i; j < MAX_CLIENTS - 1; ++j) {
     this->fds_[j] = this->fds_[j + 1];
@@ -201,6 +201,13 @@ void Webserver::closeConnection_(Socket &socket, pollfd &pollfd, size_t &i) {
   }
   this->fds_[MAX_CLIENTS - 1].fd = -1;
   this->Sockets_[MAX_CLIENTS - 1].setIdle();
+  socketNum_--;
+  clientSocketNum_--; */
+
+  close(pollfd.fd);
+  socket.setIdle();
+  std::swap(fds_[i], fds_[socketNum_]);
+  std::swap(Sockets_[i], Sockets_[socketNum_]);
   socketNum_--;
   clientSocketNum_--;
 }
