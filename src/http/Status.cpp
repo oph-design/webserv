@@ -4,27 +4,27 @@ statusMap Status::stats_ = Status::createStatusMap();
 
 Status::Status() : code_(200) {}
 
-Status::Status(const Status& rhs) { *this = rhs; }
+Status::Status(const Status &rhs) { *this = rhs; }
 
-Status& Status::operator=(const Status& rhs) {
+Status &Status::operator=(const Status &rhs) {
   this->code_ = rhs.code_;
   return (*this);
 }
 
-Status& Status::operator=(int newCode) {
+Status &Status::operator=(int newCode) {
   this->code_ = newCode;
   return (*this);
 }
 
 Status::~Status() {}
 
-void Status::setErrors(const Location& location) {
+void Status::setErrors(const Location &location) {
   this->root_ = location.getRoot();
   this->errors_ = location.getErrorPage();
 }
 
-std::ostream& operator<<(std::ostream& stream, const Status& status) {
-  stream << toString<int>(status.code_) << " " << status.stats_[status.code_];
+std::ostream &operator<<(std::ostream &stream, const Status &status) {
+  stream << toString<int>(status.code_) << " " << Status::stats_[status.code_];
   return (stream);
 }
 
@@ -41,17 +41,19 @@ bool Status::operator<(int rhs) const { return (this->code_ < rhs); }
 std::string Status::getStdError() {
   std::string path = this->root_ + "/" + this->errors_[this->code_];
   std::ifstream error(path.c_str());
-  if (!error.is_open()) return "";
+  if (!error.is_open())
+    return "";
   std::stringstream content;
   content << error.rdbuf();
   error.close();
   return (content.str());
 }
 
-std::string& Status::operator>>(std::string& str) {
+std::string &Status::operator>>(std::string &str) {
   std::stringstream body;
   str = this->getStdError();
-  if (!str.empty()) return (str);
+  if (!str.empty())
+    return (str);
   body << "<!DOCTYPE html>\n";
   body << "<html lang=\"en\">\n";
   body << "<head>\n";
@@ -83,9 +85,9 @@ statusMap Status::createStatusMap() {
 
   while (data.is_open() && std::getline(data, field)) {
     try {
-      key = field.substr(0, field.find(","));
-      value = field.substr(field.find(",") + 1);
-    } catch (std::exception&) {
+      key = field.substr(0, field.find(','));
+      value = field.substr(field.find(',') + 1);
+    } catch (std::exception &) {
       continue;
     }
     stats.insert(statusPair(std::atoi(key.c_str()), value));

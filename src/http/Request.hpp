@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "PrintVerbose.hpp"
 #include "colors.hpp"
 
 #ifndef BUFFER_SIZE
@@ -28,15 +29,12 @@ typedef enum e_methodTypes {
 } t_methodTypes;
 
 class Request {
- public:
+public:
   Request();
-  Request(char buffer[BUFFER_SIZE]);
-  Request(std::string bufferString);
+  Request(const std::string &bufferString);
   ~Request();
   Request(const Request &obj);
   Request &operator=(const Request &obj);
-
-  void addField(std::pair<std::string, std::string> &fieldWithContent);
 
   const std::string &operator[](const std::string &key) const;
   const std::string &operator[](const char *key) const;
@@ -49,12 +47,12 @@ class Request {
   std::string getHTTPVersion() const;
   bool getRequestBodyExists() const;
   std::string getRequestBody() const;
-  std::string cutPath(std::string index);
+  std::string cutPath(const std::string &index);
   bool isKeepAlive() const;
 
   void setPath(const std::string &path);
 
- private:
+private:
   void parseRequestLine_(std::string &requestLine);
   void decodeURI_();
   void splitURI_();
@@ -73,4 +71,4 @@ class Request {
   bool requestBodyExists_;
 };
 
-#endif  // HEADER_HPP_
+#endif // HEADER_HPP_

@@ -29,7 +29,7 @@ typedef std::pair<std::string, std::string> contentField;
 typedef std::map<std::string, std::string> contentMap;
 
 class Response {
- public:
+public:
   Response(Request &request, const Location &location);
   Response(const Response &rhs);
   Response &operator=(const Response &rhs);
@@ -39,26 +39,27 @@ class Response {
   const std::string &operator[](const char *key);
   friend std::ostream &operator<<(std::ostream &stream, const Response &resp);
   const std::string &getBody() const;
-  const std::string getHeader() const;
+  std::string getHeader() const;
   static contentMap createTypeMap();
 
- private:
-  void readBody_(std::string dir);
-  void findType_(std::string url);
-  void handleGetRequest_(Request &request, std::string uri);
-  void handlePostRequest_(const Request &request, std::string uri);
-  void handleDeleteRequest_(const Request &request, std::string uri);
-  void createFile_(std::string filename, std::string ext, std::string data);
+private:
+  void readBody_(const std::string &dir);
+  void findType_(const std::string &url);
+  void handleGetRequest_(Request &request, const std::string &uri);
+  void handlePostRequest_(const Request &request, const std::string &uri);
+  void handleDeleteRequest_(const Request &request, const std::string &uri);
+  void createFile_(const std::string &filename, const std::string &ext,
+                   const std::string &data);
   void buildJsonBody_();
   void serveCgi_(const Request &request);
-  bool prerequisits_(std::string meth, const Request &request);
+  bool prerequisites_(const std::string &method, const Request &request);
   bool redirect();
 
   static bool isForbiddenPath_(const std::string &dir);
-  static bool isFolder_(std::string uri);
-  void serveFolder_(std::string path);
-  std::string createFolderBody_(std::string path);
-  std::deque<std::string> getFilesInFolder_(std::string path);
+  static bool isFolder_(const std::string &uri);
+  void serveFolder_(const std::string &path);
+  std::string createFolderBody_(const std::string &path);
+  static std::deque<std::string> getFilesInFolder_(const std::string &path);
 
   static contentMap fileTypes_;
   contentMap header_;
@@ -68,4 +69,4 @@ class Response {
   std::string type_;
 };
 
-#endif  // !RESPONSE_HPP
+#endif // !RESPONSE_HPP
