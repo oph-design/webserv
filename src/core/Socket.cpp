@@ -4,17 +4,9 @@
 
 // public
 Socket::Socket()
-    : fd_(-1),
-      socketIndex_(-1),
-      socketType_(UNUSED),
-      serverAddress_(""),
-      socketOpt_(1),
-      listeningSocket_(-1),
-      dataSend_(0),
-      pendingSend_(false),
-      keepAlive_(false),
-      timeout_(5),
-      configId_(-1) {}
+    : fd_(-1), socketIndex_(-1), socketType_(UNUSED), serverAddress_(""),
+      socketOpt_(1), listeningSocket_(-1), dataSend_(0), pendingSend_(false),
+      keepAlive_(false), timeout_(5), configId_(-1) {}
 
 Socket::~Socket() {}
 
@@ -40,12 +32,12 @@ Socket &Socket::operator=(const Socket &rhs) {
 
 // getter
 
-int Socket::getFd() { return this->fd_; }
-bool Socket::getKeepAlive() const { return this->keepAlive_; }
+const int &Socket::getFd() const { return this->fd_; }
+const bool &Socket::getKeepAlive() const { return this->keepAlive_; }
 
 // setter
 
-void Socket::setServerAddress(std::string name) {
+void Socket::setServerAddress(const std::string &name) {
   std::string port = toString<int>(ntohs(this->socketaddr_.sin_port));
   this->serverAddress_ = name + ":" + port;
 }
@@ -76,7 +68,8 @@ void Socket::setTimestamp() { this->timestamp_ = std::time(NULL); }
 bool Socket::checkTimeout() {
   if (this->socketType_ == CLIENT) {
     time_t current = std::time(NULL);
-    if ((current - this->timestamp_) >= this->timeout_) return true;
+    if ((current - this->timestamp_) >= this->timeout_)
+      return true;
   }
   return false;
 }

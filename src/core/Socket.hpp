@@ -28,21 +28,21 @@ typedef struct s_reqStatus {
 class Socket {
   friend class Webserver;
 
- public:
+public:
   Socket();
   ~Socket();
   Socket(const Socket &);
   Socket &operator=(const Socket &);
 
   // getter
-  bool getKeepAlive() const;
-  int getFd();
+  const bool &getKeepAlive() const;
+  const int &getFd() const;
 
   // setter
   void setReqStatus();
   void setIdle();
   void setTimestamp();
-  void setServerAddress(std::string name);
+  void setServerAddress(const std::string &name);
 
   // other functions
   bool checkTimeout();
@@ -50,7 +50,7 @@ class Socket {
   // public vars
   t_reqStatus reqStatus;
 
- private:
+private:
   int fd_;
   int socketIndex_;
   SocketType socketType_;
@@ -69,4 +69,4 @@ class Socket {
 
 bool receiveRequest(Socket &socket, size_t &bytes);
 
-#endif  //  SOCKET_HPP
+#endif //  SOCKET_HPP
