@@ -1,13 +1,13 @@
 #ifndef CGICONNECTOR_HPP
 #define CGICONNECTOR_HPP
 
-#include <csignal>
-#include <cstdio>
 #include <dirent.h>
 #include <fcntl.h>
 #include <sys/wait.h>
 #include <unistd.h>
 
+#include <csignal>
+#include <cstdio>
 #include <cstring>
 #include <exception>
 #include <fstream>
@@ -29,7 +29,7 @@ typedef std::pair<std::string, std::string> envVar;
 typedef std::map<std::string, std::string> envMap;
 
 class CgiConnector {
-public:
+ public:
   CgiConnector();
   CgiConnector(const Request &request, const std::string &path);
   CgiConnector(const CgiConnector &rhs);
@@ -41,7 +41,7 @@ public:
   std::string getBody() const;
   static bool isCgi(const std::string &path);
 
-private:
+ private:
   static envMap buildEnv_(const Request &request);
   char **envToString_();
   static bool waitTimeouted(pid_t pid, int *exitcode);
@@ -56,4 +56,4 @@ private:
   envMap env_;
 };
 
-#endif // !CGICONNECTOR_HPP
+#endif  // !CGICONNECTOR_HPP

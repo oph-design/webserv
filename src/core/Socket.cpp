@@ -4,9 +4,17 @@
 
 // public
 Socket::Socket()
-    : fd_(-1), socketIndex_(-1), socketType_(UNUSED), serverAddress_(""),
-      socketOpt_(1), listeningSocket_(-1), dataSend_(0), pendingSend_(false),
-      keepAlive_(false), timeout_(5), configId_(-1) {}
+    : fd_(-1),
+      socketIndex_(-1),
+      socketType_(UNUSED),
+      serverAddress_(""),
+      socketOpt_(1),
+      listeningSocket_(-1),
+      dataSend_(0),
+      pendingSend_(false),
+      keepAlive_(false),
+      timeout_(5),
+      configId_(-1) {}
 
 Socket::~Socket() {}
 
@@ -68,8 +76,7 @@ void Socket::setTimestamp() { this->timestamp_ = std::time(NULL); }
 bool Socket::checkTimeout() {
   if (this->socketType_ == CLIENT) {
     time_t current = std::time(NULL);
-    if ((current - this->timestamp_) >= this->timeout_)
-      return true;
+    if ((current - this->timestamp_) >= this->timeout_) return true;
   }
   return false;
 }
