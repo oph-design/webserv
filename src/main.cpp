@@ -7,8 +7,7 @@
 int main(int argc, char *argv[]) {
   implementSignalHandling();
   ConfigFile configFile;
-  if (!configFile.openFile(argc, argv))
-    return EXIT_FAILURE;
+  if (!configFile.openFile(argc, argv)) return EXIT_FAILURE;
   ConfigVector configs = configFile.createConfig();
   if (!configFile.isValid()) {
     std::cout << configFile << std::endl;

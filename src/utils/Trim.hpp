@@ -5,4 +5,4 @@
 
 std::string trim(const std::string &s, const std::string &trim);
 
-#endif // !TRIM_HPP
+#endif  // !TRIM_HPP
