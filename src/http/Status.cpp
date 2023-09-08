@@ -41,8 +41,7 @@ bool Status::operator<(int rhs) const { return (this->code_ < rhs); }
 std::string Status::getStdError() {
   std::string path = this->root_ + "/" + this->errors_[this->code_];
   std::ifstream error(path.c_str());
-  if (!error.is_open())
-    return "";
+  if (!error.is_open()) return "";
   std::stringstream content;
   content << error.rdbuf();
   error.close();
@@ -52,8 +51,7 @@ std::string Status::getStdError() {
 std::string &Status::operator>>(std::string &str) {
   std::stringstream body;
   str = this->getStdError();
-  if (!str.empty())
-    return (str);
+  if (!str.empty()) return (str);
   body << "<!DOCTYPE html>\n";
   body << "<html lang=\"en\">\n";
   body << "<head>\n";
