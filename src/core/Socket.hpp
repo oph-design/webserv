@@ -28,7 +28,7 @@ typedef struct s_reqStatus {
 class Socket {
   friend class Webserver;
 
-public:
+ public:
   Socket();
   ~Socket();
   Socket(const Socket &);
@@ -50,7 +50,7 @@ public:
   // public vars
   t_reqStatus reqStatus;
 
-private:
+ private:
   int fd_;
   int socketIndex_;
   SocketType socketType_;
@@ -69,4 +69,4 @@ private:
 
 bool receiveRequest(Socket &socket, size_t &bytes);
 
-#endif //  SOCKET_HPP
+#endif  //  SOCKET_HPP
