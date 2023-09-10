@@ -42,7 +42,6 @@ class Socket {
   void setReqStatus();
   void setIdle();
   void setTimestamp();
-  void setServerAddress(std::string name);
 
   // other functions
   bool checkTimeout();
@@ -54,7 +53,6 @@ class Socket {
   int fd_;
   int socketIndex_;
   SocketType socketType_;
-  std::string serverAddress_;
   int socketOpt_;
   int listeningSocket_;
   sockaddr_in socketaddr_;
@@ -64,7 +62,6 @@ class Socket {
   bool keepAlive_;
   time_t timestamp_;
   double timeout_;
-  int configId_;
 };
 
 bool receiveRequest(Socket &socket, size_t &bytes);

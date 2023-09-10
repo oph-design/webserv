@@ -1,5 +1,7 @@
 #include "Webserver.hpp"
 
+#include "ToString.hpp"
+
 Webserver::Webserver(const Webserver &rhs) : configs_(rhs.configs_) {
   *this = rhs;
 }
@@ -86,10 +88,8 @@ void Webserver::createServerSocket_(Socket &serverSocket, int port,
   this->fds_[socketNum_].fd = serverSocket.listeningSocket_;
   serverSocket.fd_ = serverSocket.listeningSocket_;
   std::string servername = this->configs_[this->socketNum_].getServerName();
-  serverSocket.setServerAddress(servername);
   serverSocket.socketIndex_ = socketNum_;
   serverSocket.socketType_ = SERVER;
-  serverSocket.configId_ = this->socketNum_;
   serverSocket.timeout_ = timeout;
   this->socketNum_++;
   this->serverSocketNum_++;
@@ -145,8 +145,7 @@ void Webserver::startServerRoutine_() {
 std::string Webserver::createResponse_(Socket &socket) {
   Request request(socket.reqStatus.buffer);
   if (request.isKeepAlive()) socket.keepAlive_ = true;
-  int conf = this->getConfigId_(request);
-  Location loc = this->configs_[conf].getLocationByPath(request.getPath());
+  Location loc = getConfig_(request).getLocationByPath(request.getPath());
   Response resobj(request, loc);
   std::string response = resobj.getHeader() + resobj.getBody();
   return response;
@@ -225,18 +224,21 @@ void Webserver::checkTimeoutClients() {
   }
 }
 
-int Webserver::getConfigId_(const Request &request) {
+Config &Webserver::getConfig_(const Request &request) {
   std::string toFind;
+  std::string compare;
+  Config &res = this->configs_[0];
   try {
     toFind = request["Host"];
   } catch (std::exception &) {
-    return (0);
+    return (res);
   }
-  for (int i = 0; i < MAX_CLIENTS; ++i) {
-    if (toFind == this->Sockets_[i].serverAddress_)
-      return (this->Sockets_[i].configId_);
+  for (size_t i = 0; i < this->configs_.size(); ++i) {
+    compare = this->configs_[i].getServerName() + ":" +
+              toString(this->configs_[i].getPort());
+    if (compare == toFind) res = this->configs_[i];
   }
-  return (0);
+  return (res);
 }
 
 void Webserver::error_(std::string error) {
