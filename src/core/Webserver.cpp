@@ -89,14 +89,13 @@ void Webserver::createServerSocket_(Socket &serverSocket, int port,
   std::string servername = this->configs_[index].getServerName();
   serverSocket.socketIndex_ = index;
   serverSocket.socketType_ = SERVER;
-  serverSocket.configId_ = index;
   serverSocket.timeout_ = timeout;
   this->serverSocketNum_++;
 }
 
 void Webserver::createClientSocket_(Socket &serverSocket) {
   if (getFreeSocket() == MAX_CLIENTS) return;
-  socklen_t boundServerAdress_len = sizeof(serverSocket.socketaddr_);
+  socklen_t boundServerAddress_len = sizeof(serverSocket.socketaddr_);
   int new_client_sock;
   if ((new_client_sock = accept(serverSocket.fd_,
                                 (struct sockaddr *)&serverSocket.socketaddr_,
