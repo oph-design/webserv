@@ -9,7 +9,7 @@ int main(int argc, char *argv[]) {
   ConfigFile configFile;
   if (!configFile.openFile(argc, argv)) return EXIT_FAILURE;
   ConfigVector configs = configFile.createConfig();
-  if (configFile.isValid() == false) {
+  if (!configFile.isValid()) {
     std::cout << configFile << std::endl;
     return EXIT_FAILURE;
   } else {

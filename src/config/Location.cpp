@@ -3,12 +3,14 @@
 #include "Types.hpp"
 
 Location::Location() {
+  Duplicates duplicates;
   this->autoindex_ = false;
   this->cgiProcessing_ = false;
   this->clientMaxBodySize_ = 10000;
   this->index_ = "index.html";
   this->root_ = "./";
   this->limitExcept_.insert("GET");
+  this->duplicates_ = duplicates;
   this->duplicates_.clientMaxBodySize = false;
   this->duplicates_.index = false;
   this->duplicates_.root = false;
@@ -18,9 +20,9 @@ Location::Location() {
 
 Location::~Location() {}
 
-Location::Location(const Location& obj) { *this = obj; }
+Location::Location(const Location &obj) { *this = obj; }
 
-Location& Location::operator=(const Location& obj) {
+Location &Location::operator=(const Location &obj) {
   this->autoindex_ = obj.autoindex_;
   this->cgiProcessing_ = obj.cgiProcessing_;
   this->clientMaxBodySize_ = obj.clientMaxBodySize_;
@@ -36,17 +38,17 @@ Location& Location::operator=(const Location& obj) {
   return *this;
 }
 
-bool Location::methodAllowed(std::string meth) const {
-  StringSet::const_iterator it = this->limitExcept_.find(meth);
+bool Location::methodAllowed(const std::string &method) const {
+  StringSet::const_iterator it = this->limitExcept_.find(method);
   if (it != this->limitExcept_.end()) return true;
   return false;
 }
 
-bool Location::maxBodyReached(size_t clen) const {
-  return (static_cast<size_t>(this->clientMaxBodySize_) < clen);
+bool Location::maxBodyReached(const std::size_t &contentLength) const {
+  return (static_cast<size_t>(this->clientMaxBodySize_) < contentLength);
 }
 
-std::ostream& operator<<(std::ostream& stream, const Location& location) {
+std::ostream &operator<<(std::ostream &stream, const Location &location) {
   stream << "\nPath: " << location.path_ << "\n";
   stream << "autoindex: " << location.autoindex_ << "\n";
   stream << "client_max_body_size: " << location.clientMaxBodySize_ << "\n";

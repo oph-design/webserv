@@ -1,8 +1,7 @@
 #ifndef SIGNALS_HPP_
 #define SIGNALS_HPP_
 
-#include <signal.h>
-
+#include <csignal>
 #include <iostream>
 
 extern bool serverRunning;

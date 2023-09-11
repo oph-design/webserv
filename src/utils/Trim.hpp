@@ -3,6 +3,6 @@
 
 #include <string>
 
-std::string trim(const std::string &s, std::string trim);
+std::string trim(const std::string &s, const std::string &trim);
 
 #endif  // !TRIM_HPP

@@ -14,7 +14,7 @@ Webserver::Webserver(ConfigVector &configs)
       clientSocketNum_(0),
       socketOpt_(1),
       configs_(configs) {
-  for (size_t i = 0; i < MAX_CLIENTS; ++i) {
+  for (std::size_t i = 0; i < MAX_CLIENTS; ++i) {
     fds_[i].fd = -1;
     fds_[i].events = POLLIN;
     fds_[i].revents = 0;
@@ -97,11 +97,11 @@ void Webserver::createServerSocket_(Socket &serverSocket, int port,
 
 void Webserver::createClientSocket_(Socket &serverSocket) {
   if (socketNum_ >= MAX_CLIENTS) return;
-  socklen_t boundServerAdress_len = sizeof(serverSocket.socketaddr_);
+  socklen_t boundServerAddress_len = sizeof(serverSocket.socketaddr_);
   int new_client_sock;
   if ((new_client_sock = accept(serverSocket.fd_,
                                 (struct sockaddr *)&serverSocket.socketaddr_,
-                                &boundServerAdress_len)) == -1)
+                                &boundServerAddress_len)) == -1)
     error_("Accept Error");
   printVerbose("opened new Socket ", new_client_sock);
   if (fcntl(new_client_sock, F_SETFL, O_NONBLOCK, FD_CLOEXEC) == -1) {
@@ -167,7 +167,7 @@ void Webserver::sendResponse_(Socket &socket, pollfd &pollfd, size_t &i) {
     socket.pendingSend_ = false;
     socket.setTimestamp();
     pollfd.events = POLLIN;
-    if (socket.getKeepAlive() == false) closeConnection_(socket, pollfd, i);
+    if (!socket.getKeepAlive()) closeConnection_(socket, pollfd, i);
   }
 }
 
@@ -176,15 +176,14 @@ bool Webserver::existingConnection_(Socket &socket, pollfd &pollfd, size_t &i) {
   if (receiveRequest(socket, currentBytes) || socket.pendingSend_) {
     printVerbose("connection on socket ", socket.fd_);
     socket.setTimestamp();
-    if (socket.pendingSend_ == false)
-      socket.response_ = this->createResponse_(socket);
+    if (!socket.pendingSend_) socket.response_ = this->createResponse_(socket);
     this->sendResponse_(socket, pollfd, i);
   }
   if (currentBytes == static_cast<std::size_t>(-1) &&
       (errno == EWOULDBLOCK || errno == EAGAIN) && VERBOSE) {
     std::cout << "BLOCKER: " << socket.fd_ << std::endl;
-  } else if (currentBytes == 0 && socket.reqStatus.pendingReceive == false) {
-    if (socket.getKeepAlive() == false) closeConnection_(socket, pollfd, i);
+  } else if (currentBytes == 0 && !socket.reqStatus.pendingReceive) {
+    if (!socket.getKeepAlive()) closeConnection_(socket, pollfd, i);
     return false;
   }
   return true;
@@ -206,7 +205,7 @@ void Webserver::closeConnection_(Socket &socket, pollfd &pollfd, size_t &i) {
 
 void Webserver::checkPending_() {
   for (size_t i = 0; i < socketNum_; ++i) {
-    if (this->Sockets_[i].pendingSend_ == true) {
+    if (this->Sockets_[i].pendingSend_) {
       this->sendResponse_(this->Sockets_[i], fds_[i], i);
       return;
     }
@@ -216,7 +215,7 @@ void Webserver::checkPending_() {
 void Webserver::checkTimeoutClients() {
   for (size_t i = 0; i < socketNum_; ++i) {
     if (this->Sockets_[i].socketType_ == CLIENT &&
-        this->Sockets_[i].checkTimeout() == true) {
+        this->Sockets_[i].checkTimeout()) {
       printVerbose("Timeout of Client Socket: ", this->Sockets_[i].fd_);
       closeConnection_(this->Sockets_[i], this->fds_[i], i);
       break;
@@ -241,7 +240,7 @@ Config &Webserver::getConfig_(const Request &request) {
   return (res);
 }
 
-void Webserver::error_(std::string error) {
+void Webserver::error_(const std::string &error) {
   printVerbose(error, "");
   exit(EXIT_FAILURE);
 }

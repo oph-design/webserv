@@ -6,7 +6,7 @@ int parseCl(std::string buffer) {
   std::size_t position = buffer.find("Content-Length");
   if (position == std::string::npos) return 0;
   buffer = buffer.substr(position + 16, buffer.length());
-  return (atoi(buffer.c_str()));
+  return (std::atoi(buffer.c_str()));
 }
 
 int subtrHeader(std::string buffer) {
@@ -14,8 +14,8 @@ int subtrHeader(std::string buffer) {
   return (buffer.length());
 }
 
-bool getTransferEncoding(std::string buffer) {
-  return (buffer.find("Transfer-Encoding: chunked") != buffer.npos);
+bool getTransferEncoding(const std::string &buffer) {
+  return (buffer.find("Transfer-Encoding: chunked") != std::string::npos);
 }
 
 bool receiveRequest(Socket &socket, size_t &bytes) {
@@ -25,7 +25,7 @@ bool receiveRequest(Socket &socket, size_t &bytes) {
   bytes = recv(socket.getFd(), buffer, sizeof(buffer), O_NONBLOCK);
   reqstatus.readBytes += bytes;
   if (bytes == 0) return (false);
-  if (reqstatus.pendingReceive == false) {
+  if (!reqstatus.pendingReceive) {
     reqstatus.clen = parseCl(buffer);
     reqstatus.buffer = std::string(buffer, bytes);
     reqstatus.readBytes -= subtrHeader(buffer);

@@ -7,13 +7,7 @@ Request::Request() {
   this->requestBodyExists_ = false;
 }
 
-Request::Request(char buffer[BUFFER_SIZE]) {
-  this->requestBodyExists_ = false;
-  std::string string(buffer);
-  *this = Request(string);
-}
-
-Request::Request(std::string bufferString) {
+Request::Request(const std::string &bufferString) {
   this->requestBodyExists_ = false;
   std::stringstream ss(bufferString);
   std::string line;
@@ -26,7 +20,7 @@ Request::Request(std::string bufferString) {
     std::getline(ss, line);
     line.erase(std::remove(line.begin(), line.end(), '\r'), line.end());
     line.erase(std::remove(line.begin(), line.end(), '\n'), line.end());
-    if (line.size() == 0) break;
+    if (line.empty()) break;
     std::pair<std::string, std::string> keyPair;
     keyPair.first = line.substr(0, line.find(": "));
     keyPair.second =
@@ -35,7 +29,7 @@ Request::Request(std::string bufferString) {
   }
   this->requestBody_ = bufferString.substr(bufferString.find("\r\n\r\n") + 4,
                                            bufferString.length());
-  if (requestBody_.size() != 0) {
+  if (!requestBody_.empty()) {
     this->requestBodyExists_ = true;
     this->unchunkBody_();
   }
@@ -55,6 +49,7 @@ void Request::unchunkBody_() {
     }
     this->requestBody_ = newBody;
   } catch (std::exception &e) {
+    printVerbose(RED, e.what());
     std::cout << e.what() << std::endl;
   }
 }
@@ -164,7 +159,7 @@ void Request::decodeURI_() {
 
 void Request::splitURI_() {
   std::size_t queryBegin = this->URI_.find('?');
-  if (queryBegin != this->URI_.npos && queryBegin + 1 != this->URI_.npos) {
+  if (queryBegin != std::string::npos && queryBegin + 1 != std::string::npos) {
     this->path_ = this->URI_.substr(0, queryBegin);
     this->queryString_ = this->URI_.substr(queryBegin + 1);
   } else {
@@ -216,7 +211,7 @@ std::ostream &operator<<(std::ostream &stream, const Request &header) {
 
 void Request::setPath(const std::string &path) { this->path_ = path; }
 
-std::string Request::cutPath(std::string index) {
+std::string Request::cutPath(const std::string &index) {
   if (!index.empty())
     return this->path_.substr(index.length(), this->path_.length());
   return (this->path_);

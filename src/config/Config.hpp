@@ -42,7 +42,7 @@ class Config {
   const ErrorMap &getErrorPage() const;
   const int &getPort() const;
   const int &getTimeout() const;
-  const Location &getLocationByPath(std::string index);
+  const Location &getLocationByPath(const std::string &index);
 
  private:
   static ConfigVector &handleDuplicates_(ConfigVector &configs);

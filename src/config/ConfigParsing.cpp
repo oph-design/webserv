@@ -11,7 +11,7 @@ Config ConfigParsing::parseServer_(LineIter &iter, const LineIter &end) {
       config.listen_.insert(ConfigParsing::parseListen(*iter));
     else if (iter->firstWord() == "client_max_body_size")
       config.clientMaxBodySize_ =
-          ConfigParsing::parseCientMaxBodySize(*iter, duplicates);
+          ConfigParsing::parseClientMaxBodySize(*iter, duplicates);
     else if (iter->firstWord() == "server_name")
       config.serverName_ = ConfigParsing::parseServerName(*iter);
     else if (iter->firstWord() == "index")
@@ -44,7 +44,7 @@ Location ConfigParsing::parseLocation_(LineIter &iter, const LineIter &end) {
       location.cgiProcessing_ = ConfigParsing::parseCgiProcessing(*iter);
     else if (iter->firstWord() == "client_max_body_size")
       location.clientMaxBodySize_ =
-          ConfigParsing::parseCientMaxBodySize(*iter, duplicates);
+          ConfigParsing::parseClientMaxBodySize(*iter, duplicates);
     else if (iter->firstWord() == "index")
       location.index_ = ConfigParsing::parseIndex(*iter, duplicates);
     else if (iter->firstWord() == "root")
@@ -112,7 +112,7 @@ int ConfigParsing::parseTimeout(Line &line) {
   return std::atoi(line[1].c_str());
 }
 
-int ConfigParsing::parseCientMaxBodySize(Line &line, Duplicates &duplicates) {
+int ConfigParsing::parseClientMaxBodySize(Line &line, Duplicates &duplicates) {
   std::string parameter = "client_max_body_size";
   if (line.words() != 2) {
     line.addError(parameter + " unexpected arguments");

@@ -7,6 +7,7 @@
 #include "Request.hpp"
 #include "Trim.hpp"
 
-std::string getContentDispostion(const Request& request, std::string key);
+std::string getContentDisposition(const Request &request,
+                                  const std::string &key);
 
-#endif  // !GETCONTENTDISPOSITION_HPP
+#endif  // GETCONTENTDISPOSITION_HPP

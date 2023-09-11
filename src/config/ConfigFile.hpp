@@ -23,31 +23,27 @@ class ConfigFile {
  public:
   ~ConfigFile();
   ConfigFile();
-  ConfigFile(const ConfigFile& obj);
-  ConfigFile& operator=(const ConfigFile& obj);
+  ConfigFile(const ConfigFile &obj);
+  ConfigFile &operator=(const ConfigFile &obj);
 
-  bool openFile(int argc, char* argv[]);
+  bool openFile(int argc, char *argv[]);
 
   ConfigVector createConfig();
 
   bool isValid();
 
-  friend std::ostream& operator<<(std::ostream& stream, ConfigFile& config);
+  friend std::ostream &operator<<(std::ostream &stream, ConfigFile &config);
 
  private:
-  static ConfigVector splitUpListens_(ConfigVector& configvector);
+  static ConfigVector splitUpListens_(ConfigVector &configvector);
   void cleanContent_();
-  void vaildateConfigFile_();
+  void validateConfigFile_();
   ConfigVector createConfigVector_();
   void removeSemiColon_();
   void checkSeparator_();
   void checkConfigBlocks_();
 
   void updateBackup();
-
-  Config parseServer_(LineIter& iter, const LineIter& end);
-  Location parseLocation_(LineIter& iter, const LineIter& end);
-  StringSet parseLimitExcept_(LineIter& iter, const LineIter& end);
 
   LineVector content_;
   LineVector backup_;

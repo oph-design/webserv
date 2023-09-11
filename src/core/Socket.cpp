@@ -36,8 +36,8 @@ Socket &Socket::operator=(const Socket &rhs) {
 
 // getter
 
-int Socket::getFd() { return this->fd_; }
-bool Socket::getKeepAlive() const { return this->keepAlive_; }
+const int &Socket::getFd() const { return this->fd_; }
+const bool &Socket::getKeepAlive() const { return this->keepAlive_; }
 
 // setter
 

@@ -4,12 +4,12 @@ Line::Line() : lineNumber_(0), error_(false) {}
 
 Line::~Line() {}
 
-Line::Line(const Line& obj) { *this = obj; }
+Line::Line(const Line &obj) { *this = obj; }
 
-Line::Line(int lineNumber, std::string content)
+Line::Line(int lineNumber, const std::string &content)
     : content_(content), lineNumber_(lineNumber), error_(false) {}
 
-Line& Line::operator=(const Line& obj) {
+Line &Line::operator=(const Line &obj) {
   this->lineNumber_ = obj.lineNumber_;
   this->content_ = obj.content_;
   this->error_ = obj.error_;
@@ -17,7 +17,7 @@ Line& Line::operator=(const Line& obj) {
   return *this;
 }
 
-const std::string Line::operator[](const int& key) const {
+std::string Line::operator[](const int &key) const {
   if (key >= this->words())
     throw std::out_of_range("Line " + toString(this->lineNumber_));
   int count = 0;
@@ -45,38 +45,32 @@ void Line::trimWhitespace() {
 
 void Line::removeComment() {
   std::size_t pos = this->content_.find('#');
-  if (pos != this->content_.npos)
-    this->content_ = this->content_.substr(0, pos);
+  if (pos != std::string::npos) this->content_ = this->content_.substr(0, pos);
 }
 
-bool Line::isEmpty() const {
-  if (this->content_.size() == 0)
-    return true;
-  else
-    return false;
-}
+bool Line::isEmpty() const { return this->content_.empty(); }
 
 bool Line::isValid() const { return !this->error_; }
 
-std::ostream& operator<<(std::ostream& stream, const Line& line) {
+std::ostream &operator<<(std::ostream &stream, const Line &line) {
   stream << line.lineNumber_ + 1 << ":\t" << line.error_ << ":\t"
          << line.content_;
-  if (line.error_ == true) {
+  if (line.error_) {
     stream << RED << "\n" << line.errorMessage_ << WHITE;
   }
   stream << std::flush;
   return stream;
 }
 
-void Line::addError(std::string errorMessage) {
+void Line::addError(const std::string &errorMessage) {
   this->error_ = true;
   this->errorMessage_.append(errorMessage + "\n");
 }
 
-const std::string& Line::getLine() const { return this->content_; }
+const std::string &Line::getLine() const { return this->content_; }
 
-const char& Line::last() const {
-  if (this->content_.size() > 0)
+const char &Line::last() const {
+  if (!this->content_.empty())
     return *(this->content_.end() - 1);
   else
     return *(this->content_.end());
@@ -98,11 +92,11 @@ int Line::words() const {
 }
 
 void Line::removeSemiColon() {
-  if (this->content_.size() > 0 && this->last() == ';')
+  if (!this->content_.empty() && this->last() == ';')
     this->content_ = this->content_.substr(0, this->content_.size() - 1);
 }
 
-void Line::copyAllButContent(const Line& obj) {
+void Line::copyAllButContent(const Line &obj) {
   this->errorMessage_ = obj.errorMessage_;
   this->lineNumber_ = obj.lineNumber_;
   this->error_ = obj.error_;
@@ -114,10 +108,10 @@ std::string Line::lastWord() const {
   std::string buffer;
   std::string prior;
   while (std::getline(ss, buffer, ' ')) {
-    if (buffer.size() == 0) break;
+    if (buffer.empty()) break;
     prior = buffer;
   }
   return buffer;
 }
 
-const std::size_t& Line::getLineNumber() const { return this->lineNumber_; }
+const std::size_t &Line::getLineNumber() const { return this->lineNumber_; }

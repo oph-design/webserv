@@ -35,8 +35,8 @@ class Socket {
   Socket &operator=(const Socket &);
 
   // getter
-  bool getKeepAlive() const;
-  int getFd();
+  const bool &getKeepAlive() const;
+  const int &getFd() const;
 
   // setter
   void setReqStatus();

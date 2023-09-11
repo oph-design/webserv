@@ -30,13 +30,11 @@ class Webserver {
   ~Webserver();
   Webserver &operator=(const Webserver &);
 
-  void boot();
-
  private:
   void createServerSocket_(Socket &, int, double);
   void createClientSocket_(Socket &);
   void startServerRoutine_();
-  void error_(std::string);
+  static void error_(const std::string &);
   void sendResponse_(Socket &socket, pollfd &fd, size_t &i);
   bool existingConnection_(Socket &socket, pollfd &fd, size_t &i);
   std::string createResponse_(Socket &socket);
