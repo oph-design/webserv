@@ -38,12 +38,15 @@ class Webserver {
   void startServerRoutine_();
   void error_(std::string);
   void sendResponse_(Socket &socket, pollfd &fd, size_t &i);
-  bool existingConnection_(Socket &socket, pollfd &fd, size_t &i);
+  bool receiveRequest_(Socket &socket, pollfd &fd, size_t &i);
+	void handlePollout(Socket &socket, pollfd &pollfd, size_t &i);
   std::string createResponse_(Socket &socket);
   void closeConnection_(Socket &socket, pollfd &fd, size_t &i);
-  void checkPending_();
+  bool checkPending_();
   void checkTimeoutClients();
   int getConfigId_(const Request &request);
+	bool pollError_(size_t &i);
+	size_t getFreeSocket();
 
   size_t socketNum_;
   size_t serverSocketNum_;

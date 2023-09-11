@@ -75,7 +75,7 @@ void Webserver::createServerSocket_(Socket &serverSocket, int port,
     error_("Error: Could not bind socket");
   }
 
-  if (listen(serverSocket.listeningSocket_, 25) != 0) {
+  if (listen(serverSocket.listeningSocket_, 200) != 0) {
     error_("Error: Listen");
   }
 
@@ -107,18 +107,27 @@ void Webserver::createClientSocket_(Socket &serverSocket) {
   if (fcntl(new_client_sock, F_SETFL, O_NONBLOCK, FD_CLOEXEC) == -1) {
     error_("Error: Setting socket to nonblocking");
   }
-  this->Sockets_[socketNum_].fd_ = new_client_sock;
-  this->fds_[socketNum_].fd = new_client_sock;
-  this->Sockets_[socketNum_].socketIndex_ = socketNum_;
-  this->Sockets_[socketNum_].socketType_ = CLIENT;
-  this->Sockets_[socketNum_].setTimestamp();
-  this->Sockets_[socketNum_].timeout_ = serverSocket.timeout_;
+	size_t index = getFreeSocket();
+  this->Sockets_[index].fd_ = new_client_sock;
+  this->fds_[index].fd = new_client_sock;
+  this->Sockets_[index].socketIndex_ = socketNum_;
+  this->Sockets_[index].socketType_ = CLIENT;
+  this->Sockets_[index].setTimestamp();
+  this->Sockets_[index].timeout_ = serverSocket.timeout_;
   socketNum_++;
   clientSocketNum_++;
   if (VERBOSE) {
     std::cout << "Connection Established with "
               << this->Sockets_[socketNum_ - 1].fd_ << std::endl;
   }
+}
+
+size_t Webserver::getFreeSocket(){
+	for(size_t i = 0; i < MAX_CLIENTS; ++i){
+		if(this->fds_[i].fd == -1)
+			return i;
+	}
+	return MAX_CLIENTS;
 }
 
 void Webserver::startServerRoutine_() {
@@ -128,18 +137,43 @@ void Webserver::startServerRoutine_() {
       if (serverRunning) printVerbose("poll error", "");
       break;
     }
-    checkPending_();
     for (size_t i = 0; i < socketNum_; ++i) {
-      if (this->fds_[i].revents == POLLIN) {
+			if(pollError_(i))
+				;
+      else if (this->fds_[i].revents == POLLIN) {
         if (Sockets_[i].socketType_ == SERVER) {
           createClientSocket_(Sockets_[i]);
         } else {
-          existingConnection_(Sockets_[i], fds_[i], i);
+          receiveRequest_(Sockets_[i], fds_[i], i);
         }
-      }
+      } else if (this->fds_[i].revents == POLLOUT)
+        handlePollout(this->Sockets_[i], this->fds_[i], i);
       checkTimeoutClients();
     }
   }
+}
+
+bool Webserver::pollError_(size_t &i) {
+  int res = 0;
+  if (this->fds_[i].revents & POLLERR) {
+    std::cout << "Error: POLLERR" << std::endl;
+    res = 1;
+  } else if (this->fds_[i].revents & POLLPRI) {
+    std::cout << "Error: POLLPRI" << std::endl;
+    res = 1;
+  } else if (this->fds_[i].revents & POLLNVAL) {
+    std::cout << "Error: POLLNVAL" << std::endl;
+    res = 1;
+  } else if (this->fds_[i].revents & POLLHUP) {
+    std::cout << "Error: POLLHUP" << std::endl;
+    res = 1;
+  }
+  if (res != 0) {
+    std::cout << "pollfd: " << this->fds_[i].fd << std::endl;
+    closeConnection_(Sockets_[i], fds_[i], i);
+		return true;
+  }
+	return false;
 }
 
 std::string Webserver::createResponse_(Socket &socket) {
@@ -152,13 +186,25 @@ std::string Webserver::createResponse_(Socket &socket) {
   return response;
 }
 
+void Webserver::handlePollout(Socket &socket, pollfd &pollfd, size_t &i) {
+  if (socket.pendingSend_ == true) {
+    this->sendResponse_(socket, pollfd, i);
+    socket.setTimestamp();
+  }
+  if (socket.pendingSend_ == false){
+    socket.response_ = this->createResponse_(socket);
+ 		this->sendResponse_(socket, pollfd, i);
+		socket.setTimestamp();
+	}
+}
+
 void Webserver::sendResponse_(Socket &socket, pollfd &pollfd, size_t &i) {
   socket.dataSend_ =
       send(socket.fd_, socket.response_.c_str(), socket.response_.size(), 0);
-
   if (socket.dataSend_ == static_cast<std::size_t>(-1)) {
-    std::cout << "send failed" << std::endl;
-    closeConnection_(socket, pollfd, i);
+		perror("send failed");
+    std::cout << "send failed: " << socket.fd_ << std::endl;
+    // closeConnection_(socket, pollfd, i);
   } else if (socket.dataSend_ < socket.response_.size()) {
     socket.pendingSend_ = true;
     socket.response_ = socket.response_.substr(socket.dataSend_);
@@ -172,14 +218,28 @@ void Webserver::sendResponse_(Socket &socket, pollfd &pollfd, size_t &i) {
   }
 }
 
-bool Webserver::existingConnection_(Socket &socket, pollfd &pollfd, size_t &i) {
+/* bool Webserver::receiveRequest_(Socket &socket, pollfd &pollfd, size_t &i) {
   size_t currentBytes;
   if (receiveRequest(socket, currentBytes) || socket.pendingSend_) {
     printVerbose("connection on socket ", socket.fd_);
     socket.setTimestamp();
-    if (socket.pendingSend_ == false)
-      socket.response_ = this->createResponse_(socket);
-    this->sendResponse_(socket, pollfd, i);
+  }
+  if (currentBytes == static_cast<std::size_t>(-1) &&
+      (errno == EWOULDBLOCK || errno == EAGAIN) && VERBOSE) {
+    std::cout << "BLOCKER: " << socket.fd_ << std::endl;
+  } else if (currentBytes == 0 && socket.reqStatus.pendingReceive == false) {
+    if (socket.getKeepAlive() == false) closeConnection_(socket, pollfd, i);
+    return false;
+  }
+  return true;
+} */
+
+bool Webserver::receiveRequest_(Socket &socket, pollfd &pollfd, size_t &i) {
+  size_t currentBytes;
+  if (receiveRequest(socket, currentBytes)) {
+    printVerbose("connection on socket ", socket.fd_);
+    socket.setTimestamp();
+		pollfd.events = POLLOUT;
   }
   if (currentBytes == static_cast<std::size_t>(-1) &&
       (errno == EWOULDBLOCK || errno == EAGAIN) && VERBOSE) {
@@ -193,25 +253,30 @@ bool Webserver::existingConnection_(Socket &socket, pollfd &pollfd, size_t &i) {
 
 void Webserver::closeConnection_(Socket &socket, pollfd &pollfd, size_t &i) {
   printVerbose("Connection closing on Socket ", socket.fd_);
+	shutdown(pollfd.fd, SHUT_RDWR);
   close(pollfd.fd);
   socket.socketType_ = UNUSED;
+	pollfd.events = POLLIN;
   for (size_t j = i; j < MAX_CLIENTS - 1; ++j) {
     this->fds_[j] = this->fds_[j + 1];
     this->Sockets_[j] = this->Sockets_[j + 1];
   }
   this->fds_[MAX_CLIENTS - 1].fd = -1;
+  this->fds_[MAX_CLIENTS - 1].events = POLLIN;
   this->Sockets_[MAX_CLIENTS - 1].setIdle();
   socketNum_--;
   clientSocketNum_--;
 }
 
-void Webserver::checkPending_() {
+bool Webserver::checkPending_() {
   for (size_t i = 0; i < socketNum_; ++i) {
-    if (this->Sockets_[i].pendingSend_ == true) {
+    if (this->Sockets_[i].pendingSend_ == true &&
+        this->Sockets_[i].socketType_ != UNUSED) {
       this->sendResponse_(this->Sockets_[i], fds_[i], i);
-      return;
+      return true;
     }
   }
+  return false;
 }
 
 void Webserver::checkTimeoutClients() {

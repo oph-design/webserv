@@ -54,6 +54,7 @@ void Socket::setIdle() {
   fd_ = -1;
   socketIndex_ = -1;
   socketType_ = UNUSED;
+	serverAddress_.clear();
   socketOpt_ = 1;
   listeningSocket_ = -1;
   memset(&socketaddr_, 0, sizeof(socketaddr_));
@@ -61,6 +62,9 @@ void Socket::setIdle() {
   response_.clear();
   pendingSend_ = false;
   keepAlive_ = false;
+	timestamp_ = 0;
+  timeout_ = 0;
+  configId_ = -1;
 }
 
 // other functions
