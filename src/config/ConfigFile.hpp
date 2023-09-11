@@ -28,6 +28,9 @@ class ConfigFile {
   bool openFile(int argc, char *argv[]);
   ConfigVector createConfig();
   bool isValid();
+  void printError() const;
+  bool isValid() const;
+
   friend std::ostream &operator<<(std::ostream &stream, ConfigFile &config);
 
  private:

@@ -10,7 +10,7 @@ int main(int argc, char *argv[]) {
   if (!configFile.openFile(argc, argv)) return EXIT_FAILURE;
   ConfigVector configs = configFile.createConfig();
   if (!configFile.isValid()) {
-    std::cout << configFile << std::endl;
+    configFile.printError();
     return EXIT_FAILURE;
   } else {
     Webserver Server(configs);

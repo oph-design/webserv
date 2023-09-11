@@ -40,6 +40,20 @@ bool ConfigFile::openFile(int argc, char *argv[]) {
   return true;
 }
 
+void ConfigFile::printError() const {
+  if (this->isValid()) return;
+  for (LineVector::const_iterator iter = this->content_.begin();
+       iter != this->content_.end(); ++iter) {
+    if (iter->isValid())
+      continue;
+    else {
+      std::cout << "Config Parsing error" << std::endl;
+      std::cout << *iter << std::flush;
+      return;
+    }
+  }
+}
+
 void ConfigFile::cleanContent_() {
   LineVector newContent;
   for (LineIter iter = this->content_.begin(); iter != this->content_.end();
@@ -56,9 +70,9 @@ void ConfigFile::validateConfigFile_() {
   this->checkConfigBlocks_();
 }
 
-bool ConfigFile::isValid() {
-  for (LineIter iter = this->content_.begin(); iter != this->content_.end();
-       ++iter) {
+bool ConfigFile::isValid() const {
+  for (LineVector::const_iterator iter = this->content_.begin();
+       iter != this->content_.end(); ++iter) {
     if (!iter->isValid()) return false;
   }
   return true;
