@@ -75,7 +75,7 @@ void Webserver::createServerSocket_(Socket &serverSocket, int port,
     error_("Error: Could not bind socket");
   }
 
-  if (listen(serverSocket.listeningSocket_, 25) != 0) {
+  if (listen(serverSocket.listeningSocket_, 100) != 0) {
     error_("Error: Listen");
   }
 
