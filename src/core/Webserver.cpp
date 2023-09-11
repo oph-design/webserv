@@ -224,18 +224,18 @@ void Webserver::checkTimeoutClients() {
 }
 
 Config &Webserver::getConfig_(const Request &request) {
-  std::string toFind;
-  std::string compare;
   Config &res = this->configs_[0];
-  try {
-    toFind = request["Host"];
-  } catch (std::exception &) {
-    return (res);
+  for (size_t i = 0; i < this->configs_.size(); ++i) {
+    if (this->configs_[i].getPort() == request.getPort()) {
+      res = this->configs_[i];
+      break;
+    }
   }
   for (size_t i = 0; i < this->configs_.size(); ++i) {
-    compare = this->configs_[i].getServerName() + ":" +
-              toString(this->configs_[i].getPort());
-    if (compare == toFind) res = this->configs_[i];
+    if (this->configs_[i].getServerName() == request.getHostname()) {
+      res = this->configs_[i];
+      break;
+    }
   }
   return (res);
 }

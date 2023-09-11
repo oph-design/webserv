@@ -1,5 +1,8 @@
 #include "Request.hpp"
 
+#include <exception>
+
+#include "PrintVerbose.hpp"
 #include "Utils.hpp"
 
 Request::Request() {
@@ -98,6 +101,30 @@ bool Request::isKeepAlive() const {
   } catch (std::exception &) {
     return false;
   }
+}
+
+std::string Request::getHostname() const {
+  std::string str;
+  try {
+    str = (*this)["Host"];
+  } catch (std::exception &e) {
+    printVerbose(RED, e.what());
+  }
+  std::size_t position = str.find(':');
+  if (position != std::string::npos) str = str.substr(0, position);
+  return (str);
+}
+
+int Request::getPort() const {
+  std::string str;
+  try {
+    str = (*this)["Host"];
+  } catch (std::exception &e) {
+    printVerbose(RED, e.what());
+  }
+  std::size_t position = str.find(':');
+  if (position != std::string::npos) str = str.substr(position + 1);
+  return (std::atoi(str.c_str()));
 }
 
 std::string Request::getRequestMethodString() const {
