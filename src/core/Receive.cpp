@@ -21,7 +21,6 @@ bool getTransferEncoding(const std::string &buffer) {
 bool receiveRequest(Socket &socket, size_t &bytes) {
   char buffer[131072] = {0};
   t_reqStatus &reqstatus = socket.reqStatus;
-
   bytes = recv(socket.getFd(), buffer, sizeof(buffer), O_NONBLOCK);
   reqstatus.readBytes += bytes;
   if (bytes == 0) return (false);

@@ -29,6 +29,10 @@ Socket &Socket::operator=(const Socket &rhs) {
   this->keepAlive_ = rhs.keepAlive_;
   this->timestamp_ = rhs.timestamp_;
   this->timeout_ = rhs.timeout_;
+  this->reqStatus.pendingReceive = rhs.reqStatus.pendingReceive;
+  this->reqStatus.chunked = rhs.reqStatus.chunked;
+  this->reqStatus.clen = rhs.reqStatus.clen;
+  this->reqStatus.readBytes = rhs.reqStatus.readBytes;
   return *this;
 }
 
@@ -43,6 +47,7 @@ void Socket::setIdle() {
   fd_ = -1;
   socketIndex_ = -1;
   socketType_ = UNUSED;
+
   socketOpt_ = 1;
   listeningSocket_ = -1;
   memset(&socketaddr_, 0, sizeof(socketaddr_));
@@ -50,6 +55,8 @@ void Socket::setIdle() {
   response_.clear();
   pendingSend_ = false;
   keepAlive_ = false;
+  timestamp_ = 0;
+  timeout_ = 0;
 }
 
 // other functions
