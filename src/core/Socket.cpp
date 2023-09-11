@@ -13,7 +13,7 @@ Socket::Socket()
       dataSend_(0),
       pendingSend_(false),
       keepAlive_(false),
-      timeout_(5),
+      timeout_(30),
       configId_(-1) {}
 
 Socket::~Socket() {}
@@ -35,6 +35,10 @@ Socket &Socket::operator=(const Socket &rhs) {
   this->timestamp_ = rhs.timestamp_;
   this->timeout_ = rhs.timeout_;
   this->configId_ = rhs.configId_;
+	this->reqStatus.pendingReceive = rhs.reqStatus.pendingReceive;
+  this->reqStatus.chunked = rhs.reqStatus.chunked;
+  this->reqStatus.clen = rhs.reqStatus.clen;
+  this->reqStatus.readBytes = rhs.reqStatus.readBytes;
   return *this;
 }
 

@@ -48,7 +48,7 @@ class Webserver {
 	bool pollError_(size_t &i);
 	size_t getFreeSocket();
 
-  size_t socketNum_;
+  //size_t socketNum_;
   size_t serverSocketNum_;
   size_t clientSocketNum_;
   int socketOpt_;
