@@ -147,6 +147,7 @@ std::string Webserver::createResponse_(Socket &socket) {
   if (request.isKeepAlive()) socket.keepAlive_ = true;
   int conf = this->getConfigId_(request);
   Location loc = this->configs_[conf].getLocationByPath(request.getPath());
+  std::cout << loc << std::endl;
   Response resobj(request, loc);
   std::string response = resobj.getHeader() + resobj.getBody();
   return response;
