@@ -13,7 +13,7 @@ Socket::Socket()
       dataSend_(0),
       pendingSend_(false),
       keepAlive_(false),
-      timeout_(30),
+      timeout_(5),
       configId_(-1) {}
 
 Socket::~Socket() {}

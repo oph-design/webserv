@@ -21,7 +21,6 @@ Webserver::Webserver(ConfigVector &configs)
     size_t index = getFreeSocket();
     if (index != MAX_CLIENTS) {
       createServerSocket_(Sockets_[index], it->getPort(), it->getTimeout());
-
     } else {
       error_("Too many Server Sockets, no client connection will be possible");
     }
@@ -62,11 +61,11 @@ void Webserver::createServerSocket_(Socket &serverSocket, int port,
     error_("Error: Setting SO_REUSEADDR");
   }
 
-/*   if (setsockopt(serverSocket.listeningSocket_, SOL_SOCKET, SO_REUSEPORT,
-                 &serverSocket.socketOpt_,
-                 sizeof(serverSocket.socketOpt_)) == -1) {
-    error_("Error: Setting SO_REUSEPORT");
-  } */
+  /*   if (setsockopt(serverSocket.listeningSocket_, SOL_SOCKET, SO_REUSEPORT,
+                   &serverSocket.socketOpt_,
+                   sizeof(serverSocket.socketOpt_)) == -1) {
+      error_("Error: Setting SO_REUSEPORT");
+    } */
 
   if (bind(serverSocket.listeningSocket_,
            (struct sockaddr *)&serverSocket.socketaddr_,
@@ -138,11 +137,10 @@ void Webserver::startServerRoutine_() {
       if (serverRunning) printVerbose("poll error", "");
       break;
     }
-    checkTimeoutClients();
     for (size_t i = 0; i < MAX_CLIENTS; ++i) {
       if (pollError_(i))
         ;
-      if (this->fds_[i].revents == POLLIN) {
+      else if (this->fds_[i].revents == POLLIN) {
         if (Sockets_[i].socketType_ == SERVER) {
           createClientSocket_(Sockets_[i]);
         } else {
@@ -151,6 +149,7 @@ void Webserver::startServerRoutine_() {
       } else if (this->fds_[i].revents == POLLOUT)
         handlePollout(this->Sockets_[i], this->fds_[i], i);
     }
+    checkTimeoutClients();
   }
 }
 
@@ -199,46 +198,23 @@ void Webserver::handlePollout(Socket &socket, pollfd &pollfd, size_t &i) {
 }
 
 void Webserver::sendResponse_(Socket &socket, pollfd &pollfd, size_t &i) {
-  int err = 0;
-  socklen_t len = sizeof(err);
-  if (getsockopt(socket.fd_, SOL_SOCKET, SO_ERROR, &err, &len) == 0) {
-    if (err == 0) {
-      socket.dataSend_ = send(socket.fd_, socket.response_.c_str(),
-                              socket.response_.size(), 0);
-      if (socket.dataSend_ == static_cast<std::size_t>(-1)) {
-        perror("send failed");
-        std::cout << "send failed: " << socket.fd_ << std::endl;
-        // closeConnection_(socket, pollfd, i);
-      } else if (socket.dataSend_ < socket.response_.size()) {
-        socket.pendingSend_ = true;
-        socket.response_ = socket.response_.substr(socket.dataSend_);
-        socket.setTimestamp();
-        pollfd.events = POLLOUT;
-      } else {
-        socket.pendingSend_ = false;
-        socket.setTimestamp();
-        pollfd.events = POLLIN;
-        if (socket.getKeepAlive() == false) closeConnection_(socket, pollfd, i);
-      }
-    }
+  socket.dataSend_ =
+      send(socket.fd_, socket.response_.c_str(), socket.response_.size(), 0);
+  if (socket.dataSend_ == static_cast<std::size_t>(-1)) {
+		printVerbose(RED, "send failed");
+    //closeConnection_(socket, pollfd, i);
+  } else if (socket.dataSend_ < socket.response_.size()) {
+    socket.pendingSend_ = true;
+    socket.response_ = socket.response_.substr(socket.dataSend_);
+    socket.setTimestamp();
+    pollfd.events = POLLOUT;
+  } else {
+    socket.pendingSend_ = false;
+    socket.setTimestamp();
+    pollfd.events = POLLIN;
+    if (socket.getKeepAlive() == false) closeConnection_(socket, pollfd, i);
   }
 }
-
-/* bool Webserver::receiveRequest_(Socket &socket, pollfd &pollfd, size_t &i) {
-  size_t currentBytes;
-  if (receiveRequest(socket, currentBytes) || socket.pendingSend_) {
-    printVerbose("connection on socket ", socket.fd_);
-    socket.setTimestamp();
-  }
-  if (currentBytes == static_cast<std::size_t>(-1) &&
-      (errno == EWOULDBLOCK || errno == EAGAIN) && VERBOSE) {
-    std::cout << "BLOCKER: " << socket.fd_ << std::endl;
-  } else if (currentBytes == 0 && socket.reqStatus.pendingReceive == false) {
-    if (socket.getKeepAlive() == false) closeConnection_(socket, pollfd, i);
-    return false;
-  }
-  return true;
-} */
 
 bool Webserver::receiveRequest_(Socket &socket, pollfd &pollfd, size_t &i) {
   size_t currentBytes;
@@ -263,7 +239,7 @@ void Webserver::closeConnection_(Socket &socket, pollfd &pollfd, size_t &i) {
   shutdown(pollfd.fd, SHUT_RDWR);
   close(pollfd.fd);
   pollfd.fd = -1;
-  pollfd.events = POLLERR;
+  pollfd.events = POLLIN;
   socket.setIdle();
   clientSocketNum_--;
 }
