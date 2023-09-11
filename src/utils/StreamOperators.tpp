@@ -33,4 +33,3 @@ std::ostream &operator<<(std::ostream &stream,
   stream << std::flush;
   return stream;
 }
-
