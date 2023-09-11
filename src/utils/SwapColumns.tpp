@@ -1,7 +1,4 @@
-#ifndef SWAPCOLUMNS_HPP
-#define SWAPCOLUMNS_HPP
-
-#include <map>
+#include "Utils.hpp"
 
 template <typename Key, typename Value>
 std::map<Value, Key> swapColumns(std::map<Key, Value> input) {
@@ -11,5 +8,3 @@ std::map<Value, Key> swapColumns(std::map<Key, Value> input) {
     res.insert(std::pair<Value, Key>(it->second, it->first));
   return (res);
 }
-
-#endif  // !SWAPCOLUMNS_HPP

@@ -1,7 +1,5 @@
 #include "Socket.hpp"
 
-#include "ToString.hpp"
-
 // public
 Socket::Socket()
     : fd_(-1),

@@ -1,12 +1,4 @@
-
-#ifndef PRINTVERBOSE_HPP_
-#define PRINTVERBOSE_HPP_
-
-#include <iostream>
-
-#include "colors.hpp"
-
-#define VERBOSE false
+#include "Utils.hpp"
 
 template <typename Type>
 void printVerbose(const std::string &call, Type val) {
@@ -14,4 +6,3 @@ void printVerbose(const std::string &call, Type val) {
   std::cout << call << val << COLOR_RESET << std::endl;
 }
 
-#endif  // PRINTVERBOSE_HPP_

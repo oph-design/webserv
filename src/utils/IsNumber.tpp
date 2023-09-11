@@ -1,8 +1,4 @@
-#ifndef ISNUMBER_HPP_
-#define ISNUMBER_HPP_
-
-#include <cctype>
-#include <iterator>
+#include "Utils.hpp"
 
 template <typename Type>
 bool isNumber(Type cont) {
@@ -12,4 +8,3 @@ bool isNumber(Type cont) {
   }
   return true;
 }
-#endif  // ISNUMBER_HPP_

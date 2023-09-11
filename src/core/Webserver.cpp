@@ -1,7 +1,5 @@
 #include "Webserver.hpp"
 
-#include "ToString.hpp"
-
 Webserver::Webserver(const Webserver &rhs) : configs_(rhs.configs_) {
   *this = rhs;
 }

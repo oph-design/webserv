@@ -16,7 +16,7 @@
 #include "ConfigParsing.hpp"
 #include "Line.hpp"
 #include "Location.hpp"
-#include "Types.hpp"
+#include "Utils.hpp"
 #include "colors.hpp"
 
 class ConfigFile {
@@ -25,13 +25,9 @@ class ConfigFile {
   ConfigFile();
   ConfigFile(const ConfigFile &obj);
   ConfigFile &operator=(const ConfigFile &obj);
-
   bool openFile(int argc, char *argv[]);
-
   ConfigVector createConfig();
-
   bool isValid();
-
   friend std::ostream &operator<<(std::ostream &stream, ConfigFile &config);
 
  private:

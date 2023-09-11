@@ -1,7 +1,5 @@
 #include "Location.hpp"
 
-#include "Types.hpp"
-
 Location::Location() {
   Duplicates duplicates;
   this->autoindex_ = false;

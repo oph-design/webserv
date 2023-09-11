@@ -1,11 +1,4 @@
-#ifndef STREAMOPERATORS_HPP_
-#define STREAMOPERATORS_HPP_
-
-#include <iostream>
-#include <iterator>
-#include <map>
-#include <set>
-#include <vector>
+#include "Utils.hpp"
 
 template <typename Content>
 std::ostream &operator<<(std::ostream &stream,
@@ -41,4 +34,3 @@ std::ostream &operator<<(std::ostream &stream,
   return stream;
 }
 
-#endif  // STREAMOPERATORS_HPP_
