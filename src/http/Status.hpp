@@ -34,6 +34,7 @@ class Status {
 
  private:
   void setErrors(const Location& location);
+  std::string getStyling_();
   std::string getStdError();
 
   int code_;
