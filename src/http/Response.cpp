@@ -6,7 +6,6 @@ contentMap Response::fileTypes_ = Response::createTypeMap();
 
 Response::Response(Request &request, const Location &location)
     : location_(location) {
-  //printVerbose(MAGENTA, this->location_);
   if (this->redirect()) return;
   switch (request.getRequestMethodType()) {
     case 0:

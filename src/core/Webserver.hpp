@@ -37,16 +37,15 @@ class Webserver {
   static void error_(const std::string &);
   void sendResponse_(Socket &socket, pollfd &fd, size_t &i);
   bool receiveRequest_(Socket &socket, pollfd &fd, size_t &i);
-	void handlePollout(Socket &socket, pollfd &pollfd, size_t &i);
+  void handlePollout(Socket &socket, pollfd &pollfd, size_t &i);
   std::string createResponse_(Socket &socket);
   void closeConnection_(Socket &socket, pollfd &fd, size_t &i);
   bool checkPending_();
   void checkTimeoutClients();
-	bool pollError_(size_t &i);
-	size_t getFreeSocket();
+  bool pollError_(size_t &i);
+  size_t getFreeSocket();
   Config &getConfig_(const Request &request);
 
-  //size_t socketNum_;
   size_t serverSocketNum_;
   size_t clientSocketNum_;
   int socketOpt_;
