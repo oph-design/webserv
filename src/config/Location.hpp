@@ -7,8 +7,18 @@
 #include <string>
 #include <vector>
 
-#include "StreamOperators.hpp"
-#include "Types.hpp"
+#include "Utils.hpp"
+
+typedef std::set<std::string> StringSet;
+typedef std::map<int, std::string> ErrorMap;
+
+typedef struct s_duplicates {
+  bool index;
+  bool root;
+  bool upload_pass;
+  bool cgi_pass;
+  bool clientMaxBodySize;
+} Duplicates;
 
 class Location {
   friend class Config;

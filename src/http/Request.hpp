@@ -9,7 +9,7 @@
 #include <string>
 #include <utility>
 
-#include "PrintVerbose.hpp"
+#include "Utils.hpp"
 #include "colors.hpp"
 
 #ifndef BUFFER_SIZE

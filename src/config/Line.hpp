@@ -6,7 +6,7 @@
 #include <stdexcept>
 #include <string>
 
-#include "ToString.hpp"
+#include "Utils.hpp"
 #include "colors.hpp"
 
 class Line {

@@ -15,6 +15,8 @@
 #include <sstream>
 #include <string>
 
+#include "Utils.hpp"
+
 typedef enum eSocketType { SERVER, CLIENT, UNUSED } SocketType;
 
 typedef struct s_reqStatus {

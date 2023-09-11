@@ -19,7 +19,6 @@
 
 #include "CgiConnector.hpp"
 #include "Config.hpp"
-#include "PrintVerbose.hpp"
 #include "Request.hpp"
 #include "Status.hpp"
 #include "Utils.hpp"

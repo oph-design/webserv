@@ -9,8 +9,7 @@
 #include <string>
 
 #include "Location.hpp"
-#include "ToString.hpp"
-#include "Types.hpp"
+#include "Utils.hpp"
 
 typedef std::pair<int, std::string> statusPair;
 typedef std::map<int, std::string> statusMap;
@@ -34,6 +33,7 @@ class Status {
 
  private:
   void setErrors(const Location& location);
+  std::string getStyling_();
   std::string getStdError();
 
   int code_;
