@@ -29,7 +29,7 @@ Socket &Socket::operator=(const Socket &rhs) {
   this->keepAlive_ = rhs.keepAlive_;
   this->timestamp_ = rhs.timestamp_;
   this->timeout_ = rhs.timeout_;
-	this->reqStatus.pendingReceive = rhs.reqStatus.pendingReceive;
+  this->reqStatus.pendingReceive = rhs.reqStatus.pendingReceive;
   this->reqStatus.chunked = rhs.reqStatus.chunked;
   this->reqStatus.clen = rhs.reqStatus.clen;
   this->reqStatus.readBytes = rhs.reqStatus.readBytes;
@@ -55,7 +55,7 @@ void Socket::setIdle() {
   response_.clear();
   pendingSend_ = false;
   keepAlive_ = false;
-	timestamp_ = 0;
+  timestamp_ = 0;
   timeout_ = 0;
 }
 
