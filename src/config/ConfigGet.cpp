@@ -23,7 +23,8 @@ const Location &Config::getLocationByPath(const std::string &index) {
     if (it->getPath().empty()) continue;
     if (index.size() < it->getPath().size()) continue;
     tmp = index.substr(0, it->getPath().size());
-    if (it->getPath() == tmp) return (*it);
+    if (it->getPath() == tmp + '/') return (*it);
+    if (!it->getPath().compare(index)) return (*it);
   }
   return (this->locations_[0]);
 }
