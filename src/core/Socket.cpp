@@ -7,14 +7,12 @@ Socket::Socket()
     : fd_(-1),
       socketIndex_(-1),
       socketType_(UNUSED),
-      serverAddress_(""),
       socketOpt_(1),
       listeningSocket_(-1),
       dataSend_(0),
       pendingSend_(false),
       keepAlive_(false),
-      timeout_(5),
-      configId_(-1) {}
+      timeout_(5) {}
 
 Socket::~Socket() {}
 
@@ -24,7 +22,6 @@ Socket &Socket::operator=(const Socket &rhs) {
   this->fd_ = rhs.fd_;
   this->socketIndex_ = rhs.socketIndex_;
   this->socketType_ = rhs.socketType_;
-  this->serverAddress_ = rhs.serverAddress_;
   this->socketOpt_ = rhs.socketOpt_;
   this->listeningSocket_ = rhs.listeningSocket_;
   this->socketaddr_ = rhs.socketaddr_;
@@ -34,7 +31,6 @@ Socket &Socket::operator=(const Socket &rhs) {
   this->keepAlive_ = rhs.keepAlive_;
   this->timestamp_ = rhs.timestamp_;
   this->timeout_ = rhs.timeout_;
-  this->configId_ = rhs.configId_;
   return *this;
 }
 
@@ -44,11 +40,6 @@ const int &Socket::getFd() const { return this->fd_; }
 const bool &Socket::getKeepAlive() const { return this->keepAlive_; }
 
 // setter
-
-void Socket::setServerAddress(const std::string &name) {
-  std::string port = toString<int>(ntohs(this->socketaddr_.sin_port));
-  this->serverAddress_ = name + ":" + port;
-}
 
 void Socket::setIdle() {
   fd_ = -1;

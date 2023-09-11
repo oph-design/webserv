@@ -41,7 +41,7 @@ class Webserver {
   void closeConnection_(Socket &socket, pollfd &fd, size_t &i);
   void checkPending_();
   void checkTimeoutClients();
-  int getConfigId_(const Request &request);
+  Config &getConfig_(const Request &request);
 
   size_t socketNum_;
   size_t serverSocketNum_;
