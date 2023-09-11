@@ -47,6 +47,8 @@ class Request {
   std::string getHTTPVersion() const;
   bool getRequestBodyExists() const;
   std::string getRequestBody() const;
+  std::string getHostname() const;
+  int getPort() const;
   std::string cutPath(const std::string &index);
   bool isKeepAlive() const;
 
