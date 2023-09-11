@@ -61,11 +61,11 @@ void Webserver::createServerSocket_(Socket &serverSocket, int port,
     error_("Error: Setting SO_REUSEADDR");
   }
 
-    if (setsockopt(serverSocket.listeningSocket_, SOL_SOCKET, SO_REUSEPORT,
-                   &serverSocket.socketOpt_,
-                   sizeof(serverSocket.socketOpt_)) == -1) {
-      error_("Error: Setting SO_REUSEPORT");
-    }
+  if (setsockopt(serverSocket.listeningSocket_, SOL_SOCKET, SO_REUSEPORT,
+                 &serverSocket.socketOpt_,
+                 sizeof(serverSocket.socketOpt_)) == -1) {
+    error_("Error: Setting SO_REUSEPORT");
+  }
 
   if (bind(serverSocket.listeningSocket_,
            (struct sockaddr *)&serverSocket.socketaddr_,
@@ -186,11 +186,10 @@ std::string Webserver::createResponse_(Socket &socket) {
 }
 
 void Webserver::handlePollout(Socket &socket, pollfd &pollfd, size_t &i) {
-	if (socket.pendingSend_ == true) {
+  if (socket.pendingSend_ == true) {
     this->sendResponse_(socket, pollfd, i);
     socket.setTimestamp();
-  }
-  else if (socket.pendingSend_ == false) {
+  } else if (socket.pendingSend_ == false) {
     socket.response_ = this->createResponse_(socket);
     this->sendResponse_(socket, pollfd, i);
     socket.setTimestamp();
@@ -198,10 +197,10 @@ void Webserver::handlePollout(Socket &socket, pollfd &pollfd, size_t &i) {
 }
 
 void Webserver::sendResponse_(Socket &socket, pollfd &pollfd, size_t &i) {
-	socket.dataSend_ =
+  socket.dataSend_ =
       send(socket.fd_, socket.response_.c_str(), socket.response_.size(), 0);
   if (socket.dataSend_ == static_cast<std::size_t>(-1)) {
-		printVerbose("send failed", socket.fd_);
+    printVerbose("send failed", socket.fd_);
     closeConnection_(socket, pollfd, i);
   } else if (socket.dataSend_ < socket.response_.size()) {
     socket.pendingSend_ = true;
