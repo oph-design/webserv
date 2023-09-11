@@ -1,20 +1,16 @@
 #include "Socket.hpp"
 
-#include "ToString.hpp"
-
 // public
 Socket::Socket()
     : fd_(-1),
       socketIndex_(-1),
       socketType_(UNUSED),
-      serverAddress_(""),
       socketOpt_(1),
       listeningSocket_(-1),
       dataSend_(0),
       pendingSend_(false),
       keepAlive_(false),
-      timeout_(5),
-      configId_(-1) {}
+      timeout_(5) {}
 
 Socket::~Socket() {}
 
@@ -24,7 +20,6 @@ Socket &Socket::operator=(const Socket &rhs) {
   this->fd_ = rhs.fd_;
   this->socketIndex_ = rhs.socketIndex_;
   this->socketType_ = rhs.socketType_;
-  this->serverAddress_ = rhs.serverAddress_;
   this->socketOpt_ = rhs.socketOpt_;
   this->listeningSocket_ = rhs.listeningSocket_;
   this->socketaddr_ = rhs.socketaddr_;
@@ -34,7 +29,6 @@ Socket &Socket::operator=(const Socket &rhs) {
   this->keepAlive_ = rhs.keepAlive_;
   this->timestamp_ = rhs.timestamp_;
   this->timeout_ = rhs.timeout_;
-  this->configId_ = rhs.configId_;
 	this->reqStatus.pendingReceive = rhs.reqStatus.pendingReceive;
   this->reqStatus.chunked = rhs.reqStatus.chunked;
   this->reqStatus.clen = rhs.reqStatus.clen;
@@ -44,15 +38,10 @@ Socket &Socket::operator=(const Socket &rhs) {
 
 // getter
 
-int Socket::getFd() { return this->fd_; }
-bool Socket::getKeepAlive() const { return this->keepAlive_; }
+const int &Socket::getFd() const { return this->fd_; }
+const bool &Socket::getKeepAlive() const { return this->keepAlive_; }
 
 // setter
-
-void Socket::setServerAddress(std::string name) {
-  std::string port = toString<int>(ntohs(this->socketaddr_.sin_port));
-  this->serverAddress_ = name + ":" + port;
-}
 
 void Socket::setIdle() {
   fd_ = -1;

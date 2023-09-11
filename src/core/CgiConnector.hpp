@@ -3,11 +3,11 @@
 
 #include <dirent.h>
 #include <fcntl.h>
-#include <signal.h>
-#include <stdio.h>
 #include <sys/wait.h>
 #include <unistd.h>
 
+#include <csignal>
+#include <cstdio>
 #include <cstring>
 #include <exception>
 #include <fstream>
@@ -18,9 +18,9 @@
 #include <string>
 
 #include "Location.hpp"
-#include "PrintVerbose.hpp"
 #include "Request.hpp"
 #include "Status.hpp"
+#include "Utils.hpp"
 #include "colors.hpp"
 
 #define TIMEOUT 1
@@ -31,21 +31,21 @@ typedef std::map<std::string, std::string> envMap;
 class CgiConnector {
  public:
   CgiConnector();
-  CgiConnector(const Request& request, std::string path);
-  CgiConnector(const CgiConnector& rhs);
-  CgiConnector& operator=(const CgiConnector& rhs);
+  CgiConnector(const Request &request, const std::string &path);
+  CgiConnector(const CgiConnector &rhs);
+  CgiConnector &operator=(const CgiConnector &rhs);
   ~CgiConnector();
 
-  void makeConnection(Status& status);
+  void makeConnection(Status &status);
   std::map<std::string, std::string> getHeader() const;
   std::string getBody() const;
-  static bool isCgi(std::string path);
+  static bool isCgi(const std::string &path);
 
  private:
-  envMap buildEnv_(const Request& request);
-  char** envToString_();
-  static bool waitTimeouted(pid_t pid, int* exitcode);
-  void executeScript_(std::string path, int pipes[2]);
+  static envMap buildEnv_(const Request &request);
+  char **envToString_();
+  static bool waitTimeouted(pid_t pid, int *exitcode);
+  void executeScript_(const std::string &path, int pipes[2]);
   void readOutput_(int pipes[2]);
   void writeReqBody();
 

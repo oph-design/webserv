@@ -15,6 +15,8 @@
 #include <sstream>
 #include <string>
 
+#include "Utils.hpp"
+
 typedef enum eSocketType { SERVER, CLIENT, UNUSED } SocketType;
 
 typedef struct s_reqStatus {
@@ -35,14 +37,13 @@ class Socket {
   Socket &operator=(const Socket &);
 
   // getter
-  bool getKeepAlive() const;
-  int getFd();
+  const bool &getKeepAlive() const;
+  const int &getFd() const;
 
   // setter
   void setReqStatus();
   void setIdle();
   void setTimestamp();
-  void setServerAddress(std::string name);
 
   // other functions
   bool checkTimeout();
@@ -54,7 +55,6 @@ class Socket {
   int fd_;
   int socketIndex_;
   SocketType socketType_;
-  std::string serverAddress_;
   int socketOpt_;
   int listeningSocket_;
   sockaddr_in socketaddr_;
@@ -64,7 +64,6 @@ class Socket {
   bool keepAlive_;
   time_t timestamp_;
   double timeout_;
-  int configId_;
 };
 
 bool receiveRequest(Socket &socket, size_t &bytes);

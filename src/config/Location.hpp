@@ -1,15 +1,24 @@
 #ifndef LOCATION_HPP_
 #define LOCATION_HPP_
 
-#include <stdlib.h>
-
+#include <cstdlib>
 #include <iostream>
 #include <map>
 #include <string>
 #include <vector>
 
-#include "StreamOperators.hpp"
-#include "Types.hpp"
+#include "Utils.hpp"
+
+typedef std::set<std::string> StringSet;
+typedef std::map<int, std::string> ErrorMap;
+
+typedef struct s_duplicates {
+  bool index;
+  bool root;
+  bool upload_pass;
+  bool cgi_pass;
+  bool clientMaxBodySize;
+} Duplicates;
 
 class Location {
   friend class Config;
@@ -19,24 +28,24 @@ class Location {
  public:
   Location();
   ~Location();
-  Location(const Location& obj);
-  Location& operator=(const Location& obj);
+  Location(const Location &obj);
+  Location &operator=(const Location &obj);
 
-  friend std::ostream& operator<<(std::ostream& stream,
-                                  const Location& location);
+  friend std::ostream &operator<<(std::ostream &stream,
+                                  const Location &location);
 
-  const std::string& getRewrite() const;
-  const bool& getAutoindex() const;
-  const int& getClientMaxBodySize() const;
-  const std::string& getIndex() const;
-  const std::string& getPath() const;
-  const std::string& getRoot() const;
-  const std::string& getUploadPass() const;
-  const StringSet& getMethods() const;
-  const std::string& getCgiPass() const;
-  const ErrorMap& getErrorPage() const;
-  bool methodAllowed(std::string meth) const;
-  bool maxBodyReached(size_t clen) const;
+  const std::string &getRewrite() const;
+  const bool &getAutoindex() const;
+  const int &getClientMaxBodySize() const;
+  const std::string &getIndex() const;
+  const std::string &getPath() const;
+  const std::string &getRoot() const;
+  const std::string &getUploadPass() const;
+  const StringSet &getMethods() const;
+  const std::string &getCgiPass() const;
+  const ErrorMap &getErrorPage() const;
+  bool methodAllowed(const std::string &method) const;
+  bool maxBodyReached(const std::size_t &contentLength) const;
 
  private:
   bool autoindex_;

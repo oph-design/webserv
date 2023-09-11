@@ -1,8 +1,4 @@
-#ifndef TOSTRING_HPP_
-#define TOSTRING_HPP_
-
-#include <sstream>
-#include <string>
+#include "Utils.hpp"
 
 template <typename Type>
 std::string toString(Type obj) {
@@ -10,5 +6,3 @@ std::string toString(Type obj) {
   ss << obj;
   return ss.str();
 }
-
-#endif  // TOSTRING_HPP_

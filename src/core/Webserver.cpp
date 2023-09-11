@@ -11,7 +11,7 @@ Webserver::Webserver(ConfigVector &configs)
       clientSocketNum_(0),
       socketOpt_(1),
       configs_(configs) {
-  for (size_t i = 0; i < MAX_CLIENTS; ++i) {
+  for (std::size_t i = 0; i < MAX_CLIENTS; ++i) {
     fds_[i].fd = -1;
     fds_[i].events = POLLIN;
     fds_[i].revents = 0;
@@ -87,7 +87,6 @@ void Webserver::createServerSocket_(Socket &serverSocket, int port,
   this->fds_[index].revents = 0;
   serverSocket.fd_ = serverSocket.listeningSocket_;
   std::string servername = this->configs_[index].getServerName();
-  serverSocket.setServerAddress(servername);
   serverSocket.socketIndex_ = index;
   serverSocket.socketType_ = SERVER;
   serverSocket.configId_ = index;
@@ -101,7 +100,7 @@ void Webserver::createClientSocket_(Socket &serverSocket) {
   int new_client_sock;
   if ((new_client_sock = accept(serverSocket.fd_,
                                 (struct sockaddr *)&serverSocket.socketaddr_,
-                                &boundServerAdress_len)) == -1)
+                                &boundServerAddress_len)) == -1)
     error_("Accept Error");
   printVerbose("opened new Socket ", new_client_sock);
   if (fcntl(new_client_sock, F_SETFL, O_NONBLOCK, FD_CLOEXEC) == -1) {
@@ -178,8 +177,7 @@ bool Webserver::pollError_(size_t &i) {
 std::string Webserver::createResponse_(Socket &socket) {
   Request request(socket.reqStatus.buffer);
   if (request.isKeepAlive()) socket.keepAlive_ = true;
-  int conf = this->getConfigId_(request);
-  Location loc = this->configs_[conf].getLocationByPath(request.getPath());
+  Location loc = getConfig_(request).getLocationByPath(request.getPath());
   Response resobj(request, loc);
   std::string response = resobj.getHeader() + resobj.getBody();
   return response;
@@ -211,7 +209,7 @@ void Webserver::sendResponse_(Socket &socket, pollfd &pollfd, size_t &i) {
     socket.pendingSend_ = false;
     socket.setTimestamp();
     pollfd.events = POLLIN;
-    if (socket.getKeepAlive() == false) closeConnection_(socket, pollfd, i);
+    if (!socket.getKeepAlive()) closeConnection_(socket, pollfd, i);
   }
 }
 
@@ -225,8 +223,8 @@ bool Webserver::receiveRequest_(Socket &socket, pollfd &pollfd, size_t &i) {
   if (currentBytes == static_cast<std::size_t>(-1) &&
       (errno == EWOULDBLOCK || errno == EAGAIN) && VERBOSE) {
     std::cout << "BLOCKER: " << socket.fd_ << std::endl;
-  } else if (currentBytes == 0 && socket.reqStatus.pendingReceive == false) {
-    if (socket.getKeepAlive() == false) closeConnection_(socket, pollfd, i);
+  } else if (currentBytes == 0 && !socket.reqStatus.pendingReceive) {
+    if (!socket.getKeepAlive()) closeConnection_(socket, pollfd, i);
     return false;
   }
   return true;
@@ -257,7 +255,7 @@ bool Webserver::checkPending_() {
 void Webserver::checkTimeoutClients() {
   for (size_t i = 0; i < MAX_CLIENTS; ++i) {
     if (this->Sockets_[i].socketType_ == CLIENT &&
-        this->Sockets_[i].checkTimeout() == true) {
+        this->Sockets_[i].checkTimeout()) {
       printVerbose("Timeout of Client Socket: ", this->Sockets_[i].fd_);
       closeConnection_(this->Sockets_[i], this->fds_[i], i);
       break;
@@ -265,21 +263,24 @@ void Webserver::checkTimeoutClients() {
   }
 }
 
-int Webserver::getConfigId_(const Request &request) {
-  std::string toFind;
-  try {
-    toFind = request["Host"];
-  } catch (std::exception &) {
-    return (0);
+Config &Webserver::getConfig_(const Request &request) {
+  Config &res = this->configs_[0];
+  for (size_t i = 0; i < this->configs_.size(); ++i) {
+    if (this->configs_[i].getPort() == request.getPort()) {
+      res = this->configs_[i];
+      break;
+    }
   }
-  for (int i = 0; i < MAX_CLIENTS; ++i) {
-    if (toFind == this->Sockets_[i].serverAddress_)
-      return (this->Sockets_[i].configId_);
+  for (size_t i = 0; i < this->configs_.size(); ++i) {
+    if (this->configs_[i].getServerName() == request.getHostname()) {
+      res = this->configs_[i];
+      break;
+    }
   }
-  return (0);
+  return (res);
 }
 
-void Webserver::error_(std::string error) {
+void Webserver::error_(const std::string &error) {
   printVerbose(error, "");
   exit(EXIT_FAILURE);
 }

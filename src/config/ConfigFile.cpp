@@ -1,20 +1,18 @@
 #include "ConfigFile.hpp"
 
-#include "Types.hpp"
-
 ConfigFile::ConfigFile() {}
 
 ConfigFile::~ConfigFile() {}
 
-ConfigFile::ConfigFile(const ConfigFile& obj) { *this = obj; }
+ConfigFile::ConfigFile(const ConfigFile &obj) { *this = obj; }
 
-ConfigFile& ConfigFile::operator=(const ConfigFile& obj) {
+ConfigFile &ConfigFile::operator=(const ConfigFile &obj) {
   this->content_ = obj.content_;
   this->backup_ = obj.backup_;
   return *this;
 }
 
-bool ConfigFile::openFile(int argc, char* argv[]) {
+bool ConfigFile::openFile(int argc, char *argv[]) {
   std::string path;
   if (argc < 2) {
     path = STD_CONF_PATH;
@@ -42,6 +40,20 @@ bool ConfigFile::openFile(int argc, char* argv[]) {
   return true;
 }
 
+void ConfigFile::printError() const {
+  if (this->isValid()) return;
+  for (LineVector::const_iterator iter = this->content_.begin();
+       iter != this->content_.end(); ++iter) {
+    if (iter->isValid())
+      continue;
+    else {
+      std::cout << "Config Parsing error" << std::endl;
+      std::cout << *iter << std::flush;
+      return;
+    }
+  }
+}
+
 void ConfigFile::cleanContent_() {
   LineVector newContent;
   for (LineIter iter = this->content_.begin(); iter != this->content_.end();
@@ -53,14 +65,14 @@ void ConfigFile::cleanContent_() {
   this->content_ = newContent;
 }
 
-void ConfigFile::vaildateConfigFile_() {
+void ConfigFile::validateConfigFile_() {
   this->checkSeparator_();
   this->checkConfigBlocks_();
 }
 
-bool ConfigFile::isValid() {
-  for (LineIter iter = this->content_.begin(); iter != this->content_.end();
-       ++iter) {
+bool ConfigFile::isValid() const {
+  for (LineVector::const_iterator iter = this->content_.begin();
+       iter != this->content_.end(); ++iter) {
     if (!iter->isValid()) return false;
   }
   return true;
@@ -81,13 +93,13 @@ void ConfigFile::checkConfigBlocks_() {
     if (iter->last() == '{') {
       openings.push_back(iter);
     } else if (iter->last() == '}') {
-      if (openings.size() == 0)
+      if (openings.empty())
         iter->addError("Unexpected block closing");
       else
         openings.pop_back();
     }
   }
-  if (openings.size() != 0) {
+  if (!openings.empty()) {
     for (std::list<LineIter>::iterator iter = openings.begin();
          iter != openings.end(); ++iter) {
       (*iter)->addError("Missing block closing");
@@ -111,11 +123,11 @@ void ConfigFile::removeSemiColon_() {
 
 ConfigVector ConfigFile::createConfig() {
   this->cleanContent_();
-  this->vaildateConfigFile_();
+  this->validateConfigFile_();
   this->removeSemiColon_();
-  if (this->isValid() == false) return ConfigVector();
+  if (!this->isValid()) return ConfigVector();
   ConfigVector configVector = ConfigFile::createConfigVector_();
-  if (this->isValid() == false) return ConfigVector();
+  if (!this->isValid()) return ConfigVector();
   configVector = Config::handleDuplicates_(configVector);
   configVector = ConfigFile::splitUpListens_(configVector);
   return configVector;
@@ -136,7 +148,7 @@ ConfigVector ConfigFile::createConfigVector_() {
   return configVector;
 }
 
-ConfigVector ConfigFile::splitUpListens_(ConfigVector& configvector) {
+ConfigVector ConfigFile::splitUpListens_(ConfigVector &configvector) {
   ConfigVector newConfigVector;
   for (ConfigVector::iterator vectorIter = configvector.begin();
        vectorIter != configvector.end(); ++vectorIter) {
@@ -150,7 +162,7 @@ ConfigVector ConfigFile::splitUpListens_(ConfigVector& configvector) {
   return newConfigVector;
 }
 
-std::ostream& operator<<(std::ostream& stream, ConfigFile& config) {
+std::ostream &operator<<(std::ostream &stream, ConfigFile &config) {
   config.updateBackup();
   stream << "Line\tError\tContent\n";
   stream << std::boolalpha;

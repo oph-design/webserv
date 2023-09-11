@@ -17,9 +17,18 @@
 #include <string>
 #include <vector>
 
+#include "Line.hpp"
 #include "Location.hpp"
-#include "ToString.hpp"
-#include "Types.hpp"
+#include "Utils.hpp"
+
+class Config;
+
+typedef std::vector<Line>::iterator LineIter;
+typedef std::vector<Line> LineVector;
+typedef std::vector<std::string>::iterator StringIter;
+typedef std::vector<Config> ConfigVector;
+typedef std::vector<Location> LocationVector;
+typedef std::pair<int, std::string> ErrorPage;
 
 class Config {
   friend class ConfigFile;
@@ -42,7 +51,7 @@ class Config {
   const ErrorMap &getErrorPage() const;
   const int &getPort() const;
   const int &getTimeout() const;
-  const Location &getLocationByPath(std::string index);
+  const Location &getLocationByPath(const std::string &index);
 
  private:
   static ConfigVector &handleDuplicates_(ConfigVector &configs);
