@@ -123,7 +123,13 @@ int ConfigParsing::parseClientMaxBodySize(Line &line, Duplicates &duplicates) {
     return 0;
   }
   duplicates.clientMaxBodySize = true;
-  return std::atoi(line[1].c_str());
+  char *ptr = NULL;
+  long number = std::strtol(line[1].c_str(), &ptr, 10);
+  if (number > INT_MAX || static_cast<int>(number) != number) {
+    line.addError(parameter + "only Integer Range allowed");
+    return 0;
+  }
+  return static_cast<int>(number);
 }
 
 std::string ConfigParsing::parseServerName(Line &line) {
