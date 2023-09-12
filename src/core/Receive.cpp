@@ -1,6 +1,7 @@
 #include <cstdlib>
 
 #include "Socket.hpp"
+#include "Utils.hpp"
 
 int parseCl(std::string buffer) {
   std::size_t position = buffer.find("Content-Length");
@@ -14,10 +15,6 @@ int subtrHeader(std::string buffer) {
   return (buffer.length());
 }
 
-bool getTransferEncoding(const std::string &buffer) {
-  return (buffer.find("Transfer-Encoding: chunked") != std::string::npos);
-}
-
 bool receiveRequest(Socket &socket, size_t &bytes) {
   char buffer[131072] = {0};
   t_reqStatus &reqstatus = socket.reqStatus;
@@ -28,12 +25,10 @@ bool receiveRequest(Socket &socket, size_t &bytes) {
     reqstatus.clen = parseCl(buffer);
     reqstatus.buffer = std::string(buffer, bytes);
     reqstatus.readBytes -= subtrHeader(buffer);
-    reqstatus.chunked = getTransferEncoding(buffer);
   } else {
     reqstatus.buffer.append(std::string(buffer, bytes));
   }
-  if (reqstatus.readBytes == reqstatus.clen ||
-      (reqstatus.readBytes > reqstatus.clen && reqstatus.chunked)) {
+  if (reqstatus.readBytes >= reqstatus.clen) {
     socket.setReqStatus();
     return (true);
   }

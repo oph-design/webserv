@@ -49,7 +49,7 @@ class Request {
   std::string getRequestBody() const;
   std::string getHostname() const;
   int getPort() const;
-  std::string cutPath(const std::string &index);
+  std::string cutPath(const std::string &index) const;
   bool isKeepAlive() const;
 
   void setPath(const std::string &path);

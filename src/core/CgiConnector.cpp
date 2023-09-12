@@ -1,5 +1,7 @@
 #include "CgiConnector.hpp"
 
+#include "Utils.hpp"
+
 CgiConnector::CgiConnector() {}
 
 CgiConnector::CgiConnector(const Request &request, const std::string &path)
@@ -44,7 +46,7 @@ std::string CgiConnector::getBody() const { return this->respBody_; }
 bool CgiConnector::isCgi(const std::string &path) {
   std::string name = path.substr(path.rfind('/') + 1, path.size());
   std::string extension = name.substr(name.rfind('.') + 1, name.length());
-  if (extension != "py") return (false);
+  if (extension != "py" && extension != "sh") return (false);
   if (access(path.c_str(), F_OK | X_OK) == -1) return (false);
   return (true);
 }
@@ -114,10 +116,8 @@ void CgiConnector::readOutput_(int pipes[2]) {
     bzero(buf, 16);
   }
   this->respHeader_ = bufferStr.substr(0, bufferStr.find("\n\n"));
-  std::cout << this->respHeader_ << std::endl;
   this->respBody_ =
       bufferStr.substr(bufferStr.find("\n\n") + 2, bufferStr.size());
-  std::cout << this->respBody_ << std::endl;
   close(pipes[0]);
 }
 
@@ -126,8 +126,17 @@ void CgiConnector::writeReqBody() {
   pipe(script_input);
   dup2(script_input[0], 0);
   close(script_input[0]);
-  write(script_input[1], this->reqBody_.c_str(), this->reqBody_.size());
+  while (write(script_input[1], this->reqBody_.c_str(), 16))
+    ;
   close(script_input[1]);
+}
+
+std::string getExtension(std::string path) {
+  std::string ext = path.substr(path.rfind('.') + 1);
+  if (ext == "py")
+    return ("/usr/bin/python3");
+  else
+    return ("/bin/sh");
 }
 
 void CgiConnector::executeScript_(const std::string &path, int pipes[2]) {
@@ -136,10 +145,11 @@ void CgiConnector::executeScript_(const std::string &path, int pipes[2]) {
   close(pipes[0]);
   close(pipes[1]);
   char **env = this->envToString_();
-  char **args = new char *[2];
-  args[0] = const_cast<char *>(path.c_str());
-  args[1] = NULL;
-  execve(path.c_str(), args, env);
+  char **args = new char *[3];
+  args[0] = const_cast<char *>(getExtension(path).c_str());
+  args[1] = const_cast<char *>(path.c_str());
+  args[2] = NULL;
+  execve(args[0], args, env);
   size_t i = 0;
   while (env[i]) delete env[i++];
   delete[] env;
@@ -155,7 +165,6 @@ void CgiConnector::makeConnection(Status &status) {
   if (!pid) this->executeScript_(this->path_, pipes);
   if (!waitTimeouted(pid, &exitcode)) std::cerr << "CGI Timeout" << std::endl;
   exitcode = WEXITSTATUS(exitcode);
-  std::cout << RED << exitcode << COLOR_RESET << std::endl;
   if (exitcode > 0) {
     close(pipes[0]);
     close(pipes[1]);
