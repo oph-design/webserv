@@ -130,7 +130,7 @@ size_t Webserver::getFreeSocket() {
 
 void Webserver::startServerRoutine_() {
   while (serverRunning) {
-    int ret = poll(this->fds_, MAX_CLIENTS, 10000);
+    int ret = poll(this->fds_, 256, 10000);
     if (ret == -1) {
       if (serverRunning) printVerbose("poll error", "");
       break;
@@ -283,3 +283,4 @@ void Webserver::error_(const std::string &error) {
   printVerbose(error, "");
   exit(EXIT_FAILURE);
 }
+

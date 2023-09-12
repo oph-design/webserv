@@ -21,7 +21,6 @@ typedef enum eSocketType { SERVER, CLIENT, UNUSED } SocketType;
 
 typedef struct s_reqStatus {
   bool pendingReceive;
-  bool chunked;
   int clen;
   int readBytes;
   std::string buffer;

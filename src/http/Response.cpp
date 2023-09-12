@@ -1,11 +1,14 @@
 #include "Response.hpp"
 
+#include "Utils.hpp"
+
 contentMap Response::fileTypes_ = Response::createTypeMap();
 
 /*            constructors                  */
 
 Response::Response(Request &request, const Location &location)
     : location_(location) {
+  printVerbose(RED, "I am here");
   if (this->redirect()) return;
   switch (request.getRequestMethodType()) {
     case 0:
@@ -133,10 +136,10 @@ void Response::handleGetRequest_(Request &request, const std::string &uri) {
 
 /*             Post Request                  */
 
-void Response::createFile_(const std::string &filename, const std::string &ext,
+void Response::createFile_(const std::string &filename,
                            const std::string &data) {
   std::string path = this->location_.getUploadPass();
-  path = path + "/" + filename + "." + ext;
+  path = path + "/" + filename;
   this->status_ = 201;
   if (!access(path.c_str(), F_OK)) this->status_ = 200;
   std::ofstream outfile((path).c_str());
@@ -157,26 +160,32 @@ void Response::buildJsonBody_() {
       contentField("Content-Length", toString(this->body_.size())));
 }
 
+std::string Response::getFilename(const Request &request) {
+  std::string file = request.getPath();
+  std::string ext;
+  std::string clen;
+  file = file.substr(file.rfind('/') + 0, file.length());
+  file = file.substr(0, file.rfind('.'));
+  try {
+    ext = swapColumns(fileTypes_)[request["Content-Type"]];
+    clen = request["Content-Length"];
+    file = getContentDisposition(request, "filename");
+  } catch (std::exception &e) {
+    std::cout << e.what() << std::endl;
+  }
+  if (ext.empty() || clen.empty() || file.empty() ||
+      request.getRequestBody().empty())
+    this->status_ = 400;
+  return (file + "." + ext);
+}
+
 void Response::handlePostRequest_(const Request &request,
                                   const std::string &uri) {
   if (!this->prerequisites_("POST", request)) return;
   if (CgiConnector::isCgi(location_.getCgiPass() + uri))
     return (void)(serveCgi_(request));
-  std::string file = request.getPath();
-  std::string ext;
-  file = file.substr(file.rfind('/') + 1, file.length());
-  file = file.substr(0, file.rfind('.'));
-  ext = swapColumns(fileTypes_)[request["Content-Type"]];
-  try {
-    ext = swapColumns(fileTypes_)[request["Content-Type"]];
-    file = getContentDisposition(request, "filename");
-  } catch (std::exception &e) {
-    std::cout << e.what() << std::endl;
-  }
-  if (!request.getRequestBodyExists() || !file.length() || !ext.length())
-    this->status_ = 400;
-  if (this->status_ < 400)
-    this->createFile_(file, ext, request.getRequestBody());
+  std::string file = this->getFilename(request);
+  if (this->status_ < 400) this->createFile_(file, request.getRequestBody());
   this->header_.insert(contentField("Connection", "keep-alive"));
   this->header_.insert(contentField("Content-Type", "application/json"));
   buildJsonBody_();
