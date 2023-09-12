@@ -117,7 +117,7 @@ void Response::handleGetRequest_(Request &request, const std::string &uri) {
     return (void)(serveCgi_(request));
   if (Response::isFolder_(path) && !this->location_.getAutoindex())
     path = path + this->location_.getIndex();
-  else if (Response::isFolder_(path) && !this->location_.getAutoindex())
+  else if (Response::isFolder_(path) && this->location_.getAutoindex())
     return (void)(serveFolder_(path));
 
   if (this->status_ == 200) readBody_(path);
@@ -243,8 +243,7 @@ void Response::serveCgi_(const Request &request) {
 
 /*                Folder Request                  */
 void Response::serveFolder_(const std::string &path) {
-  bool autoindex = true;
-  if (autoindex) this->body_ = createFolderBody_(path);
+  this->body_ = createFolderBody_(path);
   this->header_.insert(contentField("Content-Type", "text/html"));
   this->header_.insert(contentField("Connection", "keep-alive"));
   this->header_.insert(
