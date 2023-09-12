@@ -111,6 +111,7 @@ void Response::readBody_(const std::string &dir) {
 }
 
 void Response::handleGetRequest_(Request &request, const std::string &uri) {
+  std::cout << "in handel reuest: " << request.getPath() << std::endl;
   std::string path = location_.getRoot() + uri;
   if (!this->prerequisites_("GET", request)) return;
   if (CgiConnector::isCgi(location_.getCgiPass() + uri))
@@ -118,7 +119,7 @@ void Response::handleGetRequest_(Request &request, const std::string &uri) {
   if (Response::isFolder_(path) && !this->location_.getAutoindex())
     path = path + this->location_.getIndex();
   else if (Response::isFolder_(path) && this->location_.getAutoindex())
-    return (void)(serveFolder_(path));
+    return (void)(serveFolder_(path, request));
 
   if (this->status_ == 200) readBody_(path);
   if (this->status_ == 200) findType_(path);
@@ -242,8 +243,8 @@ void Response::serveCgi_(const Request &request) {
 }
 
 /*                Folder Request                  */
-void Response::serveFolder_(const std::string &path) {
-  this->body_ = createFolderBody_(path);
+void Response::serveFolder_(const std::string &path, const Request &request) {
+  this->body_ = createFolderBody_(path, request);
   this->header_.insert(contentField("Content-Type", "text/html"));
   this->header_.insert(contentField("Connection", "keep-alive"));
   this->header_.insert(
@@ -269,19 +270,24 @@ std::deque<std::string> Response::getFilesInFolder_(const std::string &path) {
   return names;
 }
 
-std::string Response::createFolderBody_(const std::string &path) {
+std::string Response::createFolderBody_(const std::string &path,
+                                        const Request &request) {
   std::string body;
   std::deque<std::string> names = Response::getFilesInFolder_(path);
-
+  // std::cout << this->location_.getRoot() + path << std::endl;
   std::string uri = path.substr(this->location_.getRoot().size());
+  std::cout << "uri: " << uri << std::endl;
+  std::cout << "path: " << path << std::endl;
+  std::cout << "root: " << this->location_.getRoot() << std::endl;
   body.append("<html>\n");
-  body.append("<head><title>Index of" + uri + " </title></head>\n");
+  body.append("<head><title>Index of" + request.getPath() +
+              " </title></head>\n");
   body.append("<body>\n");
-  body.append("<h1>Index of " + uri + " </h1><hr><pre>\n");
+  body.append("<h1>Index of " + request.getPath() + " </h1><hr><pre>\n");
   if (last(uri) == '/') uri = uri.substr(0, uri.size() - 1);
   for (std::deque<std::string>::iterator iter = names.begin();
        iter != names.end(); ++iter) {
-    body.append("<a href=\"" + uri + *iter + "\">");
+    body.append("<a href=\"" + request.getPath() + *iter + "\">");
     if ((*iter)[0] == '/')
       body.append(iter->substr(1));
     else
