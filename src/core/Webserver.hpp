@@ -47,7 +47,6 @@ class Webserver {
   Config &getConfig_(const Request &request);
 
   size_t serverSocketNum_;
-  size_t clientSocketNum_;
   int socketOpt_;
   ConfigVector &configs_;
   struct pollfd fds_[MAX_CLIENTS];
