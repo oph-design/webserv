@@ -21,9 +21,8 @@
 #include "Request.hpp"
 #include "Status.hpp"
 #include "Utils.hpp"
-#include "colors.hpp"
 
-#define TIMEOUT 1
+#define TIMEOUT 3
 
 typedef std::pair<std::string, std::string> envVar;
 typedef std::map<std::string, std::string> envMap;

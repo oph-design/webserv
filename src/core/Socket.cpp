@@ -10,7 +10,9 @@ Socket::Socket()
       dataSend_(0),
       pendingSend_(false),
       keepAlive_(false),
-      timeout_(5) {}
+      timeout_(5) {
+  this->setReqStatus();
+}
 
 Socket::~Socket() {}
 
@@ -30,7 +32,6 @@ Socket &Socket::operator=(const Socket &rhs) {
   this->timestamp_ = rhs.timestamp_;
   this->timeout_ = rhs.timeout_;
   this->reqStatus.pendingReceive = rhs.reqStatus.pendingReceive;
-  this->reqStatus.chunked = rhs.reqStatus.chunked;
   this->reqStatus.clen = rhs.reqStatus.clen;
   this->reqStatus.readBytes = rhs.reqStatus.readBytes;
   return *this;
@@ -62,7 +63,6 @@ void Socket::setIdle() {
 // other functions
 void Socket::setReqStatus() {
   this->reqStatus.pendingReceive = false;
-  this->reqStatus.chunked = false;
   this->reqStatus.clen = 0;
   this->reqStatus.readBytes = 0;
 }

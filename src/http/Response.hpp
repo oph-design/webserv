@@ -47,11 +47,11 @@ class Response {
   void handleGetRequest_(Request &request, const std::string &uri);
   void handlePostRequest_(const Request &request, const std::string &uri);
   void handleDeleteRequest_(const Request &request, const std::string &uri);
-  void createFile_(const std::string &filename, const std::string &ext,
-                   const std::string &data);
+  void createFile_(const std::string &filename, const std::string &data);
   void buildJsonBody_();
   void serveCgi_(const Request &request);
   bool prerequisites_(const std::string &method, const Request &request);
+  std::string getFilename(const Request &request);
   bool redirect();
 
   static bool isForbiddenPath_(const std::string &dir);

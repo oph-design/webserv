@@ -1,5 +1,7 @@
 #include "ConfigParsing.hpp"
 
+#include "Utils.hpp"
+
 Config ConfigParsing::parseServer_(LineIter &iter, const LineIter &end) {
   Config config;
   Duplicates duplicates;

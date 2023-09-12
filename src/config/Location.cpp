@@ -55,7 +55,7 @@ std::ostream &operator<<(std::ostream &stream, const Location &location) {
   stream << "upload_pass: " << location.uploadPass_ << "\n";
   stream << "rewrite: " << location.rewrite_ << "\n";
   stream << "limit_except:\n" << location.limitExcept_;
-  stream << "fastcgi_pass:\n" << location.cgiPass_;
+  stream << "cgi_pass:\n" << location.cgiPass_;
   stream << "error_page:\n" << location.errorPage_;
   stream << std::flush;
   return stream;

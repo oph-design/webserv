@@ -1,4 +1,7 @@
+#include <cstring>
+
 #include "Config.hpp"
+#include "Utils.hpp"
 
 const int &Config::getClientMaxBodySize() const {
   return this->clientMaxBodySize_;
@@ -24,7 +27,7 @@ const Location &Config::getLocationByPath(const std::string &index) {
     if (index.size() < it->getPath().size()) continue;
     tmp = index.substr(0, it->getPath().size());
     if (it->getPath() == tmp + '/') return (*it);
-    if (!it->getPath().compare(index)) return (*it);
+    if (!strcmp(tmp.c_str(), it->getPath().c_str())) return (*it);
   }
   return (this->locations_[0]);
 }
