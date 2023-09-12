@@ -274,17 +274,11 @@ std::string Response::createFolderBody_(const std::string &path,
                                         const Request &request) {
   std::string body;
   std::deque<std::string> names = Response::getFilesInFolder_(path);
-  // std::cout << this->location_.getRoot() + path << std::endl;
-  std::string uri = path.substr(this->location_.getRoot().size());
-  std::cout << "uri: " << uri << std::endl;
-  std::cout << "path: " << path << std::endl;
-  std::cout << "root: " << this->location_.getRoot() << std::endl;
   body.append("<html>\n");
   body.append("<head><title>Index of" + request.getPath() +
               " </title></head>\n");
   body.append("<body>\n");
   body.append("<h1>Index of " + request.getPath() + " </h1><hr><pre>\n");
-  if (last(uri) == '/') uri = uri.substr(0, uri.size() - 1);
   for (std::deque<std::string>::iterator iter = names.begin();
        iter != names.end(); ++iter) {
     body.append("<a href=\"" + request.getPath() + *iter + "\">");
