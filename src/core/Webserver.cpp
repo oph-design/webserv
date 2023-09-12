@@ -7,9 +7,7 @@ Webserver::Webserver(const Webserver &rhs) : configs_(rhs.configs_) {
 Webserver::~Webserver() {}
 
 Webserver::Webserver(ConfigVector &configs)
-    : serverSocketNum_(0),
-      socketOpt_(1),
-      configs_(configs) {
+    : serverSocketNum_(0), socketOpt_(1), configs_(configs) {
   for (std::size_t i = 0; i < MAX_CLIENTS; ++i) {
     fds_[i].fd = -1;
     fds_[i].events = POLLIN;
