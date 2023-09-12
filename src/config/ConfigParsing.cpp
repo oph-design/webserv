@@ -1,5 +1,7 @@
 #include "ConfigParsing.hpp"
 
+#include "Utils.hpp"
+
 Config ConfigParsing::parseServer_(LineIter &iter, const LineIter &end) {
   Config config;
   Duplicates duplicates;
@@ -53,7 +55,7 @@ Location ConfigParsing::parseLocation_(LineIter &iter, const LineIter &end) {
       location.uploadPass_ = ConfigParsing::parseUpload(*iter, duplicates);
     else if (iter->firstWord() == "rewrite")
       location.rewrite_ = ConfigParsing::parseRewrite(*iter);
-    else if (iter->firstWord() == "fastcgi_pass")
+    else if (iter->firstWord() == "cgi_pass")
       location.cgiPass_ = ConfigParsing::parseCgiPass(*iter, duplicates);
     else if (iter->firstWord() == "error_page")
       location.errorPage_.insert(ConfigParsing::parseErrorPage(*iter));

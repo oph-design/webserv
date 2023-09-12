@@ -14,7 +14,7 @@
 
 #include "colors.hpp"
 
-#define VERBOSE true
+#define VERBOSE false
 
 class Request;
 

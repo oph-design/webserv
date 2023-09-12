@@ -8,7 +8,6 @@ contentMap Response::fileTypes_ = Response::createTypeMap();
 
 Response::Response(Request &request, const Location &location)
     : location_(location) {
-  printVerbose(RED, "I am here");
   if (this->redirect()) return;
   switch (request.getRequestMethodType()) {
     case 0:
@@ -112,7 +111,6 @@ void Response::readBody_(const std::string &dir) {
 
 void Response::handleGetRequest_(Request &request, const std::string &uri) {
   std::string path = location_.getRoot() + uri;
-  if (!this->prerequisites_("POST", request)) return;
   if (CgiConnector::isCgi(location_.getCgiPass() + uri))
     return (void)(serveCgi_(request));
   if (Response::isFolder_(path) && !this->location_.getAutoindex())
@@ -226,7 +224,8 @@ bool Response::prerequisites_(const std::string &method,
 /*             Cgi Request                  */
 
 void Response::serveCgi_(const Request &request) {
-  CgiConnector cgi(request, location_.getCgiPass() + request.getPath());
+  CgiConnector cgi(
+      request, location_.getCgiPass() + request.cutPath(location_.getPath()));
   cgi.makeConnection(this->status_);
   if (status_ > 399) {
     this->status_ >> this->body_;
