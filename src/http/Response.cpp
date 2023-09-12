@@ -104,6 +104,7 @@ void Response::readBody_(const std::string &dir) {
     this->status_ = 404;
   }
   std::stringstream content;
+  std::cout << dir << std::endl;
   content << file.rdbuf();
   file.close();
   this->body_ = content.str();
@@ -209,7 +210,7 @@ bool Response::prerequisites_(const std::string &method,
                               const Request &request) {
   if (isForbiddenPath_(request.getPath()))
     this->status_ = 400;
-  else if (this->location_.methodAllowed(method))
+  else if (!this->location_.methodAllowed(method))
     this->status_ = 405;
   else if (this->location_.maxBodyReached(request.getRequestBody().size()))
     this->status_ = 413;
