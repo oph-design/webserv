@@ -2,20 +2,20 @@
 Implementation of a minimalistic webserver for ecole 42
 
 
-# Web Server Configuration
-
-This document provides a guide for configuring your web server using a syntax similar to Nginx. The configuration file allows you to define server blocks, location blocks, and limit_except blocks to tailor your web server's behavior.
-
 ## Table of Contents
 
 - [webserv](#webserv)
-- [Web Server Configuration](#web-server-configuration)
   - [Table of Contents](#table-of-contents)
+- [Web Server Configuration](#web-server-configuration)
   - [Server Block](#server-block)
   - [Location Block](#location-block)
   - [Limit\_except Block](#limit_except-block)
 
----
+
+# Web Server Configuration
+
+This document provides a guide for configuring your web server using a syntax similar to Nginx. The configuration file allows you to define server blocks, location blocks, and limit_except blocks to tailor your web server's behavior.
+
 
 ## Server Block
 
@@ -29,6 +29,7 @@ server {
     index INDEX_FILE;
     root ROOT_DIRECTORY;
     error_page CODE PATH;
+    timeout TIMEOUT
 
     # Add location blocks and limit_except blocks here
 }
@@ -41,6 +42,7 @@ server {
 - `ROOT_DIRECTORY`: The root directory for serving files.
 - `CODE`: HTTP status code for which to display the custom error page.
 - `PATH`: Path to the custom error page.
+- `TIMEOUT`: The time until a client should time out in seconds.
 
 ---
 
@@ -54,10 +56,11 @@ location PATH {
     client_max_body_size SIZE;
     index INDEX_FILE;
     root ROOT_DIRECTORY;
-    fastcgi_pass FASTCGI_BACKEND;
+    cgi_pass CGI_DIRECTORY;
     error_page CODE PATH;
+    cgi_processing CGI;
 
-    # Add more settings as needed
+    # Add limit_except block here if wanted
 }
 ```
 
@@ -66,9 +69,10 @@ location PATH {
 - `SIZE`: Maximum body size for client requests.
 - `INDEX_FILE`: Default file to serve for this location.
 - `ROOT_DIRECTORY`: The directory to serve files from.
-- `FASTCGI_BACKEND`: FastCGI backend server's address.
+- `CGI_DIRECTORY`: Path where the CGI-Scripts are located.
 - `CODE`: HTTP status code for which to display the custom error page.
 - `PATH`: Path to the custom error page.
+- `CGI`: Allowed CGIs.
 
 ---
 
