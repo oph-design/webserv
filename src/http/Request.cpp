@@ -233,6 +233,7 @@ std::ostream &operator<<(std::ostream &stream, const Request &header) {
 void Request::setPath(const std::string &path) { this->path_ = path; }
 
 std::string Request::cutPath(const std::string &index) const {
+  std::cout << index << std::endl;
   if (!index.empty())
     return this->path_.substr(index.length(), this->path_.length());
   return (this->path_);

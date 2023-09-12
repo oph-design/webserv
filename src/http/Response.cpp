@@ -111,6 +111,7 @@ void Response::readBody_(const std::string &dir) {
 
 void Response::handleGetRequest_(Request &request, const std::string &uri) {
   std::string path = location_.getRoot() + uri;
+  if (!this->prerequisites_("POST", request)) return;
   if (CgiConnector::isCgi(location_.getCgiPass() + uri))
     return (void)(serveCgi_(request));
   if (Response::isFolder_(path) && !this->location_.getAutoindex())
