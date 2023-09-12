@@ -126,8 +126,7 @@ void CgiConnector::writeReqBody() {
   pipe(script_input);
   dup2(script_input[0], 0);
   close(script_input[0]);
-  while (write(script_input[1], this->reqBody_.c_str(), 16))
-    ;
+  write(script_input[1], this->reqBody_.c_str(), this->reqBody_.size());
   close(script_input[1]);
 }
 
@@ -150,6 +149,7 @@ void CgiConnector::executeScript_(const std::string &path, int pipes[2]) {
   args[1] = const_cast<char *>(path.c_str());
   args[2] = NULL;
   execve(args[0], args, env);
+  perror("execve");
   size_t i = 0;
   while (env[i]) delete env[i++];
   delete[] env;
