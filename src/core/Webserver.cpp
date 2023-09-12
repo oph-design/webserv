@@ -283,4 +283,3 @@ void Webserver::error_(const std::string &error) {
   printVerbose(error, "");
   exit(EXIT_FAILURE);
 }
-
