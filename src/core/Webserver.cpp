@@ -8,7 +8,6 @@ Webserver::~Webserver() {}
 
 Webserver::Webserver(ConfigVector &configs)
     : serverSocketNum_(0),
-      clientSocketNum_(0),
       socketOpt_(1),
       configs_(configs) {
   for (std::size_t i = 0; i < MAX_CLIENTS; ++i) {
@@ -30,7 +29,6 @@ Webserver::Webserver(ConfigVector &configs)
 
 Webserver &Webserver::operator=(const Webserver &rhs) {
   this->serverSocketNum_ = rhs.serverSocketNum_;
-  this->clientSocketNum_ = rhs.clientSocketNum_;
   this->socketOpt_ = rhs.socketOpt_;
   this->configs_ = rhs.configs_;
   return *this;
@@ -112,7 +110,6 @@ void Webserver::createClientSocket_(Socket &serverSocket) {
   this->Sockets_[index].socketType_ = CLIENT;
   this->Sockets_[index].setTimestamp();
   this->Sockets_[index].timeout_ = serverSocket.timeout_;
-  clientSocketNum_++;
   if (VERBOSE) {
     std::cout << "Connection Established with " << this->Sockets_[index].fd_
               << std::endl;
@@ -237,7 +234,6 @@ void Webserver::closeConnection_(Socket &socket, pollfd &pollfd, size_t &i) {
   pollfd.fd = -1;
   pollfd.events = POLLIN;
   socket.setIdle();
-  clientSocketNum_--;
 }
 
 bool Webserver::checkPending_() {
