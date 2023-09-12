@@ -111,7 +111,7 @@ void Response::readBody_(const std::string &dir) {
 
 void Response::handleGetRequest_(Request &request, const std::string &uri) {
   std::string path = location_.getRoot() + uri;
-  if (!this->prerequisites_("POST", request)) return;
+  if (!this->prerequisites_("GET", request)) return;
   if (CgiConnector::isCgi(location_.getCgiPass() + uri))
     return (void)(serveCgi_(request));
   if (Response::isFolder_(path) && !this->location_.getAutoindex())
@@ -163,7 +163,7 @@ std::string Response::getFilename(const Request &request) {
   std::string file = request.getPath();
   std::string ext;
   std::string clen;
-  file = file.substr(file.rfind('/') + 0, file.length());
+  file = file.substr(file.rfind('/') + 1);
   file = file.substr(0, file.rfind('.'));
   try {
     ext = swapColumns(fileTypes_)[request["Content-Type"]];
