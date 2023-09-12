@@ -46,6 +46,7 @@ class Location {
   const ErrorMap &getErrorPage() const;
   bool methodAllowed(const std::string &method) const;
   bool maxBodyReached(const std::size_t &contentLength) const;
+  bool operator>(const Location &rhs) const;
 
  private:
   bool autoindex_;

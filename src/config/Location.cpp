@@ -46,6 +46,10 @@ bool Location::maxBodyReached(const std::size_t &contentLength) const {
   return (static_cast<size_t>(this->clientMaxBodySize_) < contentLength);
 }
 
+bool Location::operator>(const Location &rhs) const {
+  std::size_t lhs = this->path_.size();
+  return (lhs > rhs.path_.size());
+}
 std::ostream &operator<<(std::ostream &stream, const Location &location) {
   stream << "\nPath: " << location.path_ << "\n";
   stream << "autoindex: " << location.autoindex_ << "\n";

@@ -29,7 +29,7 @@ const Location &Config::getLocationByPath(const std::string &index) {
     if (it->getPath() == tmp + '/') return (*it);
     if (!strcmp(tmp.c_str(), it->getPath().c_str())) return (*it);
   }
-  return (this->locations_[0]);
+  return (this->locations_[this->locations_.size() - 1]);
 }
 
 const int &Config::getTimeout() const { return this->timeout_; }

@@ -29,6 +29,8 @@ Config ConfigParsing::parseServer_(LineIter &iter, const LineIter &end) {
     else
       iter->addError("unknown option" + iter->firstWord());
   }
+  std::sort(config.locations_.begin(), config.locations_.end(),
+            std::greater<Location>());
   return config;
 }
 
