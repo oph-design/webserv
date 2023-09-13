@@ -79,14 +79,17 @@ StringSet ConfigParsing::parseLimitExcept_(LineIter &iter,
       LimitExcept.insert((*iter)[lineIter]);
   }
   ++iter;
+  int denyAllCounter = 0;
   for (; iter != end; ++iter) {
     if (iter->getLine() == "}")
       break;
-    else if (iter->getLine() == "deny all")
+    else if (iter->getLine() == "deny all") {
+      ++denyAllCounter;
       continue;
-    else
+    } else
       iter->addError("line_except unknown token");
   }
+  if (denyAllCounter == 0) iter->addError("limit_except option missing");
   return LimitExcept;
 }
 
