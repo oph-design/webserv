@@ -20,7 +20,7 @@
 #include "Socket.hpp"
 #include "Utils.hpp"
 
-#define MAX_CLIENTS 1024
+#define MAX_CLIENTS 250
 #define BUFFER_SIZE 131072
 
 class Webserver {

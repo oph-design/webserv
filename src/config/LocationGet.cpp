@@ -21,3 +21,5 @@ const StringSet& Location::getMethods() const { return this->limitExcept_; }
 const std::string& Location::getCgiPass() const { return this->cgiPass_; }
 
 const ErrorMap& Location::getErrorPage() const { return this->errorPage_; }
+
+bool Location::getCgiPr() const { return this->cgiProcessing_; }

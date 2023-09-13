@@ -43,6 +43,7 @@ class Location {
   const std::string &getUploadPass() const;
   const StringSet &getMethods() const;
   const std::string &getCgiPass() const;
+  bool getCgiPr() const;
   const ErrorMap &getErrorPage() const;
   bool methodAllowed(const std::string &method) const;
   bool maxBodyReached(const std::size_t &contentLength) const;

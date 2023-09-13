@@ -104,7 +104,6 @@ void Response::readBody_(const std::string &dir) {
     this->status_ = 404;
   }
   std::stringstream content;
-  std::cout << dir << std::endl;
   content << file.rdbuf();
   file.close();
   this->body_ = content.str();
@@ -114,7 +113,7 @@ void Response::handleGetRequest_(Request &request, const std::string &uri) {
   std::cout << "in handel reuest: " << request.getPath() << std::endl;
   std::string path = location_.getRoot() + uri;
   if (!this->prerequisites_("GET", request)) return;
-  if (CgiConnector::isCgi(location_.getCgiPass() + uri))
+  if (location_.getCgiPr() && CgiConnector::isCgi(location_.getCgiPass() + uri))
     return (void)(serveCgi_(request));
   if (Response::isFolder_(path) && !this->location_.getAutoindex())
     path = path + this->location_.getIndex();
@@ -183,7 +182,7 @@ std::string Response::getFilename(const Request &request) {
 void Response::handlePostRequest_(const Request &request,
                                   const std::string &uri) {
   if (!this->prerequisites_("POST", request)) return;
-  if (CgiConnector::isCgi(location_.getCgiPass() + uri))
+  if (location_.getCgiPr() && CgiConnector::isCgi(location_.getCgiPass() + uri))
     return (void)(serveCgi_(request));
   std::string file = this->getFilename(request);
   if (this->status_ < 400) this->createFile_(file, request.getRequestBody());
@@ -198,7 +197,7 @@ void Response::handleDeleteRequest_(const Request &request,
                                     const std::string &uri) {
   std::string path = location_.getRoot() + uri;
   if (!this->prerequisites_("DELETE", request)) return;
-  if (CgiConnector::isCgi(this->location_.getCgiPass() + uri))
+  if (location_.getCgiPr() && CgiConnector::isCgi(location_.getCgiPass() + uri))
     return (void)(serveCgi_(request));
   if (access(path.c_str(), F_OK)) this->status_ = 403;
   if (this->status_ < 400 && remove(path.c_str())) this->status_ = 500;
