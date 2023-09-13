@@ -226,7 +226,6 @@ bool Webserver::receiveRequest_(Socket &socket, pollfd &pollfd, size_t &i) {
 void Webserver::closeConnection_(Socket &socket, pollfd &pollfd, size_t &i) {
   (void)i;
   printVerbose("Connection closing on Socket ", socket.fd_);
-  shutdown(pollfd.fd, SHUT_RDWR);
   close(pollfd.fd);
   pollfd.fd = -1;
   pollfd.events = POLLIN;
