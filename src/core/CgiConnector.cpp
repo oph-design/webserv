@@ -149,7 +149,6 @@ void CgiConnector::executeScript_(const std::string &path, int pipes[2]) {
   args[1] = const_cast<char *>(path.c_str());
   args[2] = NULL;
   execve(args[0], args, env);
-  perror("execve");
   size_t i = 0;
   while (env[i]) delete env[i++];
   delete[] env;
