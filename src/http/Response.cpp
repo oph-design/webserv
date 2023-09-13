@@ -8,7 +8,9 @@ contentMap Response::fileTypes_ = Response::createTypeMap();
 
 Response::Response(Request &request, const Location &location)
     : location_(location) {
+  this->status_.setErrors(location);
   if (this->redirect()) return;
+  std::cout << location << std::endl;
   switch (request.getRequestMethodType()) {
     case 0:
       handleGetRequest_(request, request.cutPath(location_.getPath()));
@@ -104,21 +106,21 @@ void Response::readBody_(const std::string &dir) {
     this->status_ = 404;
   }
   std::stringstream content;
-  std::cout << dir << std::endl;
   content << file.rdbuf();
   file.close();
   this->body_ = content.str();
 }
 
 void Response::handleGetRequest_(Request &request, const std::string &uri) {
+  std::cout << "in handel reuest: " << request.getPath() << std::endl;
   std::string path = location_.getRoot() + uri;
   if (!this->prerequisites_("GET", request)) return;
-  if (CgiConnector::isCgi(location_.getCgiPass() + uri))
+  if (location_.getCgiPr() && CgiConnector::isCgi(location_.getCgiPass() + uri))
     return (void)(serveCgi_(request));
   if (Response::isFolder_(path) && !this->location_.getAutoindex())
     path = path + this->location_.getIndex();
-  else if (Response::isFolder_(path) && !this->location_.getAutoindex())
-    return (void)(serveFolder_(path));
+  else if (Response::isFolder_(path) && this->location_.getAutoindex())
+    return (void)(serveFolder_(path, request));
 
   if (this->status_ == 200) readBody_(path);
   if (this->status_ == 200) findType_(path);
@@ -182,7 +184,7 @@ std::string Response::getFilename(const Request &request) {
 void Response::handlePostRequest_(const Request &request,
                                   const std::string &uri) {
   if (!this->prerequisites_("POST", request)) return;
-  if (CgiConnector::isCgi(location_.getCgiPass() + uri))
+  if (location_.getCgiPr() && CgiConnector::isCgi(location_.getCgiPass() + uri))
     return (void)(serveCgi_(request));
   std::string file = this->getFilename(request);
   if (this->status_ < 400) this->createFile_(file, request.getRequestBody());
@@ -197,7 +199,7 @@ void Response::handleDeleteRequest_(const Request &request,
                                     const std::string &uri) {
   std::string path = location_.getRoot() + uri;
   if (!this->prerequisites_("DELETE", request)) return;
-  if (CgiConnector::isCgi(this->location_.getCgiPass() + uri))
+  if (location_.getCgiPr() && CgiConnector::isCgi(location_.getCgiPass() + uri))
     return (void)(serveCgi_(request));
   if (access(path.c_str(), F_OK)) this->status_ = 403;
   if (this->status_ < 400 && remove(path.c_str())) this->status_ = 500;
@@ -242,9 +244,8 @@ void Response::serveCgi_(const Request &request) {
 }
 
 /*                Folder Request                  */
-void Response::serveFolder_(const std::string &path) {
-  bool autoindex = true;
-  if (autoindex) this->body_ = createFolderBody_(path);
+void Response::serveFolder_(const std::string &path, const Request &request) {
+  this->body_ = createFolderBody_(path, request);
   this->header_.insert(contentField("Content-Type", "text/html"));
   this->header_.insert(contentField("Connection", "keep-alive"));
   this->header_.insert(
@@ -270,19 +271,18 @@ std::deque<std::string> Response::getFilesInFolder_(const std::string &path) {
   return names;
 }
 
-std::string Response::createFolderBody_(const std::string &path) {
+std::string Response::createFolderBody_(const std::string &path,
+                                        const Request &request) {
   std::string body;
   std::deque<std::string> names = Response::getFilesInFolder_(path);
-
-  std::string uri = path.substr(this->location_.getRoot().size());
   body.append("<html>\n");
-  body.append("<head><title>Index of" + uri + " </title></head>\n");
+  body.append("<head><title>Index of" + request.getPath() +
+              " </title></head>\n");
   body.append("<body>\n");
-  body.append("<h1>Index of " + uri + " </h1><hr><pre>\n");
-  if (last(uri) == '/') uri = uri.substr(0, uri.size() - 1);
+  body.append("<h1>Index of " + request.getPath() + " </h1><hr><pre>\n");
   for (std::deque<std::string>::iterator iter = names.begin();
        iter != names.end(); ++iter) {
-    body.append("<a href=\"" + uri + *iter + "\">");
+    body.append("<a href=\"" + request.getPath() + *iter + "\">");
     if ((*iter)[0] == '/')
       body.append(iter->substr(1));
     else

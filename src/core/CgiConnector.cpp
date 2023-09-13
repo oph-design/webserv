@@ -108,12 +108,12 @@ bool CgiConnector::waitTimeouted(pid_t pid, int *exitcode) {
 
 void CgiConnector::readOutput_(int pipes[2]) {
   close(pipes[1]);
-  char buf[16];
-  bzero(buf, 16);
+  char buf[1024];
+  bzero(buf, 1024);
   std::string bufferStr;
-  while (read(pipes[0], buf, 15) > 0) {
+  while (read(pipes[0], buf, 1023) > 0) {
     bufferStr.append(buf);
-    bzero(buf, 16);
+    bzero(buf, 1024);
   }
   this->respHeader_ = bufferStr.substr(0, bufferStr.find("\n\n"));
   this->respBody_ =
@@ -126,8 +126,7 @@ void CgiConnector::writeReqBody() {
   pipe(script_input);
   dup2(script_input[0], 0);
   close(script_input[0]);
-  while (write(script_input[1], this->reqBody_.c_str(), 16))
-    ;
+  write(script_input[1], this->reqBody_.c_str(), this->reqBody_.size());
   close(script_input[1]);
 }
 

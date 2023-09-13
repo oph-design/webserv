@@ -56,8 +56,9 @@ class Response {
 
   static bool isForbiddenPath_(const std::string &dir);
   static bool isFolder_(const std::string &uri);
-  void serveFolder_(const std::string &path);
-  std::string createFolderBody_(const std::string &path);
+  void serveFolder_(const std::string &path, const Request &request);
+  std::string createFolderBody_(const std::string &path,
+                                const Request &request);
   static std::deque<std::string> getFilesInFolder_(const std::string &path);
 
   static contentMap fileTypes_;

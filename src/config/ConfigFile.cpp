@@ -36,6 +36,10 @@ bool ConfigFile::openFile(int argc, char *argv[]) {
     ++lineCount;
     buffer.clear();
   }
+  if (this->content_.size() == 0) {
+    std::cerr << "Error: Please don't use empty files/folders" << std::endl;
+    return false;
+  }
   this->backup_ = this->content_;
   return true;
 }

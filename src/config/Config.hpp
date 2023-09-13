@@ -7,7 +7,7 @@
 #define FALLBACK_TIMEOUT 10
 #define FALLBACK_SERVERNAME "localhost"
 #define FALLBACK_INDEX "index.html"
-#define FALLBACK_ROOT "html/"
+#define FALLBACK_ROOT "./html"
 #define FALLBACK_CLIENTMAXBODYSIZE 10000
 #endif  // FALLBACK_VALUES
 

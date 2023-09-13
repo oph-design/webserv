@@ -13,7 +13,6 @@ Webserver::Webserver(ConfigVector &configs)
     fds_[i].events = POLLIN;
     fds_[i].revents = 0;
   }
-
   for (ConfigVector::iterator it = configs.begin(); it != configs.end(); ++it) {
     size_t index = getFreeSocket();
     if (index != MAX_CLIENTS) {
@@ -125,7 +124,7 @@ size_t Webserver::getFreeSocket() {
 
 void Webserver::startServerRoutine_() {
   while (serverRunning) {
-    int ret = poll(this->fds_, 256, 10000);
+    int ret = poll(this->fds_, MAX_CLIENTS, 10000);
     if (ret == -1) {
       if (serverRunning) printVerbose("poll error", "");
       break;
@@ -227,7 +226,6 @@ bool Webserver::receiveRequest_(Socket &socket, pollfd &pollfd, size_t &i) {
 void Webserver::closeConnection_(Socket &socket, pollfd &pollfd, size_t &i) {
   (void)i;
   printVerbose("Connection closing on Socket ", socket.fd_);
-  shutdown(pollfd.fd, SHUT_RDWR);
   close(pollfd.fd);
   pollfd.fd = -1;
   pollfd.events = POLLIN;

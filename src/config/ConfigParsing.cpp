@@ -29,6 +29,8 @@ Config ConfigParsing::parseServer_(LineIter &iter, const LineIter &end) {
     else
       iter->addError("unknown option" + iter->firstWord());
   }
+  std::sort(config.locations_.begin(), config.locations_.end(),
+            std::greater<Location>());
   return config;
 }
 
@@ -77,14 +79,17 @@ StringSet ConfigParsing::parseLimitExcept_(LineIter &iter,
       LimitExcept.insert((*iter)[lineIter]);
   }
   ++iter;
+  int denyAllCounter = 0;
   for (; iter != end; ++iter) {
     if (iter->getLine() == "}")
       break;
-    else if (iter->getLine() == "deny all")
+    else if (iter->getLine() == "deny all") {
+      ++denyAllCounter;
       continue;
-    else
+    } else
       iter->addError("line_except unknown token");
   }
+  if (denyAllCounter == 0) iter->addError("limit_except option missing");
   return LimitExcept;
 }
 
@@ -125,7 +130,13 @@ int ConfigParsing::parseClientMaxBodySize(Line &line, Duplicates &duplicates) {
     return 0;
   }
   duplicates.clientMaxBodySize = true;
-  return std::atoi(line[1].c_str());
+  char *ptr = NULL;
+  long number = std::strtol(line[1].c_str(), &ptr, 10);
+  if (number > INT_MAX || static_cast<int>(number) != number) {
+    line.addError(parameter + "only Integer Range allowed");
+    return 0;
+  }
+  return static_cast<int>(number);
 }
 
 std::string ConfigParsing::parseServerName(Line &line) {

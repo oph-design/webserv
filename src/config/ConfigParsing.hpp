@@ -1,6 +1,7 @@
 #ifndef CONFIGPARSING_HPP_
 #define CONFIGPARSING_HPP_
 
+#include <climits>
 #include <cstdlib>
 #include <string>
 #include <utility>
