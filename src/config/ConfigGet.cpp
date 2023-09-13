@@ -27,7 +27,7 @@ const Location &Config::getLocationByPath(const std::string &index) {
     if (index.size() < it->getPath().size()) continue;
     std::size_t pos = index.find('/', it->getPath().size());
     if (pos != std::string::npos)
-      tmp = index.substr(0, pos + 1);
+      tmp = index.substr(0, pos);
     else
       tmp = index;
     if (it->getPath() == tmp + '/') return (*it);
