@@ -23,6 +23,7 @@ class Status {
   ~Status();
 
   static statusMap createStatusMap();
+  void setErrors(const Location& location);
   bool operator==(int rhs) const;
   bool operator<=(int rhs) const;
   bool operator>=(int rhs) const;
@@ -32,7 +33,6 @@ class Status {
   friend std::ostream& operator<<(std::ostream& stream, const Status& status);
 
  private:
-  void setErrors(const Location& location);
   std::string getStyling_();
   std::string getStdError();
 

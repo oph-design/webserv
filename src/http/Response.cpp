@@ -8,7 +8,9 @@ contentMap Response::fileTypes_ = Response::createTypeMap();
 
 Response::Response(Request &request, const Location &location)
     : location_(location) {
+  this->status_.setErrors(location);
   if (this->redirect()) return;
+  std::cout << location << std::endl;
   switch (request.getRequestMethodType()) {
     case 0:
       handleGetRequest_(request, request.cutPath(location_.getPath()));
