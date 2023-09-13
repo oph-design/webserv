@@ -10,7 +10,6 @@ Response::Response(Request &request, const Location &location)
     : location_(location) {
   this->status_.setErrors(location);
   if (this->redirect()) return;
-  std::cout << location << std::endl;
   switch (request.getRequestMethodType()) {
     case 0:
       handleGetRequest_(request, request.cutPath(location_.getPath()));
@@ -112,7 +111,6 @@ void Response::readBody_(const std::string &dir) {
 }
 
 void Response::handleGetRequest_(Request &request, const std::string &uri) {
-  std::cout << "in handel reuest: " << request.getPath() << std::endl;
   std::string path = location_.getRoot() + uri;
   if (!this->prerequisites_("GET", request)) return;
   if (location_.getCgiPr() && CgiConnector::isCgi(location_.getCgiPass() + uri))
@@ -172,8 +170,7 @@ std::string Response::getFilename(const Request &request) {
     ext = swapColumns(fileTypes_)[request["Content-Type"]];
     clen = request["Content-Length"];
     file = getContentDisposition(request, "filename");
-  } catch (std::exception &e) {
-    std::cout << e.what() << std::endl;
+  } catch (std::exception &) {
   }
   if (ext.empty() || clen.empty() || file.empty() ||
       request.getRequestBody().empty())

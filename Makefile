@@ -2,7 +2,7 @@ NAME							=	webserv
 
 
 CC								=	c++
-LCFLAGS						=	-fsanitize=address
+LCFLAGS						=	
 HEADERFLAGS				=	-I src/core -I include -I src/utils -I src/http \
 										-I src/config -I src/misc
 MAXFDS						= $(shell ulimit -n)
@@ -84,31 +84,8 @@ bonus:
 ################################################################################
 ################################################################################
 
-REDIRECT					= $(HOME)/goinfre/docker
-
-$(REDIRECT):
-	./docker/setup.sh
-
-linux: $(REDIRECT)
-	./docker/linux/docker_run.sh
-
-nginx: $(REDIRECT)
-	rm -f ./docker/nginx/nginx.conf
-	cp ./conf/webserv.conf ./docker/nginx/nginx.conf
-	./docker/nginx/docker_run.sh
-
-docker_clean:
-	-docker kill $(docker ps -q)
-	docker system prune --all --volumes  -f
-
-
 $(ALL_OBJ_DIR):
 	@mkdir -p $(ALL_OBJ_DIR)
-
-norm:
-	@cpplint $(shell find src -type f -name "*.cpp") \
-						$(shell find src -type f -name "*.hpp") \
-						$(shell find include -type f -name "*.hpp")
 
 ################################################################################
 ################################################################################

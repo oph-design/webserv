@@ -215,7 +215,6 @@ bool Webserver::receiveRequest_(Socket &socket, pollfd &pollfd, size_t &i) {
   }
   if (currentBytes == static_cast<std::size_t>(-1) &&
       (errno == EWOULDBLOCK || errno == EAGAIN) && VERBOSE) {
-    std::cout << "BLOCKER: " << socket.fd_ << std::endl;
   } else if (currentBytes == 0 && !socket.reqStatus.pendingReceive) {
     if (!socket.getKeepAlive()) closeConnection_(socket, pollfd, i);
     return false;

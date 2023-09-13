@@ -25,7 +25,11 @@ const Location &Config::getLocationByPath(const std::string &index) {
        it < locations_.end(); ++it) {
     if (it->getPath().empty()) continue;
     if (index.size() < it->getPath().size()) continue;
-    tmp = index.substr(0, it->getPath().size());
+    std::size_t pos = index.find('/', it->getPath().size());
+    if (pos != std::string::npos)
+      tmp = index.substr(0, pos + 1);
+    else
+      tmp = index;
     if (it->getPath() == tmp + '/') return (*it);
     if (!strcmp(tmp.c_str(), it->getPath().c_str())) return (*it);
   }
