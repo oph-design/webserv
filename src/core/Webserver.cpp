@@ -13,7 +13,6 @@ Webserver::Webserver(ConfigVector &configs)
     fds_[i].events = POLLIN;
     fds_[i].revents = 0;
   }
-
   for (ConfigVector::iterator it = configs.begin(); it != configs.end(); ++it) {
     size_t index = getFreeSocket();
     if (index != MAX_CLIENTS) {

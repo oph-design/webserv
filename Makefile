@@ -1,10 +1,18 @@
 NAME							=	webserv
 
+
 CC								=	c++
 LCFLAGS						=	-fsanitize=address
 HEADERFLAGS				=	-I src/core -I include -I src/utils -I src/http \
 										-I src/config -I src/misc
-CFLAGS						=	$(LCFLAGS) $(HEADERFLAGS) \
+MAXFDS						= $(shell ulimit -n)
+MAXCLIENTS				= $(shell expr $(MAXFDS) - 4)
+
+ifeq ($(shell test $(MAXCLIENTS) -gt 1000; echo $$?),0)
+	MAXCLIENTS			= 1000
+endif
+
+CFLAGS						=	$(LCFLAGS) $(HEADERFLAGS) -D MAX_CLIENTS=$(MAXCLIENTS) \
 											-std=c++98 -Wall -Wextra -Werror -g -pedantic
 LFLAGS						=	$(LCFLAGS)
 
